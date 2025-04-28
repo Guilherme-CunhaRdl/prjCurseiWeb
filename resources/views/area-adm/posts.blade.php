@@ -140,12 +140,40 @@
 
                     <div class="cardsPost">
                         <div class="topoCard">
-                            <img src="https://th.bing.com/th/id/OIP.-Kw9SzjtlnVmviOxFweshwHaBu?rs=1&pid=ImgDetMain" alt="Logo" class="logoInstituicao">
+                            <img src="/img/user/fotoPerfil/default25.png" alt="Logo" class="logoInstituicao">
                             <h3 class="nomeInstituicao">Etec de Guaianazes</h3>
                         </div>
 
                         <p class="descricaoInstituicao">
-                            Venho fazer um anuncio, shadow o oricio é um cara muito legal e tirou uma foto muito legal cmg e agora eu amo p...
+                            Veja onde consultar seu local de exame e o que levar. Não cometa o erro de ir... </p>
+
+
+                        <div class="imagemPostagem">
+                            <img src="https://cdn-icons-png.flaticon.com/512/10110/10110025.png" alt="Imagem do post">
+                        </div>
+
+
+                        <div class="infoCard">
+                            <div>
+                                <span>10.5k</span>
+                                Comentarios
+                            </div>
+                            <div>
+                                <span>100.5k</span>
+                                Curtidas
+                            </div>
+                        </div>
+
+
+                    </div>
+                    <div class="cardsPost">
+                        <div class="topoCard">
+                            <img src="/img/user/fotoPerfil/default25.png" alt="Logo" class="logoInstituicao">
+                            <h3 class="nomeInstituicao">Etec de Guaianazes</h3>
+                        </div>
+
+                        <p class="descricaoInstituicao">
+                            Leia o manual do candidato para não se preparar e não cometer nenhum erro.
                         </p>
 
 
@@ -169,41 +197,12 @@
                     </div>
                     <div class="cardsPost">
                         <div class="topoCard">
-                            <img src="https://th.bing.com/th/id/OIP.-Kw9SzjtlnVmviOxFweshwHaBu?rs=1&pid=ImgDetMain" alt="Logo" class="logoInstituicao">
+                            <img src="/img/user/fotoPerfil/default25.png" alt="Logo" class="logoInstituicao">
                             <h3 class="nomeInstituicao">Etec de Guaianazes</h3>
                         </div>
 
                         <p class="descricaoInstituicao">
-                            Venho fazer um anuncio, shadow o oricio é um cara muito legal e tirou uma foto muito legal cmg e agora eu amo p...
-                        </p>
-
-
-                        <div class="imagemPostagem">
-                            <img src="https://cdn-icons-png.flaticon.com/512/10110/10110025.png" alt="Imagem do post">
-                        </div>
-
-
-                        <div class="infoCard">
-                            <div>
-                                <span>10.5k</span>
-                                Comentarios
-                            </div>
-                            <div>
-                                <span>100.5k</span>
-                                Curtidas
-                            </div>
-                        </div>
-
-
-                    </div>
-                    <div class="cardsPost">
-                        <div class="topoCard">
-                            <img src="https://th.bing.com/th/id/OIP.-Kw9SzjtlnVmviOxFweshwHaBu?rs=1&pid=ImgDetMain" alt="Logo" class="logoInstituicao">
-                            <h3 class="nomeInstituicao">Etec de Guaianazes</h3>
-                        </div>
-
-                        <p class="descricaoInstituicao">
-                            Venho fazer um anuncio, shadow o oricio é um cara muito legal e tirou uma foto muito legal cmg e agora eu amo p...
+                            Atenção candidatos do Vestibulinho! As inscrições para nossos cursos para o 1°...
                         </p>
 
 
@@ -226,9 +225,9 @@
 
                     </div>
 
-                  
 
-    
+
+
                 </div>
             </div>
         </div>
@@ -293,7 +292,7 @@
             data: {
                 labels: ['Usuarios', 'Instituições'],
                 datasets: [{
-                    data: [<?=$postUsers?>, <?=$postsInstituicao?>],
+                    data: [<?= $postUsers ?>, <?= $postsInstituicao ?>],
                     backgroundColor: ['#1E78FF', '#FFA617'],
                     borderWidth: 0,
                 }]
@@ -313,7 +312,7 @@
             data: {
                 labels: ['Dia', 'Noite'],
                 datasets: [{
-                    data: ['<?=$postsDia?>','<?=$postsNoite?>'],
+                    data: ['<?= $postsDia ?>', '<?= $postsNoite ?>'],
                     backgroundColor: ['#05A4B6', '#ff005d'],
                     borderWidth: 0,
                 }]

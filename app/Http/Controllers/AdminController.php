@@ -12,10 +12,11 @@ use App\Models\Post;
 use App\Models\User;
 use App\Models\Curtida;
 use App\Models\Curtei;
-use App\Models\SeguidorSeguindo;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\RedirectResponse;
+
+
 
 
 class AdminController extends Controller
@@ -185,7 +186,9 @@ class AdminController extends Controller
                 'posts as total_curtidas' => function ($query) {
                     $query->join('tb_curtida', 'tb_post.id', '=', 'tb_curtida.id_post');
                 },
-                'seguidores as total_seguidores'
+                'seguidor as total_seguidores' => function ($query) {
+                    $query->where('status_seguidores', 1);
+                },
             ])
             ->with('instituicao') 
             ->get();

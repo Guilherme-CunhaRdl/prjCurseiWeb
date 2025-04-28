@@ -265,32 +265,34 @@ class InstituicaoController extends Controller
         $instituicao = User::where('id', $instituicaoId)->first(); 
         
         $posts = DB::table('tb_post')
-    ->join('tb_user', 'tb_post.id_user', '=', 'tb_user.id')
-    ->leftJoin('tb_curtida', 'tb_curtida.id_post', '=', 'tb_post.id')
-    ->select(
-        'tb_post.id as post_id',
-        'tb_user.img_user',
-        'tb_user.arroba_user',
-        'tb_user.nome_user',
-        'tb_post.titulo_post',
-        'tb_post.descricao_post',
-        'tb_post.conteudo_post',
-        'tb_post.status_post',
-        'tb_post.created_at',
-    )
-    ->where('tb_user.id', $instituicaoId)
-    ->groupBy(
-        'tb_post.id',
-        'tb_post.titulo_post',
-        'tb_user.img_user',
-        'tb_user.arroba_user',
-        'tb_user.nome_user',
-        'tb_post.descricao_post',
-        'tb_post.conteudo_post',
-        'tb_post.status_post',
-        'tb_post.created_at'
-    )
-    ->get();
+        ->join('tb_user', 'tb_post.id_user', '=', 'tb_user.id')
+        ->leftJoin('tb_curtida', 'tb_curtida.id_post', '=', 'tb_post.id')
+        ->select(
+            'tb_post.id as post_id',
+            'tb_user.img_user',
+            'tb_user.arroba_user',
+            'tb_user.nome_user',
+            'tb_post.titulo_post',
+            'tb_post.descricao_post',
+            'tb_post.conteudo_post',
+            'tb_post.status_post',
+            'tb_post.created_at',
+        )
+        ->where('tb_user.id', $instituicaoId)
+        ->groupBy(
+            'tb_post.id',
+            'tb_post.titulo_post',
+            'tb_user.img_user',
+            'tb_user.arroba_user',
+            'tb_user.nome_user',
+            'tb_post.descricao_post',
+            'tb_post.conteudo_post',
+            'tb_post.status_post',
+            'tb_post.created_at'
+        )
+        ->get();
+
+
         return view('instituicao.personalizacao-pagina.index', ['instituicao' => $instituicao, 'posts' => $posts]);
 
     }
@@ -301,39 +303,38 @@ class InstituicaoController extends Controller
         $instituicao = User::where('id', $instituicaoId)->first();
         
         $posts = DB::table('tb_post')
-    ->join('tb_user', 'tb_post.id_user', '=', 'tb_user.id')
-    ->leftJoin('tb_curtida', 'tb_curtida.id_post', '=', 'tb_post.id')
-    ->select(
-        'tb_post.id as post_id',
-        'tb_post.titulo_post',
-        'tb_post.descricao_post',
-        'tb_post.conteudo_post',
-        'tb_post.status_post',
-        'tb_post.created_at',
-        DB::raw('COUNT(tb_curtida.id) as total_curtidas')
-    )
-    ->where('tb_user.id', $instituicaoId) 
-    ->when($request->filled('visualizacao'), function ($query) use ($request) {
-        
-        return $query->where('tb_post.visualizacao', $request->visualizacao);
-    })
-    ->when($request->filled('mes'), function ($query) use ($request) {
-        return $query->whereMonth('tb_post.created_at', $request->mes);
-    })
-    ->when($request->filled('restricao'), function ($query) use ($request) {
-        return $query->where('tb_post.status_post', $request->restricao);
-    })
-    ->groupBy(
-        'tb_post.id',
-        'tb_post.titulo_post',
-        'tb_post.descricao_post',
-        'tb_post.conteudo_post',
-        'tb_post.status_post',
-        'tb_post.created_at'
-    )
-    ->get();
-
-    $instituicao = User::all()->where('id', $instituicaoId);
+        ->join('tb_user', 'tb_post.id_user', '=', 'tb_user.id')
+        ->leftJoin('tb_curtida', 'tb_curtida.id_post', '=', 'tb_post.id')
+        ->select(
+            'tb_post.id as post_id',
+            'tb_post.titulo_post',
+            'tb_post.descricao_post',
+            'tb_post.conteudo_post',
+            'tb_post.status_post',
+            'tb_post.created_at',
+            'tb_post.conteudo_post',
+            DB::raw('COUNT(tb_curtida.id) as total_curtidas')
+        )
+        ->where('tb_user.id', $instituicaoId) 
+        ->when($request->filled('visualizacao'), function ($query) use ($request) {
+            
+            return $query->where('tb_post.visualizacao', $request->visualizacao);
+        })
+        ->when($request->filled('mes'), function ($query) use ($request) {
+            return $query->whereMonth('tb_post.created_at', $request->mes);
+        })
+        ->when($request->filled('restricao'), function ($query) use ($request) {
+            return $query->where('tb_post.status_post', $request->restricao);
+        })
+        ->groupBy(
+            'tb_post.id',
+            'tb_post.titulo_post',
+            'tb_post.descricao_post',
+            'tb_post.conteudo_post',
+            'tb_post.status_post',
+            'tb_post.created_at'
+        )
+        ->get();
 
 
 

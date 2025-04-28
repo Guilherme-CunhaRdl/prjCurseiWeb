@@ -34,7 +34,7 @@ route::prefix('curseiAdm')->group(function(){
     // funcões
     Route::get('/deslogar','App\Http\Controllers\AdminController@deslogar');
     Route::post('/logar','App\Http\Controllers\AdminController@logar');
-     Route::get('/novoadm','App\Http\Controllers\AdminController@store');
+    Route::get('/novoadm','App\Http\Controllers\AdminController@store');
     Route::get('/buscarUsuarios','App\Http\Controllers\userController@buscarUsuarios')->middleware('auth:adm');
     Route::get('/nomedoadm','App\Http\Controllers\AdminController@nome')->middleware('auth:adm');
     Route::get('/desativarUsuarios/{id}','App\Http\Controllers\userController@desativarUsuarios')->middleware('auth:adm');
@@ -45,21 +45,27 @@ route::prefix('curseiAdm')->group(function(){
 });
 
 
-route::prefix('curseiInstituicao')->group( function(){
-    Route::get('/dashboard', [InstituicaoController::class, 'index'])->name('dashboard.index');
-Route::get('/login', [InstituicaoController::class, 'loginInstituicao'])->name('login');
-Route::post('/fazerLogin', [InstituicaoController::class, 'fazerLoginInstituicao'])->name('fazerLogin');
-Route::get('/logoffInstituicao', [InstituicaoController::class, 'logoutInstituicao'])->name('logout');
-
-Route::get('/analiseConteudo', [InstituicaoController::class, 'analiseConteudoInstituicao'])->name('analiseConteudo');
-
-Route::get('/bibliotecaMidias', [InstituicaoController::class, 'bibliotecaMidiaIndex'])->name('biblioteca.index');
-Route::get('/bibliotecaMidia/filtrar', [InstituicaoController::class, 'filtrar'])->name('biblioteca.filtrar');
-
-Route::get('/personalizacaoPagina', [InstituicaoController::class, 'personalizacaoIndex'])->name('personalizacao.index');
-
-Route::post('/personalizacaoPagina', [InstituicaoController::class, 'updatePersonalizacao'])->name('personalizacao.update');
-});
-
 
 // fim da area adm ---------------------------------------------------------------------------------------------------------
+
+// inicio da area instituicao ---------------------------------------------------------------------------------------------------------
+
+
+route::prefix('curseiInstituicao')->group( function(){
+//rotas
+Route::get('/dashboard', [InstituicaoController::class, 'index'])->name('dashboard.index');
+Route::get('/login', [InstituicaoController::class, 'loginInstituicao'])->name('login');
+Route::get('/analiseConteudo', [InstituicaoController::class, 'analiseConteudoInstituicao'])->name('analiseConteudo');
+Route::get('/bibliotecaMidias', [InstituicaoController::class, 'bibliotecaMidiaIndex'])->name('biblioteca.index');
+Route::get('/personalizacaoPagina', [InstituicaoController::class, 'personalizacaoIndex'])->name('personalizacao.index');
+
+//funcoes
+Route::post('/fazerLogin', [InstituicaoController::class, 'fazerLoginInstituicao'])->name('fazerLogin');
+Route::get('/logoffInstituicao', [InstituicaoController::class, 'logoutInstituicao'])->name('logout');
+Route::post('/personalizacaoPagina', [InstituicaoController::class, 'updatePersonalizacao'])->name('personalizacao.update');
+Route::get('/bibliotecaMidia/filtrar', [InstituicaoController::class, 'filtrar'])->name('biblioteca.filtrar');
+
+
+});
+
+// fim da area instituicao ---------------------------------------------------------------------------------------------------------

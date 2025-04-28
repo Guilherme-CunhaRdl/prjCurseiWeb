@@ -69,8 +69,8 @@
             @foreach($posts as $post)     
                             <div class="cardsPost">
                                 <div class="topoCard">
-                                    <img src="https://th.bing.com/th/id/OIP.-Kw9SzjtlnVmviOxFweshwHaBu?rs=1&pid=ImgDetMain" alt="Logo" class="logoInstituicao">
-                                    <h3 class="nomeInstituicao">{{ $post->user->nome_user ?? 'Desconhecido' }}</h3>
+                                    <img src="{{ asset('img/user/fotoPerfil/' . ($post->usuario->img_user ?? 'default-banner.jpg')) }}" alt="Logo" class="logoInstituicao">
+                                    <h3 class="nomeInstituicao">{{ $post->usuario->nome_user ?? 'Desconhecido' }}</h3>
                                 </div>
 
                                 <p class="descricaoInstituicao">
@@ -79,7 +79,9 @@
 
 
                                 <div class="imagemPostagem">
-                <img src="https://cdn-icons-png.flaticon.com/512/10110/10110025.png" alt="Imagem do post">
+
+                                
+                <img src="{{ asset('img/user/imgPosts/' . ($post->conteudo_post ?? 'default-banner.jpg')) }}" alt="Imagem do post">
             </div>
 
 

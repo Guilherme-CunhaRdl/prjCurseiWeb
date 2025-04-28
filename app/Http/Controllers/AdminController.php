@@ -226,22 +226,32 @@ class AdminController extends Controller
         $quantidadeCurtei = Curtei::where('id_user', $userId)->count();
 
 
-        $ultimosSeguidores = Seguidores::where('id', $userId)
-            ->orderBy('created_at', 'desc')
-            ->limit(5)
-            ->get();
+        $ultimosSeguidores = Seguidores::with(['usuarioSeguidor' => function($q) {
+            $q->withCount('seguidores');
+        }])
+        ->where('id_user_seguido', $userId)
+        ->where('status_seguidores', 1)
+        ->orderBy('created_at', 'desc')
+        ->limit(5)
+        ->get();
+    
+            
 
-        $seguindo = Seguidores::where('id_user_seguidor', $userId)
-            ->orderBy('created_at', 'desc')
-            ->limit(5)
-            ->get();
-
+        $seguindo = Seguidores::with(['usuarioSeguido' => function($q) {
+            $q->withCount('seguindo');
+        }])
+        ->where('id_user_seguidor', $userId)
+        ->where('status_seguidores', 1)
+        ->orderBy('created_at', 'desc')
+        ->limit(5)
+        ->get();
 
         return view('area-adm.dashboardUser', compact(
             'usuario',
             'numeroPosts',
             'numeroCurtidas',
             'numeroSeguidores',
+            'numeroSeguindo',
             'ultimosSeguidores',
             'seguindo',
             'quantidadeCurtei'

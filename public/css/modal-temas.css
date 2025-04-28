@@ -102,3 +102,28 @@
     font-weight: 600;
     font-size: 1rem;
 }
+.animacaoEntrada{
+    animation: animacaoModalAbrindo 0.8s ease-in-out;
+}
+.animacaoSaida{
+    animation: fadeOut 2s ease-in-out;
+}
+@keyframes animacaoModalAbrindo {
+    0% {
+        opacity: 0;
+
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+
+    }
+    100% {
+        opacity: 0;
+    }
+}

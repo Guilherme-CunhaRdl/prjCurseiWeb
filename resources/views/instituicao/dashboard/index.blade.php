@@ -60,13 +60,13 @@
                         
                         <div class="box-ultimo-editado d-none  d-md-grid">
                             <div class="p-1 d-flex justify-content-between align-items-center flex-column h-100 ">
-                                <div class="col-12 d-flex justify-content-between align-items-center">
+                                <div class="col-12 d-flex justify-content-between align-items-center ">
                                     <h3>Ultimo Editado</h3>
                                     <i class="bi bi-arrow-right-circle" style="font-size: 30px;"></i>
                                 </div>
                                 @foreach ($ultimoPost as $item)
 
-                                <div class="d-flex flex-row w-100 h-100 d-none d-xxl-flex">
+                                <div class="d-flex flex-row w-100 h-100 d-none align-items-center d-xxl-flex">
                                     <div class="box-img-ultimo-editado">
                                         <img class=" img-fluid" src="{{ url('img/user/imgPosts/' . $item->conteudo_post) }}" alt="">
                                     </div>

@@ -71,13 +71,14 @@ class User extends Authenticatable
         return $this->hasMany(Post::class, 'id_user');
     }
     
-    public function seguidores()
+    public function seguidor()
     {
-        return $this->hasMany(Seguidores::class, 'id_user_seguidor');
+        return $this->hasMany(Seguidores::class, 'id_user_seguido'); 
     }
 
     public function seguindo()
-{
-    return $this->hasMany(Seguidores::class, 'id_user_seguido');
-}
+    {
+        return $this->hasMany(Seguidores::class, 'id_user_seguidor'); 
+    }
+    
 }

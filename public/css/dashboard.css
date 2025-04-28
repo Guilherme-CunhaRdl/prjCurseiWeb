@@ -123,8 +123,7 @@
 
 .box-img-ultimo-editado{
     width: 250px;
-    max-width: 500px;
-    height: 200px;
+    height: 250px;
     background-color: var(--cinza);
     border-radius: 25px;
 }

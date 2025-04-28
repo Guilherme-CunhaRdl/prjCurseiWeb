@@ -39,8 +39,8 @@
                 </div>
             </div>
             <div class="d-flex justify-content-between divs-conteudo left-0">
-                <div class="bg-white text-black p-3 divConteudoPostado">
-                    <div class="d-flex flex-row justify-content-between m-3 align-items-center">
+                <div class="bg-white   text-black p-3 divConteudoPostado justify-content-center align-items-center">
+                    <div class="  d-flex flex-row justify-content-between m-3 align-items-center">
                         <h3>Conteúdo postado</h3>
                         <div class="select-wrapper ">
                             <select name="" id="select-grafico" class="select-grafico">
@@ -49,7 +49,7 @@
                             </select>
                         </div>
                     </div>
-                    <div class="div-grafico">
+                    <div class="div-grafico ">
                         <canvas id="graficoCurtidas" class="myShart"></canvas>
                     </div>
                 </div>
@@ -87,10 +87,10 @@
                             </div>
                         <p>Ultimos 30 dias</p>
                         @foreach ($ultimoSeguidor as $seguidor)
-                        <div class="p-2 row h-50 d-flex align-items-center conteudoEspectadoresRecorrentes">
+                        <div class=" row h-50 d-flex align-items-center conteudoEspectadoresRecorrentes">
                             <div class="divImgEspectadores ">
                                 <img src="{{ url('img/user/fotoPerfil/' . $seguidor->imgUser) }}"
-                                    class="imgEspectadoresRecorrentes" alt="">
+                                 alt="">
                             </div>
                             <div class="col">
                                 <h5>{{ $seguidor->nameUser }}</h5>

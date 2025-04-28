@@ -32,6 +32,7 @@ class instituicaoControllerApi extends Controller
             'complemento' => $request->complemento,
             'complemento_instituicao' => $request->cnpj,
             'id_user' => $request->user_id,
+            'verificado_instituicao' => 0,
         ]);
     }
 }

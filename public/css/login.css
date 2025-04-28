@@ -72,7 +72,7 @@
 }
 
 .divConteudoPostado{
-    height: 55vh; 
+    height: 100%; 
     width: 100vh; 
     border-radius: 20px; 
     border: 1px solid #0000;
@@ -144,6 +144,7 @@
 
 
 .conteudoEspectadoresRecorrentes{
+    height: 100%; 
     justify-content: center;
     display: flex;
     align-items: center ;
@@ -151,7 +152,7 @@
 
 .divImgEspectadores {
     width: 135px; /* Aumenta o tamanho da div */
-    height: 120px; /* Torna a div quadrada */
+    height: 100%; /* Torna a div quadrada */
     display: flex;
     justify-content: center;
     align-items: center;

@@ -54,7 +54,7 @@
                     </div>
                     
                     <div class="col-12 ps-2 my-2">
-                        <span class="span-frase-banner">Img do banner</span>
+                        <span class="span-frase-banner">Imagem do banner</span>
                     </div>
 
                     <div class="col-12 d-flex justify-content-center align-items-center">
@@ -149,7 +149,7 @@
                             <div class="col-12 mt-3 ms-5" style=" overflow-y: auto;">
                             @foreach ($posts as $item)
                                 
-                                <div class="col-12 my-3 bg-info mb-5" style="overflow-x: hidden;">
+                                <div class="col-12 my-3 mb-5" style="overflow-x: hidden;">
                                 <div class="col-12 d-flex flex-row ms-5 pt-2"  >
                                     <div class="box-post-perfil-preview col-1">
                                         <img src="{{ url('img/user/fotoPerfil/'. $item->img_user) }}" alt="">

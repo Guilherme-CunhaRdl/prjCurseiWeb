@@ -15,14 +15,12 @@ class Seguidores extends Model
 
     public $timestamps = false;
 
-        // Relacionamento: quem está sendo seguido
-        public function seguindo()
+        public function seguidor()
         {
             return $this->belongsTo(User::class, 'id_user_seguidor');
         }
     
-        // Relacionamento: quem é o seguidor
-        public function seguidor()
+        public function seguindo()
         {
             return $this->belongsTo(User::class, 'id_user_seguido');
         }

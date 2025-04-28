@@ -7,6 +7,7 @@ use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 
 class UserControllerApi extends Controller
 {
@@ -86,7 +87,12 @@ public function storeApi(Request $request)
      */
     public function showApi($id)
     {
-        $user = User::where('id', $id)->get();
+        $user = User::withCount(['seguidor', 'seguindo'])
+        ->where('id', $id)
+        ->first();
+
+
+    
         return response()->json([
             'sucesso' => true,
             'mensagem' => 'Usuario Encontrado com Sucesso!',
@@ -94,6 +100,7 @@ public function storeApi(Request $request)
             'User' => $user
         ]);
     }
+    
 
     /**
      * Show the form for editing the specified resource.

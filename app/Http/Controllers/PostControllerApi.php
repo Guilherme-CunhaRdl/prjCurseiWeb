@@ -126,33 +126,34 @@ class PostControllerApi extends Controller
 
         ]);
     }
-    
-    public function getPostsByUser($idUser)
-    {
-        $posts = Post::with('usuario')
-            ->where('id_user', $idUser) // Filtra os posts pelo id_user
-            ->get()
-            ->map(function ($post) {
-                return [
-                    'id' => $post->id,
-                    'usuario' => [
-                        'nome_user' => $post->usuario->nome_user,
-                        'arroba_user' => $post->usuario->arroba_user,
-                        'img_user' => $post->usuario->img_user ? url('img/user/fotoPerfil/' . $post->usuario->img_user) : null,
-                    ],
-                    'descricao_post' => $post->descricao_post,
-                    'criacao_post' => $post->created_at,
-                    'image_url' => $post->conteudo_post ? url('img/user/bannerPerfil/' . $post->conteudo_post) : null,
-                ];
-            });
-    
-        return response()->json([
-            'sucesso' => true,
-            'data' => $posts,
-            'message' => 'Posts do usuário retornados com sucesso',
-            'code' => 200,
-        ]);
-    }
+
+        public function getPostsByUser($idUser)
+{
+    $query = DB::table('tb_post')
+        ->join('tb_user', 'tb_post.id_user', '=', 'tb_user.id')
+        ->select(
+            'tb_post.id_user',
+            'tb_post.id AS id_post',
+            'tb_user.img_user',
+            'tb_user.nome_user',
+            'tb_post.created_at',
+            'tb_post.updated_at',
+            'tb_post.descricao_post',
+            'tb_post.conteudo_post',
+            'tb_user.arroba_user',
+            DB::raw("TIMESTAMPDIFF(SECOND, tb_post.created_at, NOW()) AS tempo_insercao")
+        )
+        ->where('tb_post.id_user', '=', $idUser); // Filtro para posts de um usuário específico
+
+    $posts = $query->get();
+
+    return response()->json([
+        'sucesso' => true,
+        'data' => $posts,
+        'message' => 'Posts do usuário retornados com sucesso',
+        'code' => 200,
+    ]);
+}
     /**
      * Show the form for creating a new resource.
      *

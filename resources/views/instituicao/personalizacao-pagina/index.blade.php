@@ -106,7 +106,8 @@
                         <button class="botao-cancelar" onclick="window.location.href='{{ route('dashboard.index') }}'">Cancelar</button>
                     </div>
 
-                </div>        </form>
+                </div>        
+            </form>
 
             </div>
 
@@ -145,31 +146,31 @@
                                 </div>
                             </div>
                             <hr>
-                            <div class="col-12 mt-3 ms-5" style="max-height: 400px; overflow-y: auto;">
+                            <div class="col-12 mt-3 ms-5" style=" overflow-y: auto;">
                             @foreach ($posts as $item)
                                 
-                                <div class="col-12 my-3 mb-5" style="overflow-x: hidden;">
+                                <div class="col-12 my-3 bg-info mb-5" style="overflow-x: hidden;">
                                 <div class="col-12 d-flex flex-row ms-5 pt-2"  >
                                     <div class="box-post-perfil-preview col-1">
                                         <img src="{{ url('img/user/fotoPerfil/'. $item->img_user) }}" alt="">
                                     </div>
                                     <div class="col-11">
-                                        <div class="col-12">
+                                        <div class="col-12 h-50 d-flex align-items-center ">
                                             <span>{{$item->nome_user}}</span>
                                             .
                                             {{ $item->created_at }}
                                             ...
                                             repub
                                         </div>
-                                        <div class="col-12">
-                                            <span>{{ $item->arroba_user }}</span>
+                                        <div class="col-12 h-50">
+                                            <span>{{ @$item->arroba_user }}</span>
                                         </div>
                                     </div>
                                 </div>
     
                                 <div class="col-12 ms-5" >
                                     <p>{{ $item->descricao_post }} </p>
-                                    <div class="box-post-conteudo-preview bg-white" style="overflow-x: hidden;" >
+                                    <div class="box-post-conteudo-preview " style="overflow-x: hidden;" >
                                         <img src="{{ url('img/user/imgPosts/' . $item->conteudo_post) }}" alt="">
                                     </div>
                                 </div>

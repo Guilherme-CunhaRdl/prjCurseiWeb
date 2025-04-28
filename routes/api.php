@@ -26,7 +26,7 @@ Route::get('/posts/{tipo}/{idUser}/{quantidade}/{pagina}/{pesquisa}', [PostContr
  Route::get('/cursei/posts', [PostControllerApi::class, 'indexApi'])->name('posts.index');
  Route::post('/cursei/posts/{idUser}', [PostControllerApi::class, 'storeApi'])->name('posts.store');
  Route::get('/cursei/posts/user/{idUser}', [PostControllerApi::class, 'getPostsByUser'])->name('posts.byUser');
- 
+
 Route::get('/cursei/user', [UserControllerApi::class, 'indexApi'])->name('user.index');
 Route::post('/cursei/user', [UserControllerApi::class, 'storeApi'])->name('user.store');
 Route::delete('/cursei/user/{id}', [UserControllerApi::class, 'destroyApi'])->name('user.destroy');

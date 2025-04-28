@@ -312,6 +312,7 @@ class InstituicaoController extends Controller
             'tb_post.conteudo_post',
             'tb_post.status_post',
             'tb_post.created_at',
+            'tb_post.conteudo_post',
             DB::raw('COUNT(tb_curtida.id) as total_curtidas')
         )
         ->where('tb_user.id', $instituicaoId) 
@@ -334,8 +335,6 @@ class InstituicaoController extends Controller
             'tb_post.created_at'
         )
         ->get();
-
-    $instituicao = User::all()->where('id', $instituicaoId);
 
 
 

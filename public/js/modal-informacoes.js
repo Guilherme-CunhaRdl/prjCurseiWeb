@@ -2,6 +2,7 @@ const containerModalInformacoes = document.getElementById('containerModalInforma
 const boxModalInformacoes = document.getElementById('boxModalInformacoes')
 
 function abrirModalInformacoes(){
+    boxModalInformacoes.classList.add('animacaoEntrada')   
 
     containerModalInformacoes.classList.add('modal-ativo')
     containerModalInformacoes.classList.remove('modal-oculto')
@@ -13,6 +14,10 @@ function fecharModalInformacoes(alvo){
     if(alvo.target === containerModalInformacoes){
         containerModalInformacoes.classList.remove('modal-ativo')
         containerModalInformacoes.classList.add('modal-oculto')
+
+        setTimeout(()=>{
+            containserModalInformacoes.style.animation = 'fadeOut 0.5s ease-in forwards';
+        }, 6000)
     }else if(alvo.target === document.getElementById('botao-fechar-informacoes')){
         containerModalInformacoes.classList.remove('modal-ativo')
         containerModalInformacoes.classList.add('modal-oculto')

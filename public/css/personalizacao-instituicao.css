@@ -142,6 +142,20 @@
     overflow: scroll;
     overflow-x: hidden;
 }
+.box-preview-perfil::-webkit-scrollbar {
+    width: 0; 
+}
+
+.box-preview-perfil::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+.box-preview-perfil::-webkit-scrollbar-thumb {
+    background-color: var(--cor-tema); 
+    border-radius: 30px;
+
+}
+
 
 .tit-preview{
     color: rgba(128, 128, 128, 0.651);
@@ -229,7 +243,9 @@
     height: 60px;
     border-radius: 50%;
     background-color: var(--cor-secundaria-tema);
+     
 }
+
 
 .box-post-perfil-preview img{
     width: 100%;
@@ -240,13 +256,12 @@
 
 .box-post-conteudo-preview{
     background-color: #818181;
-     width: 89%; 
+     width: 80%; 
      height: auto;
-
+   
 }
 .box-post-conteudo-preview img{
-     width: 70%; 
-     height: 100;
+     width: 100%; 
      object-fit: cover;
      
 }

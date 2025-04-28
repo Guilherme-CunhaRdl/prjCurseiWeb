@@ -88,7 +88,7 @@
                         <p>Ultimos 30 dias</p>
                         @foreach ($ultimoSeguidor as $seguidor)
                         <div class="p-2 row h-50 d-flex align-items-center conteudoEspectadoresRecorrentes">
-                            <div class="divImgEspectadores">
+                            <div class="divImgEspectadores ">
                                 <img src="{{ url('img/user/fotoPerfil/' . $seguidor->imgUser) }}"
                                     class="imgEspectadoresRecorrentes" alt="">
                             </div>

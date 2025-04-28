@@ -199,7 +199,7 @@ class AdminController extends Controller
     public function selectAllPostAdm()
     {
 
-        $posts = Post::with(['user', 'curtidas'])->withCount('curtidas')->get();
+        $posts = Post::with(['usuario', 'curtidas'])->withCount('curtidas')->get();
 
         return view('area-adm.TodosPost', compact('posts'));
     }

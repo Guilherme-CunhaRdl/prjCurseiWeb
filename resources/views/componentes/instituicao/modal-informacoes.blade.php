@@ -1,7 +1,7 @@
 <div class="container-fluid container-modal-informacoes modal-oculto" id="containerModalInformacoes" onclick="fecharModalInformacoes(event)">
     <div class="box-modal-informacoes" id="boxModalInformacoes">
         <div class="col-12 header-modal-informacoes">
-            <h1>Informações Instituição</h1>
+            <h1>Informações da Instituição</h1>
             <hr class="mt-0">
         </div>
             

@@ -4,7 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostControllerApi;
 use App\Http\Controllers\UserControllerApi;
-
+use App\Http\Controllers\InstituicaoControllerApi;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -25,6 +25,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
  Route::get('/cursei/posts', [PostControllerApi::class, 'indexApi'])->name('posts.index');
  Route::post('/cursei/posts/{idUser}', [PostControllerApi::class, 'storeApi'])->name('posts.store');
  Route::get('/cursei/posts/user/{idUser}', [PostControllerApi::class, 'getPostsByUser'])->name('posts.byUser');
+ Route::post('instituicao', [instituicaoControllerApi::class, 'cadastrarInstituicao']);
  
 Route::get('/cursei/user', [UserControllerApi::class, 'indexApi'])->name('user.index');
 Route::post('/cursei/user', [UserControllerApi::class, 'storeApi'])->name('user.store');

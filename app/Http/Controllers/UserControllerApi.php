@@ -45,19 +45,19 @@ public function storeApi(Request $request)
     if ($request->hasFile('imgUser') && $request->file('imgUser')->isValid()) {
         $extensao = $request->file('imgUser')->getClientOriginalExtension();
         $nomeImagem = md5($request->file('imgUser')->getClientOriginalName() . strtotime('now')) . "." . $extensao;
-        $request->file('imgUser')->move(public_path('img/img-instituicao/img-perfil'), $nomeImagem);
+        $request->file('imgUser')->move(public_path('img/user/fotoPerfil'), $nomeImagem);
     }
 
     if ($request->hasFile('bannerUser') && $request->file('bannerUser')->isValid()) {
         $extensaoBanner = $request->file('bannerUser')->getClientOriginalExtension();
         $nomeBanner = md5($request->file('bannerUser')->getClientOriginalName() . strtotime('now')) . "." . $extensaoBanner;
-        $request->file('bannerUser')->move(public_path('img/img-instituicao/banners'), $nomeBanner);
+        $request->file('bannerUser')->move(public_path('img/user/bannerPerfil'), $nomeBanner);
     }
 
     $user = User::create([
         'nome_user' => $request->nomeUser,
         'email_user' => $request->emailUser,
-        'senha_user' => $request->senhaUser,
+        'senha_user' => bcrypt($request->senhaUser),
         'img_user' => $nomeImagem,
         'banner_user' => $nomeBanner,
         'status_user' => 1,

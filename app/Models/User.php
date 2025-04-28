@@ -26,17 +26,17 @@ class User extends Authenticatable
     protected $table ='tb_user';
     protected $fillable = [
         'id',
-        'nome_user	',
-        'email_user ',
+        'nome_user',
+        'email_user',
         'senha_user',
         'img_user',
         'arroba_user',
         'banner_user',
-        'token_user ',
+        'token_user',
         'status_user',
         'bio_user',
         'created_at',
-        'updated_at	',
+        'updated_at',
     ];
 
     /**

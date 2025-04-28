@@ -22,6 +22,7 @@ class instituicaoControllerApi extends Controller
 
 
         $instituicao = Instituicao::create([
+            'cnpj_instituicao' => $request->cnpj,
             'logradouro_instituicao' => $request->logradouro,
             'num_logradouro_instituicao' => $request->num_logradouro,
             'bairro_instituicao' => $request->bairro,

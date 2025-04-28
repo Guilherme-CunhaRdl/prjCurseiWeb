@@ -38,10 +38,14 @@ route::prefix('curseiAdm')->group(function(){
     Route::get('/buscarUsuarios','App\Http\Controllers\userController@buscarUsuarios')->middleware('auth:adm');
     Route::get('/nomedoadm','App\Http\Controllers\AdminController@nome')->middleware('auth:adm');
     Route::get('/desativarUsuarios/{id}','App\Http\Controllers\userController@desativarUsuarios')->middleware('auth:adm');
+    Route::get('/ativarUsuarios/{id}','App\Http\Controllers\userController@ativarUsuarios')->middleware('auth:adm');
+
     Route::get('/alterarAdm/{id}','App\Http\Controllers\AdminController@update')->middleware('auth:adm');
     Route::put('/usuario/{id}/atualizar', [AdminController::class, 'atualizar'])->name('usuario.atualizar');
     Route::put('/instituicao/{id}/atualizarDados', [AdminController::class, 'atualizarInst'])->name('instituicao.atualizarDados');
     Route::put('/instituicao/{id}/atualizarEndereco', [AdminController::class, 'atualizarInstDados'])->name('instituicao.atualizarEndereco');
+    Route::get('/verificarInts/{id}/{acao}', 'App\Http\Controllers\AdminController@verificarInst');
+
 });
 
 

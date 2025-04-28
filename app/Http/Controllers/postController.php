@@ -44,7 +44,7 @@ class postController extends Controller
         $postsNoite = Post::whereRaw('HOUR(created_at) >= 18 OR HOUR(created_at) < 6')->count();
         $porcentagemNoite = porcentagem($postsNoite,$totalPosts);
         $porcentagemDia = porcentagem($postsDia,$totalPosts);
-
+        $posts = Post::with(['usuario', 'curtidas'])->withCount('curtidas')->orderByDesc('curtidas_count')->limit(3)->get();
         
         return view('area-adm.posts')
             ->with('totalCurtidas', $totalCurtidas)
@@ -58,6 +58,7 @@ class postController extends Controller
             ->with('postsNoite', $postsNoite)
             ->with('porcentagemNoite', $porcentagemNoite)
             ->with('porcentagemDia', $porcentagemDia)
+            ->with('topPosts', $posts)
         ;
     }
 

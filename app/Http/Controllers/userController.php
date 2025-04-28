@@ -103,6 +103,13 @@ class userController extends Controller
         $usuario =User::findOrFail($id);
         $usuario->status_user = 0;
         $usuario->save();
-        return redirect('/curseiAdm/usuarios');
+        return back();
     }
+    public function ativarUsuarios($id){
+        $usuario =User::findOrFail($id);
+        $usuario->status_user = 1;
+        $usuario->save();
+        return back();
+    }
+
 }

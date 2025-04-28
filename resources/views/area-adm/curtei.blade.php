@@ -39,7 +39,7 @@
                                 <i class='bx bx-heart'></i>
                             </div>
                             <div class="infos">
-                                <p>10.232</p>
+                                <p>0</p>
                                 <p>Curtidas</p>
                             </div>
                         </div>
@@ -234,6 +234,7 @@
             </div>
             
         </div>
+      
     </main>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -316,7 +317,7 @@
             data: {
                 labels: ['Usuarios', 'Instituições'],
                 datasets: [{
-                    data: [38, 40],
+                    data: ['<?=$curteisDia?>','<?=$curteisNoite?>'],
                     backgroundColor: ['#05A4B6', '#ff005d'],
                     borderWidth: 0,
                 }]

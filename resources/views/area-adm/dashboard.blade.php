@@ -32,7 +32,7 @@
                     <p class="numero">{{$usuarios}}</p>
                     <p class="info">AUMENTO DE {{$aumentoUser}}% <i class='bx bx-trending-up'></i></p>
                 </a>
-                <a href="/curseiAdm/intituicoes" class="card-dashboard">
+                <a href="/curseiAdm/instituicao" class="card-dashboard">
                     <div class="topo">
                         <p>Instituições Ativas</p>
                         <div class="icone"> <i class='bx bxs-institution'></i></div>
@@ -67,7 +67,7 @@
                                 </div>
                                 <p>Manhã (06:00-12:00)</p>
                             </div>
-                            <span>50%</span>
+                            <span>30%</span>
                         </div>
                         <div class="info">
                             <div>
@@ -75,7 +75,7 @@
                                 </div>
                                 <p>Tarde (12:00-18:00)</p>
                             </div>
-                            <span>50%</span>
+                            <span>20%</span>
                         </div>
                         <div class="info">
                             <div>

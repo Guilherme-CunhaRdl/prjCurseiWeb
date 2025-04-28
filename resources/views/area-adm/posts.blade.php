@@ -47,7 +47,7 @@
                                 <i class='bx bx-download'></i>
                             </div>
                             <div class="infos">
-                                <p>10.232</p>
+                                <p>0</p>
                                 <p>Downloads</p>
                             </div>
                         </div>
@@ -137,20 +137,21 @@
                 </div>
                 <div class="listarCards">
 
-
+                @foreach($topPosts as $post)   
                     <div class="cardsPost">
                         <div class="topoCard">
-                            <img src="/img/user/fotoPerfil/default25.png" alt="Logo" class="logoInstituicao">
-                            <h3 class="nomeInstituicao">Etec de Guaianazes</h3>
+                        <img src="{{asset('img/user/fotoPerfil/' . ($post->usuario->img_user ?? 'default-banner.jpg'))}}" alt="Logo" class="logoInstituicao">
+                        <h3 class="nomeInstituicao">{{'@'.$post->usuario->arroba_user ?? 'Desconhecido' }}</h3>
                         </div>
 
                         <p class="descricaoInstituicao">
-                            Veja onde consultar seu local de exame e o que levar. Não cometa o erro de ir... </p>
+                                {{ $post->descricao_post }}
+                                </p>
 
 
-                        <div class="imagemPostagem">
-                            <img src="https://cdn-icons-png.flaticon.com/512/10110/10110025.png" alt="Imagem do post">
-                        </div>
+                                <div class="imagemPostagem">
+                <img src="{{asset('img/user/imgPosts/'.$post->conteudo_post)}}" alt="Imagem do post">
+            </div>
 
 
                         <div class="infoCard">
@@ -159,75 +160,18 @@
                                 Comentarios
                             </div>
                             <div>
-                                <span>100.5k</span>
+                            <span>{{ $post->curtidas_count }}</span>
                                 Curtidas
                             </div>
                         </div>
 
 
                     </div>
-                    <div class="cardsPost">
-                        <div class="topoCard">
-                            <img src="/img/user/fotoPerfil/default25.png" alt="Logo" class="logoInstituicao">
-                            <h3 class="nomeInstituicao">Etec de Guaianazes</h3>
-                        </div>
+                @endforeach
 
-                        <p class="descricaoInstituicao">
-                            Leia o manual do candidato para não se preparar e não cometer nenhum erro.
-                        </p>
+                  
 
-
-                        <div class="imagemPostagem">
-                            <img src="https://cdn-icons-png.flaticon.com/512/10110/10110025.png" alt="Imagem do post">
-                        </div>
-
-
-                        <div class="infoCard">
-                            <div>
-                                <span>10.5k</span>
-                                Comentarios
-                            </div>
-                            <div>
-                                <span>100.5k</span>
-                                Curtidas
-                            </div>
-                        </div>
-
-
-                    </div>
-                    <div class="cardsPost">
-                        <div class="topoCard">
-                            <img src="/img/user/fotoPerfil/default25.png" alt="Logo" class="logoInstituicao">
-                            <h3 class="nomeInstituicao">Etec de Guaianazes</h3>
-                        </div>
-
-                        <p class="descricaoInstituicao">
-                            Atenção candidatos do Vestibulinho! As inscrições para nossos cursos para o 1°...
-                        </p>
-
-
-                        <div class="imagemPostagem">
-                            <img src="https://cdn-icons-png.flaticon.com/512/10110/10110025.png" alt="Imagem do post">
-                        </div>
-
-
-                        <div class="infoCard">
-                            <div>
-                                <span>10.5k</span>
-                                Comentarios
-                            </div>
-                            <div>
-                                <span>100.5k</span>
-                                Curtidas
-                            </div>
-                        </div>
-
-
-                    </div>
-
-
-
-
+    
                 </div>
             </div>
         </div>
@@ -292,7 +236,7 @@
             data: {
                 labels: ['Usuarios', 'Instituições'],
                 datasets: [{
-                    data: [<?= $postUsers ?>, <?= $postsInstituicao ?>],
+                    data: [<?=$postUsers?>, <?=$postsInstituicao?>],
                     backgroundColor: ['#1E78FF', '#FFA617'],
                     borderWidth: 0,
                 }]
@@ -312,7 +256,7 @@
             data: {
                 labels: ['Dia', 'Noite'],
                 datasets: [{
-                    data: ['<?= $postsDia ?>', '<?= $postsNoite ?>'],
+                    data: ['<?=$postsDia?>','<?=$postsNoite?>'],
                     backgroundColor: ['#05A4B6', '#ff005d'],
                     borderWidth: 0,
                 }]

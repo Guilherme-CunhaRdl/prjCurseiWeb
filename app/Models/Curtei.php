@@ -20,7 +20,7 @@ class Curtei extends Model
         'updated_at',
     ];
 
-    public function user()
+    public function usuario()
     {
         return $this->belongsTo(User::class, 'id_user');
     }

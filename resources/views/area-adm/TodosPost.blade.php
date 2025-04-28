@@ -69,8 +69,8 @@
             @foreach($posts as $post)     
                             <div class="cardsPost">
                                 <div class="topoCard">
-                                    <img src="{{ asset('img/user/fotoPerfil/' . ($post->usuario->img_user ?? 'default-banner.jpg')) }}" alt="Logo" class="logoInstituicao">
-                                    <h3 class="nomeInstituicao">{{ $post->usuario->nome_user ?? 'Desconhecido' }}</h3>
+                                    <img src="{{asset('img/user/fotoPerfil/' . ($post->usuario->img_user ?? 'default-banner.jpg'))}}" alt="Logo" class="logoInstituicao">
+                                    <h3 class="nomeInstituicao">{{'@'.$post->usuario->arroba_user ?? 'Desconhecido' }}</h3>
                                 </div>
 
                                 <p class="descricaoInstituicao">

@@ -145,7 +145,7 @@
                                 const card = `
                         <div class="card" style="opacity: ${usuario.status_user == 0 ? '0.2' : '1'};">
                             <div class="avatar">
-                                <img src="${usuario.img_user || 'https://img.freepik.com/psd-gratuitas/ilustracao-3d-de-uma-pessoa-com-oculos-de-sol_23-2149436188.jpg?semt=ais_country_boost&w=740'}" alt="">
+            <img src="{{ asset('img/user/fotoPerfil') }}/${usuario.img_user ?? 'default-banner.jpg'}" alt="">
                             </div>
                             <div class="info">
                                 <p>${usuario.nome_user}</p>
@@ -155,8 +155,8 @@
                                 <p>${usuario.status_user == 1 ? 'Ativado' : 'Desativado'}</p>
                             </div>
                             <div class="acoes">
-                                <a href="#"><i class='bx bx-info-circle'></i></a>
-                                <a href="#"><i class='bx bx-user-x'></i></a>
+                                 <a href="/curseiAdm/dashUsuarioAdm/${usuario.id}"><i class='bx bx-info-circle'></i></a>
+                            <a href="/curseiAdm/desativarUsuarios/${usuario.id}"><i class='bx bx-user-x'></i></a>
                             </div>
                         </div>
                     `;

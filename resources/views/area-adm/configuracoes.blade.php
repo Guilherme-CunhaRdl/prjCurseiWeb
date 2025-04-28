@@ -48,7 +48,7 @@
                     @foreach ($adm as $adma )
 
 
-                    <form action="alterarAdm/{{2}}" method="get" class="editarConta">
+                    <form action="alterarAdm/{{1}}" method="get" class="editarConta">
                         @csrf
                         <label for="">Nome</label>
                         <div class="contInput">

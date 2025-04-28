@@ -29,10 +29,18 @@ class curteiController extends Controller
             ->join('tb_user', 'tb_curtei.id_user', '=', 'tb_user.id')
             ->join('tb_instituicao', 'tb_user.id', '=', 'tb_instituicao.id_user')
             ->count('tb_curtei.id');
-        $totalcurtei = $curteiUsers + $curteisInstituicao;
+        
+        function porcentagem($valor,$total){
+            $resultado =number_format(($valor / $total) * 100,1,',','.');
+            return $resultado;
+        }
+        $porcentagemUser = porcentagem($curteiUsers,$totalCurtei);
+        $porcentagemInst = porcentagem($curteisInstituicao,$totalCurtei);
 
-        $porcentagemUser = number_format(($curteiUsers / $totalcurtei) * 100, 1, ',', '.');
-        $porcentagemInst = number_format(($curteisInstituicao / $totalcurtei) * 100, 1, ',', '.');
+        $curteisDia = Curtei::whereRaw('HOUR(created_at) BETWEEN   6 and 18')->count();
+        $curteisNoite = Curtei::whereRaw('HOUR(created_at) >= 18 OR HOUR(created_at) < 6')->count();
+        $porcentagemNoite = porcentagem($curteisNoite,$totalCurtei);
+        $porcentagemDia = porcentagem($curteisDia,$totalCurtei);
         
         return view('area-adm.curtei')
             ->with('totalCurtei', $totalCurtei)
@@ -41,6 +49,10 @@ class curteiController extends Controller
             ->with('curteiUsers', $curteiUsers)
             ->with('porcentagemUser', $porcentagemUser)
             ->with('porcentagemInst', $porcentagemInst)
+            ->with('curteisDia', $curteisDia)
+            ->with('curteisNoite', $curteisNoite)
+            ->with('porcentagemNoite', $porcentagemNoite)
+            ->with('porcentagemDia', $porcentagemDia)
         ;
     }
 

@@ -22,8 +22,11 @@
                 <h2>{{ $usuario->nome_user }}</h2>
             </div>
           <div class="buttonSair">
-          <a href="/curseiAdm/desativarUsuarios/{{$usuario -> id}}"><button class="botaoSair">DESATIVAR CONTA<i class="bi bi-x-circle" style="color:#8F0000;"></i></i></a>
-
+            @if($usuario->status_user == 1)
+            <a href="/curseiAdm/desativarUsuarios/{{$usuario -> id}}" style="font-weight: 600; color:#8F0000; display: flex; gap: 10px; align-items: center; justify-content: center;">Desativar conta</a>
+            @else
+            <a href="/curseiAdm/ativarUsuarios/{{$usuario -> id}}" style="font-weight: 600; color:var(--verde); display: flex; gap: 10px; align-items: center; justify-content: center;">Ativar conta</a>
+            @endif
 
 
           </div>
@@ -100,7 +103,7 @@
                 <i class="bi bi-info-circle fs-5 me-2"></i>
                 <h3 class="mb-0">Informações</h3>
               </div>
-              <button  onclick="abrirModalAlter()" >
+              <button  onclick="abrirModalAlter()"  style="border: none;background-color: transparent;"> 
                 <i class="bi bi-pencil-square fs-5" style="color:#05A4B6"></i>
               </button>
             </div>
@@ -169,7 +172,7 @@
                     </div>
                     <div class="input-modal-container">
                         <label for="senha">Senha</label>
-                        <input type="text" name="senha" value="{{ $usuario->senha_user }}">
+                        <input type="text" name="senha" value="">
                     </div>
                 </div>
             </div>

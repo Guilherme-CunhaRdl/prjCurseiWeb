@@ -48,6 +48,13 @@ class PostControllerApi extends Controller
                 DB::raw('COUNT(DISTINCT tb_curtida.id) AS curtidas'),
                 DB::raw('COUNT(DISTINCT tb_comentario.id) AS comentarios'),
                 DB::raw('IF(tb_seguidores.id IS NOT NULL, 1,0) AS segue_usuario'),
+                DB::raw("TIMESTAMPDIFF(SECOND, tb_post.created_at, NOW()) AS tempo_insercao"),
+                DB::raw("IF(EXISTS (
+                    SELECT 1 FROM tb_curtida 
+                    WHERE tb_curtida.id_post = tb_post.id 
+                      AND tb_curtida.id_user = $idUser
+                      AND tb_curtida.status_curtida = 1
+                ), 1, 0) AS curtiu_post"),
                 DB::raw("TIMESTAMPDIFF(SECOND, tb_post.created_at, NOW()) AS tempo_insercao")
             )
             ->groupBy(
@@ -68,7 +75,7 @@ class PostControllerApi extends Controller
                 ->offset($ignorarPosts)
                 ->limit($quantidade)
 
-                ;
+                ;   
                 break;
             case 1:
                 $query = $query->orderByDesc('segue_usuario')
@@ -273,10 +280,8 @@ class PostControllerApi extends Controller
                 $curtida = Curtida::select('id')
                 ->where('id_user',$request->idUser)
                 ->where('id_post',$request->idPost)
-                ->firstOrFail();
-                $curtida->status_curtida = 0;
-                $curtida->updated_at = now();
-                $curtida->save();
+                ->delete();
+              
                 $resposta = "Post descurtido com sucesso";
 
                 break;
@@ -290,7 +295,8 @@ class PostControllerApi extends Controller
                     'created_at' => now(),
                     'updated_at'=> now(),
                 ]);
-                $resposta = "Comentario feito com sucesso";
+                $usuario = User ::select('id','arroba_user','img_user')->where('id',$request->idUser)->get();
+                $resposta = $usuario;
 
                 break;
                 

@@ -22,6 +22,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::get('/posts/{tipo}/{idUser}/{quantidade}/{pagina}/{pesquisa}', [PostControllerApi::class, 'posts'])->name('posts.index');
+Route::post('/posts/interacoes/{acao}', [PostControllerApi::class, 'interacoes'])->name('posts.interacoes');
 
  Route::get('/cursei/posts', [PostControllerApi::class, 'indexApi'])->name('posts.index');
  Route::post('/cursei/posts/{idUser}', [PostControllerApi::class, 'storeApi'])->name('posts.store');

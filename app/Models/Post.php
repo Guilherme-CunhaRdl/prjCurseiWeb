@@ -26,4 +26,8 @@ class Post extends Model
     {
         return $this->belongsTo(User::class, 'id_user'); // 'id_user' é a chave estrangeira no modelo Post
     }
+    public function comentario()
+    {
+        return $this->belongsTo(Comentario::class, 'tb_comentario'); // 'id_user' é a chave estrangeira no modelo Post
+    }
 }

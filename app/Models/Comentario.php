@@ -2,31 +2,28 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Curtida extends Model
+class Comentario extends Model
 {
-    protected $table ='tb_curtida';
+    use HasFactory;
+
+    protected $table = 'tb_comentario';
+
     protected $fillable = [
         'id',
+        'comentario',
+        'status_comentario',
         'id_user',
         'id_post',
-        'status_curtida',
-        'id_storyes',
         'id_curtei',
         'created_at',
         'updated_at',
-
     ];
 
-    public function user()
+    public function usuario()
     {
         return $this->belongsTo(User::class, 'id_user');
     }
-    public function post()
-    {
-        return $this->belongsTo(Post::class, 'id_post', 'id');
-    }
-
-
 }

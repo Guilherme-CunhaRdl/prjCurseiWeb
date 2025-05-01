@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Post;
 use App\Models\User;
+use App\Models\Curtida;
+use App\Models\Comentario;
+
 use Illuminate\Support\Facades\DB;
 
 
@@ -250,5 +253,53 @@ class PostControllerApi extends Controller
     public function destroy($id)
     {
         //
+    }
+    public function interacoes(Request $request,$acao)
+    {
+        $resposta = "erro";
+        switch($acao){
+            case 'curtir':
+                $curtida = Curtida::create([
+                    'id_user' => $request->idUser,
+                    'id_post' => $request->idPost,
+                    'status_curtida'=> 1,
+                    'created_at' => now(),
+                    'updated_at'=> now(),
+                ]);
+                $resposta = "Post curtido com sucesso";
+                break;
+
+            case 'descurtir':
+                $curtida = Curtida::select('id')
+                ->where('id_user',$request->idUser)
+                ->where('id_post',$request->idPost)
+                ->firstOrFail();
+                $curtida->status_curtida = 0;
+                $curtida->updated_at = now();
+                $curtida->save();
+                $resposta = "Post descurtido com sucesso";
+
+                break;
+
+            case 'comentar':
+                $comentario = Comentario ::create([
+                    'id_user' => $request->idUser,
+                    'id_post' => $request->idPost,
+                    'comentario'=> $request->comentario,
+                    'status_comentario'=> 1,
+                    'created_at' => now(),
+                    'updated_at'=> now(),
+                ]);
+                $resposta = "Comentario feito com sucesso";
+
+                break;
+                
+            case 'comentarios':
+                $comentarios = Comentario ::with(['usuario'])->where('id_post',$request->idPost)->get();
+                $resposta = $comentarios;
+                break;
+            }
+        return $resposta;
+        
     }
 }

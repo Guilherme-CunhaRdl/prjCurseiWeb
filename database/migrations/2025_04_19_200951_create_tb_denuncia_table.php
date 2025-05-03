@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('tb_denuncia', function (Blueprint $table) {
             $table->id();
             $table->string('motivo_denuncia');
-            $table->longText('descricao_denuncia');
+            $table->longText('descricao_denuncia')->nullable();
             $table->unsignedBigInteger('id_user_denunciador')->nullable();
             $table->foreign('id_user_denunciador')->references('id')->on('tb_user')->onDelete('cascade');
             $table->unsignedBigInteger('id_user_denunciado')->nullable();

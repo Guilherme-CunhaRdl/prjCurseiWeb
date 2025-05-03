@@ -7,6 +7,8 @@ use App\Models\Post;
 use App\Models\User;
 use App\Models\Curtida;
 use App\Models\Comentario;
+use App\Models\Denuncia;
+use App\Models\Seguidores;
 
 use Illuminate\Support\Facades\DB;
 
@@ -261,7 +263,7 @@ class PostControllerApi extends Controller
     {
         //
     }
-    public function interacoes(Request $request,$acao)
+    public function interacoes(Request   $request,$acao)
     {
         $resposta = "erro";
         switch($acao){
@@ -303,6 +305,36 @@ class PostControllerApi extends Controller
             case 'comentarios':
                 $comentarios = Comentario ::with(['usuario'])->where('id_post',$request->idPost)->get();
                 $resposta = $comentarios;
+                break;
+            
+            case 'denunciar':
+                Denuncia::create([
+                    'motivo_denuncia' => $request->motivo,
+                    'id_post_denunciado' => $request->idPost,
+                    'id_user_denunciador' => $request->idUser,
+                    'id_user_denunciado'=> $request->denunciado,
+                    'created_at' => now(),
+                    'updated_at'=> now(),
+                ]);
+                $resposta = 'denuncia feita com sucesso';
+                break;
+            
+            case 'seguir':
+                $verificarSeguidor = Seguidores::select('id')->where('id_user_seguido',$request->userPost)->where('id_user_seguidor',$request->idUser)->get();
+                if($verificarSeguidor->isEmpty()){
+                    Seguidores::create([
+                        'id_user_seguido'=>$request->userPost,
+                        'id_user_seguidor'=>$request->idUser,
+                        'status_seguidores'=> 1,
+                        'created_at' => now(),
+                        'updated_at'=> now(),
+                    ]);
+                    $resposta = 'usuário segudo com sucesso';
+
+                }else{
+                    Seguidores::select('id')->where('id_user_seguido',$request->userPost)->where('id_user_seguidor',$request->idUser)->delete();
+                    $resposta = 'usuário deseguido com sucesso';
+                }
                 break;
             }
         return $resposta;

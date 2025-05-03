@@ -42,20 +42,23 @@ class UserControllerApi extends Controller
 
 public function storeApi(Request $request)
 {   
-    $nomeImagem = null;
-    $nomeBanner = null;
-
-    if ($request->hasFile('imgUser') && $request->file('imgUser')->isValid()) {
-        $extensao = $request->file('imgUser')->getClientOriginalExtension();
-        $nomeImagem = md5($request->file('imgUser')->getClientOriginalName() . strtotime('now')) . "." . $extensao;
-        $request->file('imgUser')->move(public_path('img/user/fotoPerfil'), $nomeImagem);
+    if ($request->hasFile('imgUser')) {
+        $imagemPerfil = $request->file('imgUser');
+        
+        // Define o nome do arquivo (ex: time() + extensão)
+        $nomeImagem = time() . '_' . uniqid() . '.' . $imagemPerfil->getClientOriginalExtension();
+    
+        // Move o arquivo para a pasta public/img
+        $imagemPerfil->move(public_path('img/user/fotoPerfil'), $nomeImagem);
     }
+     
+    if ($request->hasFile('bannerUser')) {
+        $imagemBanner = $request->file('bannerUser');
 
-    if ($request->hasFile('bannerUser') && $request->file('bannerUser')->isValid()) {
-        $extensaoBanner = $request->file('bannerUser')->getClientOriginalExtension();
-        $nomeBanner = md5($request->file('bannerUser')->getClientOriginalName() . strtotime('now')) . "." . $extensaoBanner;
-        $request->file('bannerUser')->move(public_path('img/user/bannerPerfil'), $nomeBanner);
-    }
+        $nomeBanner = time() . '_' . uniqid() . '.' . $imagemBanner->getClientOriginalExtension();
+
+        $imagemBanner->move(public_path('img/user/bannerPerfil'), $nomeBanner);
+        }
 
     $user = User::create([
         'nome_user' => $request->nomeUser,
@@ -68,7 +71,7 @@ public function storeApi(Request $request)
         'arroba_user' => $request->arrobaUser,
         'created_at' => now(),
     ]);
-
+    
     return response()->json([
         'sucesso' => true,
         'mensagem' => 'Usuário Cadastrado com Sucesso!',
@@ -154,7 +157,7 @@ public function storeApi(Request $request)
         $user = User::where('id', $id)->update([
             'nome_user' => $request->nomeUser,
             'email_user' => $request->emailUser,
-            'senha_user' => $request->senhaUser,
+            'senha_user' => Hash::make($request->senhaUser),
             'img_user' =>  $nomeImagem,
             'banner_user' => $nomeBanner,
             'status_user' => $request->statusUser,

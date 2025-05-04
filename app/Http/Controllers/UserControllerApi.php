@@ -40,42 +40,115 @@ class UserControllerApi extends Controller
      * @return \Illuminate\Http\Response
      */
 
-public function storeApi(Request $request)
-{   
-    $nomeImagem = null;
-    $nomeBanner = null;
-
-    if ($request->hasFile('imgUser') && $request->file('imgUser')->isValid()) {
-        $extensao = $request->file('imgUser')->getClientOriginalExtension();
-        $nomeImagem = md5($request->file('imgUser')->getClientOriginalName() . strtotime('now')) . "." . $extensao;
-        $request->file('imgUser')->move(public_path('img/user/fotoPerfil'), $nomeImagem);
-    }
-
-    if ($request->hasFile('bannerUser') && $request->file('bannerUser')->isValid()) {
-        $extensaoBanner = $request->file('bannerUser')->getClientOriginalExtension();
-        $nomeBanner = md5($request->file('bannerUser')->getClientOriginalName() . strtotime('now')) . "." . $extensaoBanner;
-        $request->file('bannerUser')->move(public_path('img/user/bannerPerfil'), $nomeBanner);
-    }
-
-    $user = User::create([
-        'nome_user' => $request->nomeUser,
-        'email_user' => $request->emailUser,
-        'senha_user' => bcrypt($request->senhaUser),
-        'img_user' => $nomeImagem,
-        'banner_user' => $nomeBanner,
-        'status_user' => 1,
-        'bio_user' => $request->bioUser,
-        'arroba_user' => $request->arrobaUser,
-        'created_at' => now(),
-    ]);
-
-    return response()->json([
-        'sucesso' => true,
-        'mensagem' => 'Usuário Cadastrado com Sucesso!',
-        'code' => 200,
-        'User' => $user,
-    ]);
-}
+     public function storeApi(Request $request)
+     {   
+         try {
+             // Verificação de email
+             $emailExistente = User::where('email_user', $request->emailUser)->exists();
+             if ($emailExistente) {
+                 return response()->json([
+                     'sucesso' => false,
+                     'mensagem' => 'Este email já está cadastrado',
+                     'error' => 'email_existente'
+                 ], 422);
+             }
+     
+             // Verificação de usuário
+             $usuarioExistente = User::where('arroba_user', $request->arrobaUser)->exists();
+             if ($usuarioExistente) {
+                 return response()->json([
+                     'sucesso' => false,
+                     'mensagem' => 'Este nome de usuário já está em uso',
+                     'error' => 'usuario_existente'
+                 ], 422);
+             }
+     
+             // Processamento de imagens
+             $nomeImagem = null;
+             $nomeBanner = null;
+     
+             if ($request->hasFile('imgUser') && $request->file('imgUser')->isValid()) {
+                 $extensao = $request->file('imgUser')->getClientOriginalExtension();
+                 $nomeImagem = md5($request->file('imgUser')->getClientOriginalName() . strtotime('now')) . "." . $extensao;
+                 $request->file('imgUser')->move(public_path('img/user/fotoPerfil'), $nomeImagem);
+             }
+     
+             if ($request->hasFile('bannerUser') && $request->file('bannerUser')->isValid()) {
+                 $extensaoBanner = $request->file('bannerUser')->getClientOriginalExtension();
+                 $nomeBanner = md5($request->file('bannerUser')->getClientOriginalName() . strtotime('now')) . "." . $extensaoBanner;
+                 $request->file('bannerUser')->move(public_path('img/user/bannerPerfil'), $nomeBanner);
+             }
+     
+             // Criação do usuário
+             $user = User::create([
+                 'nome_user' => $request->nomeUser,
+                 'email_user' => $request->emailUser,
+                 'senha_user' => bcrypt($request->senhaUser),
+                 'img_user' => $nomeImagem,
+                 'banner_user' => $nomeBanner,
+                 'status_user' => 1,
+                 'bio_user' => $request->bioUser,
+                 'arroba_user' => $request->arrobaUser,
+                 'created_at' => now(),
+             ]);
+     
+             //Verificação extra se o usuário foi criado
+             if (!$user) {
+                 throw new \Exception('Falha ao criar usuário');
+             }
+     
+             return response()->json([
+                 'sucesso' => true,
+                 'mensagem' => 'Usuário Cadastrado com Sucesso!',
+                 'code' => 200,
+                 'User' => $user,
+             ]);
+     
+         } catch (\Illuminate\Database\QueryException $e) {
+           
+             $errorCode = $e->errorInfo[1];
+             
+             if($errorCode == 1062) { // Código de erro para entrada duplicada
+                 if (str_contains($e->getMessage(), 'email_user')) {
+                     return response()->json([
+                         'sucesso' => false,
+                         'mensagem' => 'Este email já está cadastrado (erro de banco)',
+                         'error' => 'email_existente'
+                     ], 422);
+                 } elseif (str_contains($e->getMessage(), 'arroba_user')) {
+                     return response()->json([
+                         'sucesso' => false,
+                         'mensagem' => 'Este nome de usuário já está em uso (erro de banco)',
+                         'error' => 'usuario_existente'
+                     ], 422);
+                 }
+             }
+             
+          
+             if (env('APP_DEBUG')) {
+                 return response()->json([
+                     'sucesso' => false,
+                     'mensagem' => 'Erro no banco de dados',
+                     'error' => $e->getMessage(),
+                     'trace' => $e->getTrace()
+                 ], 500);
+             }
+             
+             return response()->json([
+                 'sucesso' => false,
+                 'mensagem' => 'Ocorreu um erro inesperado. Tente novamente mais tarde.',
+                 'error' => 'database_error'
+             ], 500);
+             
+         } catch (\Exception $e) {
+   
+             return response()->json([
+                 'sucesso' => false,
+                 'mensagem' => 'Ocorreu um erro durante o cadastro: ' . $e->getMessage(),
+                 'error' => 'unexpected_error'
+             ], 500);
+         }
+     }
 
 
 
@@ -211,5 +284,26 @@ public function storeApi(Request $request)
         }
 
     }
+
+    public function verificarEmailExistente(Request $request)
+    {
+        $email = $request->query('email');
+        $existe = User::where('email_user', $email)->exists();
+        
+        return response()->json([
+            'existe' => $existe
+        ]);
+    }
+    
+    public function verificarUsuarioExistente(Request $request)
+    {
+        $usuario = $request->query('usuario');
+        $existe = User::where('arroba_user', $usuario)->exists();
+        
+        return response()->json([
+            'existe' => $existe
+        ]);
+    }
+
     
 }

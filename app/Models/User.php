@@ -80,5 +80,10 @@ class User extends Authenticatable
     {
         return $this->hasMany(Seguidores::class, 'id_user_seguidor'); 
     }
-    
+    public function mensagem(){
+        return $this->hasOne(Mensagem::class, 'id_user_enviador');
+    }
+    public function chat(){
+        return $this->hasMany(Chat::class);
+    }
 }

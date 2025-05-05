@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostControllerApi;
 use App\Http\Controllers\UserControllerApi;
 use App\Http\Controllers\InstituicaoControllerApi;
+use App\Http\Controllers\MensagemControllerApi;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -36,6 +38,9 @@ Route::delete('/cursei/user/{id}', [UserControllerApi::class, 'destroyApi'])->na
 Route::put('/cursei/user/{id}', [UserControllerApi::class, 'updateApi'])->name('user.update');
 Route::get('/cursei/user/{id}', [UserControllerApi::class, 'showApi'])->name('user.show');
 Route::post('/cursei/user/logar/', [UserControllerApi::class, 'selectUserLogin'])->name('user.login');
+
+//rotas do chat
+Route::get('/cursei/chat/recebidor/{idUserRecebidor}', [MensagemControllerApi::class, 'selectMensagensApi'])->name('chat.todosChats');
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();

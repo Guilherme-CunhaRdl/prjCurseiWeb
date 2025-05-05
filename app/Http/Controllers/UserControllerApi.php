@@ -69,13 +69,13 @@ class UserControllerApi extends Controller
      
              if ($request->hasFile('imgUser') && $request->file('imgUser')->isValid()) {
                  $extensao = $request->file('imgUser')->getClientOriginalExtension();
-                 $nomeImagem = md5($request->file('imgUser')->getClientOriginalName() . strtotime('now')) . "." . $extensao;
+                 $nomeImagem = time() . '_' . uniqid() . '.' . $extensao;
                  $request->file('imgUser')->move(public_path('img/user/fotoPerfil'), $nomeImagem);
              }
      
              if ($request->hasFile('bannerUser') && $request->file('bannerUser')->isValid()) {
                  $extensaoBanner = $request->file('bannerUser')->getClientOriginalExtension();
-                 $nomeBanner = md5($request->file('bannerUser')->getClientOriginalName() . strtotime('now')) . "." . $extensaoBanner;
+                 $nomeBanner = time() . '_' . uniqid() . '.' . $extensaoBanner;
                  $request->file('bannerUser')->move(public_path('img/user/bannerPerfil'), $nomeBanner);
              }
      
@@ -92,7 +92,6 @@ class UserControllerApi extends Controller
                  'created_at' => now(),
              ]);
      
-             //Verificação extra se o usuário foi criado
              if (!$user) {
                  throw new \Exception('Falha ao criar usuário');
              }
@@ -105,10 +104,9 @@ class UserControllerApi extends Controller
              ]);
      
          } catch (\Illuminate\Database\QueryException $e) {
-           
              $errorCode = $e->errorInfo[1];
              
-             if($errorCode == 1062) { // Código de erro para entrada duplicada
+             if($errorCode == 1062) {
                  if (str_contains($e->getMessage(), 'email_user')) {
                      return response()->json([
                          'sucesso' => false,
@@ -124,16 +122,6 @@ class UserControllerApi extends Controller
                  }
              }
              
-          
-             if (env('APP_DEBUG')) {
-                 return response()->json([
-                     'sucesso' => false,
-                     'mensagem' => 'Erro no banco de dados',
-                     'error' => $e->getMessage(),
-                     'trace' => $e->getTrace()
-                 ], 500);
-             }
-             
              return response()->json([
                  'sucesso' => false,
                  'mensagem' => 'Ocorreu um erro inesperado. Tente novamente mais tarde.',
@@ -141,7 +129,6 @@ class UserControllerApi extends Controller
              ], 500);
              
          } catch (\Exception $e) {
-   
              return response()->json([
                  'sucesso' => false,
                  'mensagem' => 'Ocorreu um erro durante o cadastro: ' . $e->getMessage(),
@@ -149,7 +136,6 @@ class UserControllerApi extends Controller
              ], 500);
          }
      }
-
 
 
     /**
@@ -227,7 +213,7 @@ class UserControllerApi extends Controller
         $user = User::where('id', $id)->update([
             'nome_user' => $request->nomeUser,
             'email_user' => $request->emailUser,
-            'senha_user' => $request->senhaUser,
+            'senha_user' => Hash::make($request->senhaUser),
             'img_user' =>  $nomeImagem,
             'banner_user' => $nomeBanner,
             'status_user' => $request->statusUser,

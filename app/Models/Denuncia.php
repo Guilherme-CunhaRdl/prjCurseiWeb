@@ -11,7 +11,7 @@ class Denuncia extends Model
     protected $table ='tb_denuncia';
     protected $fillable = [
         'id',
-        'motivo_denuncia ',
+        'motivo_denuncia',
         'descricao_denuncia',
         'id_user_denunciador',
         'id_user_denunciado',

@@ -31,6 +31,8 @@ Route::post('/posts/interacoes/{acao}', [PostControllerApi::class, 'interacoes']
  Route::get('/cursei/posts/user/{idUser}', [PostControllerApi::class, 'getPostsByUser'])->name('posts.byUser');
  Route::post('instituicao', [instituicaoControllerApi::class, 'cadastrarInstituicao']);
  
+ Route::get('/verificar-email', [UserControllerApi::class, 'verificarEmailExistente']);
+Route::get('/verificar-usuario', [UserControllerApi::class, 'verificarUsuarioExistente']);
 
 Route::get('/cursei/user', [UserControllerApi::class, 'indexApi'])->name('user.index');
 Route::post('/cursei/user', [UserControllerApi::class, 'storeApi'])->name('user.store');

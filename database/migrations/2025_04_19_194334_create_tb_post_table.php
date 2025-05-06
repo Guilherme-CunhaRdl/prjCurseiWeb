@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->boolean('status_post');
             $table->string('titulo_post', 150)->nullable();
-            $table->string('conteudo_post', 36);
+            $table->string('conteudo_post', 36)->nullable();
             $table->string('descricao_post')->nullable();
             $table->unsignedBigInteger('id_user');
             $table->foreign('id_user')->references('id')->on('tb_user')->onDelete('cascade');

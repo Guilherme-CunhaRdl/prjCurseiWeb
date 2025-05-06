@@ -13,12 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('tb_chat', function (Blueprint $table) {
+        Schema::create('tb_repostar', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('id_user_recebidor');
-            $table->unsignedBigInteger('id_mensagem');
-            $table->foreign('id_user_recebidor')->references('id')->on('tb_user')->onDelete('cascade');
-            $table->foreign('id_mensagem')->references('id')->on('tb_mensagem')->onDelete('cascade');
+            $table->string('desc_repostar', 500);
+            $table->unsignedBigInteger('id_user');
+            $table->unsignedBigInteger('id_post');
+            $table->foreign('id_user')->references('id')->on('tb_user')->onDelete('cascade');
+            $table->foreign('id_post')->references('id')->on('tb_post')->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -30,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('tb_chat');
+        Schema::dropIfExists('tb_repostar');
     }
 };

@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('token_user', 300)->unique();
             $table->boolean('status_user');
             $table->longText('bio_user')->nullable();
-            $table->string('arroba_user', 30)->nullable();
+            $table->string('arroba_user', 30)->unique();
 
             $table->timestamps();
         });

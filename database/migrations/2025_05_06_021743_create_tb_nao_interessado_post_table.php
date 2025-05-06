@@ -13,11 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('tb_tag_curtei', function (Blueprint $table) {
+        Schema::create('tb_nao_interessado_post', function (Blueprint $table) {
             $table->id();
-            $table->string('nome_tag_curtei', 50);
-            $table->unsignedBigInteger('id_curtei');
-            $table->foreign('id_curtei')->references('id')->on('tb_curtei')->onDelete('cascade');
+            $table->unsignedBigInteger('id_user');
+            $table->unsignedBigInteger('id_post');
+            $table->foreign('id_user')->references('id')->on('tb_user')->onDelete('cascade');
+            $table->foreign('id_post')->references('id')->on('tb_post')->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -29,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('tb_tag_curtei');
+        Schema::dropIfExists('tb_nao_interessado_post');
     }
 };

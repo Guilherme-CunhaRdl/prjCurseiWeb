@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('tb_post', function (Blueprint $table) {
             $table->id();
             $table->boolean('status_post');
-            $table->string('titulo_post', 150);
+            $table->string('titulo_post', 150)->nullable();
             $table->string('conteudo_post', 36);
             $table->string('descricao_post')->nullable();
             $table->unsignedBigInteger('id_user');

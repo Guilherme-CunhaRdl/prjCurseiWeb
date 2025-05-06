@@ -9,8 +9,8 @@ class Post extends Model
     protected $table ='tb_post';
     protected $fillable = [
         'id',
-        'status_post ',
-        'conteudo_post	',
+        'status_post',
+        'conteudo_post',
         'descricao_post',
         'id_user',
         'created_at',

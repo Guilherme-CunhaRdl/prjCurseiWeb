@@ -194,22 +194,26 @@ class PostControllerApi extends Controller
         ]);
     }
 
-    $nomeImagem = null;
 
-    if ($request->hasFile('conteudoPost') && $request->file('conteudoPost')->isValid()) {
-        $extensao = $request->conteudoPost->extension();
-        $nomeImagem = md5($request->conteudoPost->getClientOriginalName() . microtime()) . '.' . $extensao;
-        $request->conteudoPost->move(public_path('img/user/fotoPerfil/'), $nomeImagem);
-    }
+      // Processamento de imagens
+      $nomeImagem = null;
+      
+
+      if ($request->hasFile('img') && $request->file('img')->isValid()) {
+          $extensao = $request->file('img')->getClientOriginalExtension();
+          $nomeImagem = time() . '_' . uniqid() . '.' . $extensao;
+          $request->file('img')->move(public_path('img/user/imgPosts'), $nomeImagem);
+      }
 
     // Cria o post associado ao usuário
     $post = Post::create([
-        'status_post' => $request->statusPost,
+        'status_post' => 1,
         'conteudo_post' => $nomeImagem, // Salva o nome do arquivo gerado
         'descricao_post' => $request->descricaoPost,
-        'titulo_post' => $request->tituloPost,
+        // 'titulo_post' => $request->tituloPost,
         'id_user' => $idUser, // Associa o post ao ID do usuário correto
         'created_at' => now(),
+        'update_at' => now(),
     ]);
 
     return response()->json([

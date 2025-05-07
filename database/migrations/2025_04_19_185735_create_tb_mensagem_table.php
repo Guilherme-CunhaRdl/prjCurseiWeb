@@ -15,7 +15,6 @@ return new class extends Migration
     {
         Schema::create('tb_mensagem', function (Blueprint $table) {
             $table->id();
-            $table->date('data_mensagem');
             $table->longText('conteudo_mensagem');
             $table->enum('status_mensagem',['enviado', 'recebido','visto']);
             $table->unsignedBigInteger('id_user_enviador');

@@ -42,7 +42,9 @@ Route::get('/cursei/user/{id}', [UserControllerApi::class, 'showApi'])->name('us
 Route::post('/cursei/user/logar/', [UserControllerApi::class, 'selectUserLogin'])->name('user.login');
 
 //rotas do chat
-Route::get('/cursei/chat/recebidor/{idUserRecebidor}', [MensagemControllerApi::class, 'selectMensagensApi'])->name('chat.todosChats');
+Route::get('/cursei/chat/{idChat}', [MensagemControllerApi::class, 'selectMensagensApi'])->name('chat.todosChats');
+Route::get('/cursei/chat/recebidor/{idUserRecebidor}', [MensagemControllerApi::class, 'selectChatApi'])->name('chat.todosChats');
+
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();

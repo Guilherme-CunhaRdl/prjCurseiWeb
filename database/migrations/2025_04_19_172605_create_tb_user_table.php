@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('senha_user', 100);
             $table->string('img_user', 300)->nullable();
             $table->string('banner_user', 300)->nullable();
-            $table->string('token_user', 300)->unique();
+            $table->string('token_user', 300)->nullable()->unique();
             $table->boolean('status_user');
             $table->longText('bio_user')->nullable();
             $table->string('arroba_user', 30)->unique();

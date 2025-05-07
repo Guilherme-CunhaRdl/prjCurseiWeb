@@ -290,6 +290,16 @@ class UserControllerApi extends Controller
             'existe' => $existe
         ]);
     }
-
+    public function InformacoesUser($id)
+    {
+       $usuario = User::where('id',$id)->get();
+       
+       return response()->json([
+        'sucesso' => true,
+        'mensagem' => 'Usuario encontrado com sucesso!',
+        'code' => 200,
+        'Post' => $usuario,
+    ]);
+    }
     
 }

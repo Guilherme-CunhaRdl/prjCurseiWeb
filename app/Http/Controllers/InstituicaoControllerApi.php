@@ -9,6 +9,9 @@ class instituicaoControllerApi extends Controller
     public function cadastrarInstituicao(Request $request)
     {
         $request->validate([
+            'nome_representante' => 'required|string',
+            'telefone' => 'required|string',
+            'documentos_representante' => 'required|string',
             'logradouro' => 'required|string',
             'num_logradouro' => 'required|string',
             'bairro' => 'required|string',
@@ -23,6 +26,9 @@ class instituicaoControllerApi extends Controller
 
         $instituicao = Instituicao::create([
             'cnpj_instituicao' => $request->cnpj,
+            'nome_representante' => $request->nome_representante,
+            'telefone' => $request->telefone,
+            'documentos_representante' => $request->documentos_representante,
             'logradouro_instituicao' => $request->logradouro,
             'num_logradouro_instituicao' => $request->num_logradouro,
             'bairro_instituicao' => $request->bairro,

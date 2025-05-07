@@ -9,6 +9,9 @@ class Instituicao extends Model
     protected $table ='tb_instituicao';
 
     protected $fillable = [
+        'nome_representante',
+        'telefone',
+        'documentos_representante',
         'cnpj_instituicao',
         'verificado_instituicao',
         'logradouro_instituicao',

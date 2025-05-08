@@ -25,10 +25,12 @@ class PostControllerApi extends Controller
         };
         $ignorarPosts = $ignorarPosts - $quantidade;
 
-        $query =  DB::table('tb_post')
-            ->join('tb_user', 'tb_post.id_user', '=', 'tb_user.id')
-            ->leftJoin('tb_curtida', 'tb_post.id', '=', 'tb_curtida.id_post')
-            ->leftJoin('tb_comentario', 'tb_post.id', '=', 'tb_comentario.id_post');
+        $query = DB::table('tb_post')
+        ->join('tb_user', 'tb_post.id_user', '=', 'tb_user.id')
+        ->leftJoin('tb_post as repost', 'tb_post.repost_id', '=', 'repost.id')
+        ->leftJoin('tb_user as repost_user', 'repost.id_user', '=', 'repost_user.id')
+        ->leftJoin('tb_curtida', 'tb_post.id', '=', 'tb_curtida.id_post')
+        ->leftJoin('tb_comentario', 'tb_post.id', '=', 'tb_comentario.id_post');
         // isso serve para verificar se foi passado o valor do id ,se n foi passado ele n faz a comparação pelo id--- resumindo ele ver se ta logado ou não
         if ($idUser !== 0) {
 
@@ -49,42 +51,62 @@ class PostControllerApi extends Controller
             $query = $query->whereNull('bloqueio1.id')->whereNull('bloqueio2.id');
         };
         $query = $query
-            ->select(
-                'tb_post.id_user',
-                'tb_post.id AS id_post',
-                'tb_user.img_user',
-                'tb_user.nome_user',
-                'tb_post.created_at',
-                'tb_post.updated_at',
-                'tb_post.descricao_post',
-                'tb_post.conteudo_post',
-                'tb_user.arroba_user',
-                DB::raw('COUNT(DISTINCT tb_curtida.id) AS curtidas'),
-                DB::raw('COUNT(DISTINCT tb_comentario.id) AS comentarios'),
-                DB::raw('IF(tb_seguidores.id IS NOT NULL, 1,0) AS segue_usuario'),
-                DB::raw("TIMESTAMPDIFF(SECOND, tb_post.created_at, NOW()) AS tempo_insercao"),
-                DB::raw("IF(EXISTS (
-                    SELECT 1 FROM tb_curtida 
-                    WHERE tb_curtida.id_post = tb_post.id 
-                      AND tb_curtida.id_user = $idUser
-                      AND tb_curtida.status_curtida = 1
-                ), 1, 0) AS curtiu_post"),
-                DB::raw("TIMESTAMPDIFF(SECOND, tb_post.created_at, NOW()) AS tempo_insercao"),
-                DB::raw('(COUNT(DISTINCT tb_curtida.id) + IF(tb_seguidores.id IS NOT NULL, 10, 0) + RAND()) AS score')
+        ->select(
+            'tb_post.id_user',
+            'tb_post.id AS id_post',
+            'tb_user.img_user',
+            'tb_user.nome_user',
+            'tb_post.created_at',
+            'tb_post.updated_at',
+            'tb_post.descricao_post',
+            'tb_post.conteudo_post',
+            'tb_user.arroba_user',
+            'tb_post.repost_id',
+        
+            // Dados do post original (repostado)
+            'repost.id AS repost_post_id',
+            'repost.descricao_post AS repost_descricao',
+            'repost.conteudo_post AS repost_conteudo',
+            'repost_user.nome_user AS repost_autor',
+            'repost_user.arroba_user AS repost_arroba',
+            'repost_user.img_user AS repost_img',
+            DB::raw("TIMESTAMPDIFF(SECOND, repost.created_at, NOW()) AS tempo_repostado"),
+        
+            DB::raw('COUNT(DISTINCT tb_curtida.id) AS curtidas'),
+            DB::raw('COUNT(DISTINCT tb_comentario.id) AS comentarios'),
+            DB::raw('IF(tb_seguidores.id IS NOT NULL, 1,0) AS segue_usuario'),
+            DB::raw("TIMESTAMPDIFF(SECOND, tb_post.created_at, NOW()) AS tempo_insercao"),
 
-            )
-            ->groupBy(
-                'tb_post.id_user',
-                'tb_post.id',
-                'tb_user.arroba_user',
-                'tb_user.img_user',
-                'tb_user.nome_user',
-                'tb_post.created_at',
-                'tb_post.updated_at',
-                'tb_post.descricao_post',
-                'tb_post.conteudo_post',
-                'tb_seguidores.id'
-            );
+            DB::raw("IF(EXISTS (
+                SELECT 1 FROM tb_curtida 
+                WHERE tb_curtida.id_post = tb_post.id 
+                  AND tb_curtida.id_user = $idUser
+                  AND tb_curtida.status_curtida = 1
+            ), 1, 0) AS curtiu_post"),
+            DB::raw('(COUNT(DISTINCT tb_curtida.id) + IF(tb_seguidores.id IS NOT NULL, 10, 0) + RAND()) AS score')
+        )
+        ->groupBy(
+            'tb_post.id_user',
+            'tb_post.id',
+            'tb_user.arroba_user',
+            'tb_user.img_user',
+            'tb_user.nome_user',
+            'tb_post.created_at',
+            'tb_post.updated_at',
+            'tb_post.descricao_post',
+            'tb_post.conteudo_post',
+            'tb_post.repost_id',
+            'tb_seguidores.id',
+        
+            // Campos do repost
+            'repost.id',
+            'repost.descricao_post',
+            'repost.conteudo_post',
+            'repost_user.nome_user',
+            'repost_user.arroba_user',
+            'repost_user.img_user',
+             'repost.created_at'
+        );
         switch ($tipo) {
             case 0:
                 $query = $query->orderByDesc('curtidas');
@@ -101,6 +123,8 @@ class PostControllerApi extends Controller
                     ->orWhere('tb_user.nome_user', 'like', "%$pesquisa%")
                     ->orWhere('tb_post.descricao_post', 'like', "%$pesquisa%");
                 break;
+            case 4:
+                $query = $query->where('tb_post.id',$idUser);
         }
 
         $posts = $query
@@ -211,10 +235,11 @@ class PostControllerApi extends Controller
         // Cria o post associado ao usuário
         $post = Post::create([
             'status_post' => 1,
-            'conteudo_post' => $nomeImagem, // Salva o nome do arquivo gerado
+            'conteudo_post' => $nomeImagem, 
             'descricao_post' => $request->descricaoPost,
+            'repost_id' =>$request->repost,
             // 'titulo_post' => $request->tituloPost,
-            'id_user' => $idUser, // Associa o post ao ID do usuário correto
+            'id_user' => $idUser, 
             'created_at' => now(),
             'update_at' => now(),
         ]);

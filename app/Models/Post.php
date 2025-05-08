@@ -12,6 +12,7 @@ class Post extends Model
         'status_post',
         'conteudo_post',
         'descricao_post',
+        'repost_id',
         'id_user',
         'created_at',
         'updated_at',

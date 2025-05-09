@@ -97,6 +97,116 @@ class MensagemControllerApi extends Controller
 
         }
 
+        public function selectSeguidoresSugestoes($idUser){
+
+
+            $seguidores = DB::table('tb_seguidores AS seg')
+                ->join('tb_user AS seguidor', 'seg.id_user_seguidor', '=', 'seguidor.id')
+                ->join('tb_user AS seguido', 'seg.id_user_seguido', '=', 'seguido.id')
+                ->leftJoin('tb_chat AS c', function ($join) use ($idUser) {
+                    $join->on(function ($q) use ($idUser) {
+                        $q->on('c.id_user1', '=', 'seg.id_user_seguidor')
+                          ->where('c.id_user2', '=', $idUser);
+                    })->orOn(function ($q) use ($idUser) {
+                        $q->on('c.id_user2', '=', 'seg.id_user_seguidor')
+                          ->where('c.id_user1', '=', $idUser);
+                    });
+                })
+                ->where('seg.id_user_seguido', $idUser)
+                ->select(
+                    'seguidor.id AS id_seguidor',
+                    'seguidor.nome_user AS nome_seguidor',
+                    'seguidor.img_user AS img_seguidor',
+                    'seguidor.arroba_user AS arroba_seguidor',
+                    'c.id AS id_chat',
+                    'seguido.id AS id_seguido',
+                    
+                )
+                ->orderByDesc('seg.created_at')
+                ->distinct()
+                ->get();
+            
+
+            return response()->json([
+                'sucesso' => true,
+                'seguidores' => $seguidores,
+                'message' => 'Mensagens Retornadas com Sucesso',
+                'code' => 200,
+            ]);
+
+        }
+
+        public function selectSeguidor($idUser, $idSeguidor){
+
+
+            $seguidor = DB::table('tb_seguidores AS seg')
+                ->join('tb_user AS seguidor', 'seg.id_user_seguidor', '=', 'seguidor.id')
+                ->join('tb_user AS seguido', 'seg.id_user_seguido', '=', 'seguido.id')
+                ->leftJoin('tb_chat AS c', function ($join) use ($idUser) {
+                    $join->on(function ($q) use ($idUser) {
+                        $q->on('c.id_user1', '=', 'seg.id_user_seguidor')
+                          ->where('c.id_user2', '=', $idUser);
+                    })->orOn(function ($q) use ($idUser) {
+                        $q->on('c.id_user2', '=', 'seg.id_user_seguidor')
+                          ->where('c.id_user1', '=', $idUser);
+                    });
+                })
+                ->where('seg.id_user_seguido', $idUser)
+                ->where('seguidor.id', $idSeguidor)
+                ->select(
+                    'seguidor.id AS id_seguidor',
+                    'seguidor.nome_user AS nome_seguidor',
+                    'seguidor.img_user AS img_seguidor',
+                    'seguidor.arroba_user AS arroba_seguidor',
+                    'c.id AS id_chat',
+                    'seguido.id AS id_seguido',
+                    
+                )
+                ->distinct()
+                ->first();
+            
+
+            return response()->json([
+                'sucesso' => true,
+                'seguidor' => $seguidor,
+                'message' => 'Mensagens Retornadas com Sucesso',
+                'code' => 200,
+            ]);
+
+        }
+
+
+        public function criarChat(Request $request){
+
+            try{
+                // Criação do usuário
+                $chat = Chat::create([
+                    'id_user1' => $request->idUser1,
+                    'id_user2' => $request->idUser2,
+                    'created_at' => now(),
+                ]);
+
+                if (!$chat) {
+                    throw new \Exception('Falha ao criar usuário');
+                }
+
+                return response()->json([
+                    'sucesso' => true,
+                    'mensagem' => 'Usuário Cadastrado com Sucesso!',
+                    'code' => 200,
+                    'chat' => $chat,
+                    'id_chat' => $chat->id
+                ]);
+            }catch (\Exception $e) {
+                return response()->json([
+                    'sucesso' => false,
+                    'mensagem' => 'Ocorreu um erro durante o cadastro: ' . $e->getMessage(),
+                    'error' => 'unexpected_error'
+                ], 500);
+            }
+
+        }
+
     /**
      * Show the form for creating a new resource.
      *

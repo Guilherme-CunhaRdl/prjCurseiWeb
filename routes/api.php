@@ -44,7 +44,9 @@ Route::post('/cursei/user/logar/', [UserControllerApi::class, 'selectUserLogin']
 //rotas do chat
 Route::get('/cursei/chat/{idChat}', [MensagemControllerApi::class, 'selectMensagensApi'])->name('chat.todosChats');
 Route::get('/cursei/chat/recebidor/{idUserRecebidor}', [MensagemControllerApi::class, 'selectChatApi'])->name('chat.todosChats');
-
+Route::get('/cursei/chat/adicionarChat/{idUserLogado}', [MensagemControllerApi::class, 'selectSeguidoresSugestoes'])->name('chat.telaSeguidores');
+Route::post('/cursei/chat/adicionarChat/', [MensagemControllerApi::class, 'criarChat'])->name('chat.criarChat');
+Route::get('/cursei/chat/adicionarChat/{idUserLogado}/{idSeguidor}', [MensagemControllerApi::class, 'selectSeguidor'])->name('chat.seguidor');
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();

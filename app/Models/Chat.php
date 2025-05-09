@@ -11,7 +11,7 @@ class Chat extends Model
 
     protected $table = 'tb_chat';
 
-    public $fillable = ['id', 'id_mensagem', 'created_at', 'updated_at'];
+    public $fillable = ['id', 'id_user1','id_user2', 'created_at', 'updated_at'];
 
     public function mensagem(){
         return $this->hasMany(Mensagem::class);

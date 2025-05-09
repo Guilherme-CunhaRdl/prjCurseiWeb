@@ -14,6 +14,7 @@ class Post extends Model
         'descricao_post',
         'repost_id',
         'id_user',
+        'area_post',
         'created_at',
         'updated_at',
 

@@ -16,9 +16,8 @@ return new class extends Migration
         Schema::create('tb_user_preferencia', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('id_user');
-            $table->unsignedBigInteger('id_preferencia')->unique();
+            $table->enum('preferencia', [ 'Tecnologia','Saúde','Design','Artes','Engenharia','Esportes','Ciências','Línguas','Administração','Marketing','Nutrição','indefinido'])->default('indefinido');
             $table->foreign('id_user')->references('id')->on('tb_user')->onDelete('cascade');
-            $table->foreign('id_preferencia')->references('id')->on('tb_preferencia')->onDelete('cascade');
             $table->timestamps();
         });
     }

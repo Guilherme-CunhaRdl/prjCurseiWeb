@@ -26,6 +26,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::get('/posts/{tipo}/{idUser}/{quantidade}/{pagina}/{pesquisa}', [PostControllerApi::class, 'posts'])->name('posts.index');
 Route::post('/posts/interacoes/{acao}', [PostControllerApi::class, 'interacoes'])->name('posts.interacoes');
 
+Route::get('/user/verificarInteresses/{id}', [UserControllerApi::class, 'verificarPreferencia'])->name('user.verificarPreferencia');
+Route::post('/user/escolherInteresesses', [UserControllerApi::class, 'escolherInteresesses'])->name('user.escolherInteresesses');
+
  Route::get('/cursei/posts', [PostControllerApi::class, 'indexApi'])->name('posts.index');
  Route::post('/cursei/posts/{idUser}', [PostControllerApi::class, 'storeApi'])->name('posts.store');
  Route::get('/cursei/posts/user/{idUser}', [PostControllerApi::class, 'getPostsByUser'])->name('posts.byUser');

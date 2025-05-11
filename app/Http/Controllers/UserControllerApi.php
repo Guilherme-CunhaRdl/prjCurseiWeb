@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\UserPreferencia;
 use Exception;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -301,5 +302,27 @@ class UserControllerApi extends Controller
         'Post' => $usuario,
     ]);
     }
+    public function verificarPreferencia($id)
+    {
+        $verificar = UserPreferencia ::where('id_user',$id)->exists();
+        if($verificar){
+            $resultado = true;
+        }else{
+            $resultado = false;
+        }
+
+        return response()->json([
+            'resultado' => $resultado
+        ]);
+    }
+    public function escolherInteresesses(Request $request)
+    {
+       
+        
+        return response()->json([
+            'resultado' => $request->escolhas[0],
+        ]);
+    }
+    
     
 }

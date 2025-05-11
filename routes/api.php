@@ -6,7 +6,7 @@ use App\Http\Controllers\PostControllerApi;
 use App\Http\Controllers\UserControllerApi;
 use App\Http\Controllers\InstituicaoControllerApi;
 use App\Http\Controllers\MensagemControllerApi;
-
+use App\Http\Controllers\HashtagController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -48,6 +48,9 @@ Route::get('/cursei/chat/adicionarChat/{idUserLogado}', [MensagemControllerApi::
 Route::post('/cursei/chat/adicionarChat/', [MensagemControllerApi::class, 'criarChat'])->name('chat.criarChat');
 Route::get('/cursei/chat/adicionarChat/{idUserLogado}/{idSeguidor}', [MensagemControllerApi::class, 'selectSeguidor'])->name('chat.seguidor');
 
+//rotas para o explorar
+Route::get('/cursei/explorar/assuntosMomento',[HashtagController::class, 'maisUsadas'])->name('explorar.maisUsadas');
+ 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });

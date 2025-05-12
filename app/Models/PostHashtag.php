@@ -17,6 +17,8 @@ class PostHashtag extends Model
         'id',
         'id_hashtag',
         'id_post',
+        'created_at',
+        'updated_at',
     ];
 
     // Relacionamento com a hashtag

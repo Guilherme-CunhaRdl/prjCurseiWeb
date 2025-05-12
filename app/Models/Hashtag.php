@@ -14,4 +14,6 @@ class Hashtag extends Model
     protected $fillable = [
         'id',
         'nomeHashtag',
+        'created_at',
+        'updated_at',
     ]; }

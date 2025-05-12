@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\UserPreferencia;
+use Error;
 use Exception;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -317,11 +318,24 @@ class UserControllerApi extends Controller
     }
     public function escolherInteresesses(Request $request)
     {
-       
+        try{
+
         
-        return response()->json([
-            'resultado' => $request->escolhas[0],
+        for ($i=0; $i< count($request->escolhas); $i++){
+    
+        UserPreferencia ::create([
+            'id_user' => $request->idUser,
+            'preferencia' => $request->escolhas[$i]
         ]);
+    }
+        return response()->json([
+            'sucesso' => true,
+        ]);
+    }catch(Error){
+        return response()->json([
+            'sucesso' => false,
+        ]);
+    }
     }
     
     

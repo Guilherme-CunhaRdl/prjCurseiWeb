@@ -11,7 +11,7 @@ class UserPreferencia extends Model
 
     protected $table = 'tb_user_preferencia';
 
-    public $fillable = ['id', 'id_user ','preferencia', 'created_at', 'updated_at'];
+    public $fillable = ['id', 'id_user','preferencia', 'created_at', 'updated_at'];
 
     public function mensagem(){
         return $this->hasMany(Mensagem::class);

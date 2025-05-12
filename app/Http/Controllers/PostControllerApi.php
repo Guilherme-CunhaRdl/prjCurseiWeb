@@ -11,6 +11,8 @@ use App\Models\Denuncia;
 use App\Models\Seguidores;
 use App\Models\Bloqueado;
 use App\Models\NaoInteressado;
+use App\Models\Hashtag;
+use App\Models\PostHashtag;
 
 use GuzzleHttp\Psr7\Query;
 use Illuminate\Support\Facades\DB;
@@ -397,6 +399,35 @@ class PostControllerApi extends Controller
         }
 
         // Cria o post associado ao usuário
+        function pegarHashtags($texto,$idPost)
+        {
+
+            $pattern = '/#[\w\d_]+/';
+            preg_match_all($pattern, $texto, $hashtags);
+            for ($i = 0; $i < count($hashtags[0]); $i++) {
+                $hashtag = $hashtags[0][$i];
+                $verificar = Hashtag::where('nomeHashtag', $hashtag)->first();
+                
+                if (!$verificar) {
+                   $has = Hashtag::create([
+                        'nomeHashtag' => $hashtag,
+                        'created_at' => now(),
+                        'update_at' => now(),
+                    ]);
+                    $id = $has->id;
+                }else{
+                    $id = $verificar->id;
+                }
+                PostHashtag::create([
+                    'id_hashtag' => $id,
+                    'id_post' => $idPost,
+                    'created_at' => now(),
+                    'update_at' => now(),
+                ]);
+            }
+            $resultado = $id;
+            return $resultado;
+        }
         $post = Post::create([
             'status_post' => 1,
             'conteudo_post' => $nomeImagem,
@@ -407,7 +438,7 @@ class PostControllerApi extends Controller
             'created_at' => now(),
             'update_at' => now(),
         ]);
-
+        pegarHashtags($request->descricaoPost,$post->id);
         return response()->json([
             'sucesso' => true,
             'mensagem' => 'Post criado com sucesso!',

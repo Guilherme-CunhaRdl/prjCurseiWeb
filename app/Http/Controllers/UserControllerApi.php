@@ -316,6 +316,17 @@ class UserControllerApi extends Controller
             'resultado' => $resultado
         ]);
     }
+    public function alterarUser(Request $request, $userId)
+    {
+        $usuario = User::findOrFail($userId);
+        $usuario->fill($request->only([
+            'nome_user',
+            'arroba_user',
+            'email_user'
+        ]));
+        $usuario->save();
+        return response()->json(['message' => 'Atualizado com sucesso']);
+    } 
     public function escolherInteresesses(Request $request)
     {
         try{
@@ -336,6 +347,7 @@ class UserControllerApi extends Controller
             'sucesso' => false,
         ]);
     }
+    
     }
     
     

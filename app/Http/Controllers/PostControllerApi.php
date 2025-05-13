@@ -404,6 +404,8 @@ class PostControllerApi extends Controller
 
             $pattern = '/#[\w\d_]+/';
             preg_match_all($pattern, $texto, $hashtags);
+            if($hashtags[0]){
+        
             for ($i = 0; $i < count($hashtags[0]); $i++) {
                 $hashtag = $hashtags[0][$i];
                 $verificar = Hashtag::where('nomeHashtag', $hashtag)->first();
@@ -425,8 +427,7 @@ class PostControllerApi extends Controller
                     'update_at' => now(),
                 ]);
             }
-            $resultado = $id;
-            return $resultado;
+        }
         }
         $post = Post::create([
             'status_post' => 1,

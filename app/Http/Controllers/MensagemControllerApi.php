@@ -5,9 +5,12 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Mensagem;
-use App\Events\NovaMensagem;
 use Illuminate\Support\Facades\Log;
+use App\Events\MensagemChat;
+use App\Events\TelaChat;
 use App\Models\Chat;
+use Illuminate\Support\Facades\Broadcast;
+
 
 class MensagemControllerApi extends Controller
 {
@@ -31,7 +34,7 @@ class MensagemControllerApi extends Controller
                 $join->on('tb_mensagem.id', '=', 'sub.ultima_mensagem_id');
             })
             ->select(
-                'tb_mensagem.id',
+                'tb_mensagem.id AS id_mensagem',
                 'c.id AS id_chat',
                 'user1.nome_user AS nome_user1',
                 'user2.nome_user AS nome_user2',
@@ -46,14 +49,18 @@ class MensagemControllerApi extends Controller
             )
             ->where(function ($query) use ($idUserRecebidor) {
                 $query->where('user1.id', $idUserRecebidor)
-                      ->orWhere('user2.id', $idUserRecebidor);
+                ->orWhere('user2.id', $idUserRecebidor);
             })
             ->orderByDesc('tb_mensagem.created_at');
-    
+
+
         $sql = $queryBuilder->toSql();
         $bindings = $queryBuilder->getBindings();
         $chats = $queryBuilder->get();
-    
+
+        // foreach ($chats as $c) {
+        //     broadcast(new TelaChat($c))->toOthers();
+        // }
         return response()->json([
             'sucesso' => true,
             'chats' => $chats,
@@ -224,6 +231,11 @@ class MensagemControllerApi extends Controller
             $mensagem->status_mensagem = 'enviado';
             $mensagem->created_at = now();
             $mensagem->save();
+            
+            // $mensagem->load('user');
+
+            Broadcast(new MensagemChat($mensagem))->toOthers();
+            // Broadcast(new TelaChat($mensagem->id_user_enviador->nome_user, $mensagem->conteudo_mensagem, $mensagem))->toOthers();
 
             return response()->json([
                 'message' => 'Mensagem enviada com sucesso!',

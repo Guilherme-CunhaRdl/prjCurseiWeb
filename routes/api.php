@@ -51,8 +51,12 @@ Route::get('/cursei/chat/{idChat}', [MensagemControllerApi::class, 'selectMensag
 Route::get('/cursei/chat/recebidor/{idUserRecebidor}', [MensagemControllerApi::class, 'selectChatApi'])->name('chat.todosChats');
 Route::get('/cursei/chat/adicionarChat/{idUserLogado}', [MensagemControllerApi::class, 'selectSeguidoresSugestoes'])->name('chat.telaSeguidores');
 Route::post('/cursei/chat/adicionarChat/', [MensagemControllerApi::class, 'criarChat'])->name('chat.criarChat');
+Route::post('/cursei/chat/enviarMensagem', [MensagemControllerApi::class, 'enviarMensagem'])->name('chat.enviarMensagem');
 Route::get('/cursei/chat/adicionarChat/{idUserLogado}/{idSeguidor}', [MensagemControllerApi::class, 'selectSeguidor'])->name('chat.seguidor');
+
+
 Route::post('cursei/user/{userId}', [UserControllerApi::class, 'alterarUser']); 
+
 //rotas para o explorar
 Route::get('/cursei/explorar/assuntosMomento',[HashtagController::class, 'maisUsadas'])->name('explorar.maisUsadas');
  

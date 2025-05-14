@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Models\Chat;
 use App\Models\Mensagem;
+use App\Events\NovaMensagem;
+use Illuminate\Support\Facades\Log;
+use App\Models\Chat;
 
 class MensagemControllerApi extends Controller
 {
@@ -72,6 +74,7 @@ class MensagemControllerApi extends Controller
             ->join('tb_user AS user1','c.id_user1', '=', 'user1.id')
             ->join('tb_user AS user2','c.id_user2', '=', 'user2.id')
             ->select('c.id AS id_chat' , 
+                    'tb_mensagem.id AS id_mensagem',
                     'user1.nome_user AS nome_user1', 
                     'user2.nome_user AS nome_user2',
                     'enviador.nome_user AS nome_enviador',
@@ -179,7 +182,7 @@ class MensagemControllerApi extends Controller
         public function criarChat(Request $request){
 
             try{
-                // Criação do usuário
+
                 $chat = Chat::create([
                     'id_user1' => $request->idUser1,
                     'id_user2' => $request->idUser2,
@@ -200,13 +203,34 @@ class MensagemControllerApi extends Controller
             }catch (\Exception $e) {
                 return response()->json([
                     'sucesso' => false,
-                    'mensagem' => 'Ocorreu um erro durante o cadastro: ' . $e->getMessage(),
+                    'mensagem' => 'Ocorreu um erro durante a Criação do chat: ' . $e->getMessage(),
                     'error' => 'unexpected_error'
                 ], 500);
             }
 
         }
+        public function enviarMensagem(Request $request)
+        {
+            $request->validate([
+                'idChat' => 'required',
+                'conteudoMensagem' => 'required|string',
+                'idEnviador' => 'required',
+            ]);
+    
+            $mensagem = new Mensagem();
+            $mensagem->id_chat = $request->idChat;
+            $mensagem->conteudo_mensagem = $request->conteudoMensagem;
+            $mensagem->id_user_enviador = $request->idEnviador;
+            $mensagem->status_mensagem = 'enviado';
+            $mensagem->created_at = now();
+            $mensagem->save();
 
+            return response()->json([
+                'message' => 'Mensagem enviada com sucesso!',
+                'mensagem' => $mensagem,
+            ], 201);
+        }
+    
     /**
      * Show the form for creating a new resource.
      *

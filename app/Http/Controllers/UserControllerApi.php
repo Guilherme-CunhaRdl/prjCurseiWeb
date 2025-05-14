@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\UserPreferencia;
+use App\Models\Seguidores;
 use Error;
 use Exception;
 use Illuminate\Support\Facades\Hash;
@@ -150,8 +151,8 @@ class UserControllerApi extends Controller
     {
         $user = User::withCount(['seguidor', 'seguindo'])
         ->where('id', $id)
+        ->selectRaw('IF(exists(select 1 from tb_instituicao where id_user = tb_user.id and verificado_instituicao = 1), 1, 0) as instituicao')
         ->first();
-
 
     
         return response()->json([
@@ -349,6 +350,11 @@ class UserControllerApi extends Controller
     }
     
     }
-    
+    public function verificarSeSegue($idUser,$idPerfil){
+        $segue = Seguidores::where('id_user_seguidor',$idUser)->where('id_user_seguido',$idPerfil)->where('status_seguidores',1)->exists();
+        return response()->json([
+            'data' => $segue,
+        ]);
+    }
     
 }

@@ -569,10 +569,10 @@ class PostControllerApi extends Controller
                         'created_at' => now(),
                         'updated_at' => now(),
                     ]);
-                    $resposta = 'usuário segudo com sucesso';
+                    $resposta = 'seguido';
                 } else {
                     Seguidores::select('id')->where('id_user_seguido', $request->userPost)->where('id_user_seguidor', $request->idUser)->delete();
-                    $resposta = 'usuário deseguido com sucesso';
+                    $resposta = 'deseguido';
                 }
                 break;
             case 'bloquear':

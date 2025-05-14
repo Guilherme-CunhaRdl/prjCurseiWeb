@@ -42,6 +42,8 @@ Route::post('/cursei/user', [UserControllerApi::class, 'storeApi'])->name('user.
 Route::delete('/cursei/user/{id}', [UserControllerApi::class, 'destroyApi'])->name('user.destroy');
 Route::put('/cursei/user/{id}', [UserControllerApi::class, 'updateApi'])->name('user.update');
 Route::get('/cursei/user/{id}', [UserControllerApi::class, 'showApi'])->name('user.show');
+Route::get('/cursei/user/verificarSeSegue/{idUser}/{idPerfil}', [UserControllerApi::class, 'verificarSeSegue'])->name('user.verificarSeSegue');
+
 Route::post('/cursei/user/logar/', [UserControllerApi::class, 'selectUserLogin'])->name('user.login');
 
 //rotas do chat

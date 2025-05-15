@@ -94,6 +94,7 @@ class PostControllerApi extends Controller
                 })
                 ->whereNull('bloqueio1.id')->whereNull('bloqueio2.id')
                 ->where('tb_post.id_user', '!=', $idUser)
+                ->where('tb_post.status_post', 1)
                 ->groupBy(
                     'tb_post.id_user',
                     'tb_post.id',
@@ -254,6 +255,7 @@ class PostControllerApi extends Controller
         $posts = $query
             ->offset($ignorarPosts)
             ->limit($quantidade)
+            ->where('tb_post.status_post', 1)
             ->get();
 
         return  response()->json([
@@ -604,6 +606,12 @@ class PostControllerApi extends Controller
                 }
 
                 break;
+        case 'desativar':
+            $post = post::findOrFail($request->idPost);
+            $post->status_post =0;
+            $post->save();
+            $resposta ='post desativado com sucesso';
+            break;
         }
         return $resposta;
     }

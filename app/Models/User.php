@@ -35,6 +35,7 @@ class User extends Authenticatable
         'token_user',
         'status_user',
         'bio_user',
+        'dois-fatores_user',
         'created_at',
         'updated_at',
     ];

@@ -24,6 +24,7 @@ return new class extends Migration
             $table->boolean('status_user');
             $table->longText('bio_user')->nullable();
             $table->string('arroba_user', 30)->unique();
+            $table->boolean('dois-fatores_user')->nullable();
 
             $table->timestamps();
         });

@@ -3,7 +3,7 @@
 namespace App\Events;
 
 
-    use Illuminate\Broadcasting\Channel;
+use Illuminate\Broadcasting\Channel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Broadcasting\InteractsWithSockets;
@@ -16,29 +16,33 @@ class TelaChat implements ShouldBroadcast
 
     public function __construct($chats)
     {
-        $this->chats = $chats->load('user');
+        $this->chats = $chats;
     }
 
     public function broadcastOn()
     {
-        return new Channel('chat.' . $this->chats->id_chat);
+        return new Channel('trazer_chats');
     }
 
 
-
+public function broadcastAs()
+    {
+        return 'chats';
+    }
     public function broadcastWith()
 {
-    return [
-        'chats' => [
-            'id_mensagem' => $this->chats->id_mensagem,
-            'id_chat' => $this->chats->id_chat,
-            'nome_user1' => $this->chats->nome_user1,
-            'nome_user2' => $this->chats->nome_user2,
-            'nome_enviador' => $this->chats->nome_enviador,
-            'ultima_mensagem' => $this->chats->ultima_mensagem,
-            'id_enviador' => $this->chats->id_enviador,
-            'created_at' => $this->chats->created_at,
-        ]
+    return[
+    'msgs' =>  $this->chats->map(function($msg){
+        return [
+                
+                    'id_mensagem' => $msg->id_mensagem,
+                    'id_chat' => $msg->id_chat,
+                    'ultima_mensagem' => $msg->ultima_mensagem,
+                    'id_enviador' => $msg->id_enviador,
+                    'created_at' => $msg->created_at,
+                
+            ];
+        })
     ];
 }
 }

@@ -39,6 +39,7 @@ class MensagemControllerApi extends Controller
                 'user1.nome_user AS nome_user1',
                 'user2.nome_user AS nome_user2',
                 'enviador.nome_user AS nome_enviador',
+                'tb_mensagem.status_mensagem AS status_mensagem',
                 'tb_mensagem.id_user_enviador AS enviador',
                 'tb_mensagem.conteudo_mensagem AS ultima_mensagem',
                 DB::raw("IF(user1.id = $idUserRecebidor, user2.nome_user, user1.nome_user) AS nome_enviador"),
@@ -218,6 +219,8 @@ class MensagemControllerApi extends Controller
         }
         public function enviarMensagem(Request $request)
         {
+            
+
             $request->validate([
                 'idChat' => 'required',
                 'conteudoMensagem' => 'required|string',
@@ -228,14 +231,48 @@ class MensagemControllerApi extends Controller
             $mensagem->id_chat = $request->idChat;
             $mensagem->conteudo_mensagem = $request->conteudoMensagem;
             $mensagem->id_user_enviador = $request->idEnviador;
-            $mensagem->status_mensagem = 'enviado';
+            $mensagem->status_mensagem = false;
             $mensagem->created_at = now();
             $mensagem->save();
-            
-            // $mensagem->load('user');
+
+
+            $idUserRecebidor = $request->idEnviador;
+            $sub = DB::table('tb_mensagem')
+            ->select(DB::raw('MAX(id) as ultima_mensagem_id'))
+            ->groupBy('id_chat');
+    
+        $queryBuilder = DB::table('tb_mensagem')
+            ->join('tb_user AS enviador', 'tb_mensagem.id_user_enviador', '=', 'enviador.id')
+            ->join('tb_chat AS c', 'tb_mensagem.id_chat', '=', 'c.id')
+            ->join('tb_user AS user1', 'c.id_user1', '=', 'user1.id')
+            ->join('tb_user AS user2', 'c.id_user2', '=', 'user2.id')
+            ->joinSub($sub, 'sub', function ($join) {
+                $join->on('tb_mensagem.id', '=', 'sub.ultima_mensagem_id');
+            })
+            ->select(
+                'tb_mensagem.id AS id_mensagem',
+                'c.id AS id_chat',
+                'user1.nome_user AS nome_user1',
+                'user2.nome_user AS nome_user2',
+                'tb_mensagem.status_mensagem AS status_mensagem',
+                'tb_mensagem.id_user_enviador AS enviador',
+                'tb_mensagem.conteudo_mensagem AS ultima_mensagem',
+                DB::raw("IF(user1.id = $idUserRecebidor, user2.nome_user, user1.nome_user) AS nome_enviador"),
+                DB::raw("IF(user1.id = $idUserRecebidor, user2.img_user, user1.img_user) AS img_enviador"),
+                DB::raw("IF(user1.id = $idUserRecebidor, user2.arroba_user, user1.arroba_user) AS arroba_enviador"),
+                DB::raw("IF(user1.id = $idUserRecebidor, user2.id, user1.id) AS id_enviador"),
+                'tb_mensagem.created_at'
+            )
+            ->where(function ($query) use ($idUserRecebidor) {
+                $query->where('user1.id', $idUserRecebidor)
+                ->orWhere('user2.id', $idUserRecebidor);
+            })
+            ->orderByDesc('tb_mensagem.created_at');
+
+        $chats = $queryBuilder->get();
 
             Broadcast(new MensagemChat($mensagem))->toOthers();
-            // Broadcast(new TelaChat($mensagem->id_user_enviador->nome_user, $mensagem->conteudo_mensagem, $mensagem))->toOthers();
+            Broadcast(new TelaChat($chats));
 
             return response()->json([
                 'message' => 'Mensagem enviada com sucesso!',

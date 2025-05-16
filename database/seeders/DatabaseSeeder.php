@@ -18,9 +18,6 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             InstituicaoSeeder::class,
             PostSeeder::class,
-            adminSeeder::class,
-            ConteudoCurteiSeeder::class,
-            CurteiSeeder::class,
         ]);
     }
 }

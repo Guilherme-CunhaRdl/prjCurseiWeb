@@ -13,6 +13,7 @@ use App\Models\Bloqueado;
 use App\Models\NaoInteressado;
 use App\Models\Hashtag;
 use App\Models\PostHashtag;
+use Illuminate\Support\Facades\File;
 
 use GuzzleHttp\Psr7\Query;
 use Illuminate\Support\Facades\DB;
@@ -478,9 +479,73 @@ class PostControllerApi extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function updateApi(Request $request, $id)
     {
-        //
+          function normalizarTextoUpdate($texto)
+        {
+            $texto = mb_strtolower($texto, 'UTF-8');
+            $texto = preg_replace(
+                ['/[áàãâä]/u', '/[éèêë]/u', '/[íìîï]/u', '/[óòõôö]/u', '/[úùûü]/u', '/[ç]/u'],
+                ['a', 'e', 'i', 'o', 'u', 'c'],
+                $texto
+            );
+            return $texto;
+        }
+        function identificarAreaPorPontuacaoUpdate($texto)
+        {
+            $areas = config('areas');
+
+            $pontuacoes = array_fill_keys(array_keys($areas), 0);
+
+            // Normaliza o texto de entrada e quebra em palavras
+            $palavras = explode(' ', normalizarTextoUpdate($texto));
+
+            foreach ($palavras as $palavra) {
+                foreach ($areas as $area => $keywords) {
+                    // Normaliza as palavras-chave também
+                    foreach ($keywords as $keyword) {
+                        if ($palavra === normalizarTextoUpdate($keyword)) {
+                            $pontuacoes[$area]++;
+                        }
+                    }
+                }
+            }
+
+            arsort($pontuacoes);
+
+            $maiorPontuacao = reset($pontuacoes);
+            if ($maiorPontuacao === 0) {
+                return 'indefinido';
+            }
+
+            return array_key_first($pontuacoes);
+        }
+        $conteudo = identificarAreaPorPontuacaoUpdate($request->descricaoPost);
+        $post = Post::findOrFail($id);
+        
+    if ($request->hasFile('img') && $request->file('img')->isValid()) {
+
+        if ($post->image) {
+            // Deletar a imagem antiga se ela existir
+            $imagePath = public_path('img/user/imgPosts/' . $post->image);
+            if (File::exists($imagePath)) {
+                File::delete($imagePath);
+            }
+        }
+
+        $extensao = $request->file('img')->getClientOriginalExtension();
+        $nomeImagem = time() . '_' . uniqid() . '.' . $extensao;
+
+        $request->file('img')->move(public_path('img/user/imgPosts'), $nomeImagem);
+
+        $post->conteudo_post = $nomeImagem;
+    }
+        $post->descricao_post = $request->descricaoPost;
+        $post->updated_at = now();
+        $post->area_post = $conteudo;
+        $post->save();
+        
+      return $request->descricaoPost;
     }
 
     /**

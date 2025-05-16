@@ -328,6 +328,14 @@ class UserControllerApi extends Controller
         $usuario->save();
         return response()->json(['message' => 'Atualizado com sucesso']);
     } 
+    public function atualizarDoisFatores(Request $request, $userId) {
+        $request->validate([
+            'dois-fatores_user'=>'required|boolean'
+        ]);
+        User::where('id_user', $userId)->update([
+            'dois-fatores_user' => $request->dois_fatores_user,
+        ]);
+    }
     public function escolherInteresesses(Request $request)
     {
         try{

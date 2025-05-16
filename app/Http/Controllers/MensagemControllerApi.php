@@ -217,8 +217,7 @@ class MensagemControllerApi extends Controller
             }
 
         }
-        public function enviarMensagem(Request $request)
-        {
+        public function enviarMensagem(Request $request){
             
 
             $request->validate([
@@ -267,7 +266,7 @@ class MensagemControllerApi extends Controller
                 $query->where('user1.id', $idUserRecebidor)
                 ->orWhere('user2.id', $idUserRecebidor);
             })
-            ->orderByDesc('tb_mensagem.created_at');
+            ->orderByDesc('id_mensagem');
 
         $chats = $queryBuilder->get();
 
@@ -276,10 +275,63 @@ class MensagemControllerApi extends Controller
 
             return response()->json([
                 'message' => 'Mensagem enviada com sucesso!',
+                'paia' => 'teste',
                 'mensagem' => $mensagem,
             ], 201);
+            
         }
+
     
+        public function pesquisarChats( $pesquisaUsuario, $idUserRecebidor){
+
+            
+            $sub = DB::table('tb_mensagem')
+            ->select(DB::raw('MAX(id) as ultima_mensagem_id'))
+            ->groupBy('id_chat');
+    
+        $queryBuilder = DB::table('tb_mensagem')
+            ->join('tb_user AS enviador', 'tb_mensagem.id_user_enviador', '=', 'enviador.id')
+            ->join('tb_chat AS c', 'tb_mensagem.id_chat', '=', 'c.id')
+            ->join('tb_user AS user1', 'c.id_user1', '=', 'user1.id')
+            ->join('tb_user AS user2', 'c.id_user2', '=', 'user2.id')
+            ->joinSub($sub, 'sub', function ($join) {
+                $join->on('tb_mensagem.id', '=', 'sub.ultima_mensagem_id');
+            })
+            ->select(
+                'tb_mensagem.id AS id_mensagem',
+                'c.id AS id_chat',
+                'user1.nome_user AS nome_user1',
+                'user2.nome_user AS nome_user2',
+                'tb_mensagem.status_mensagem AS status_mensagem',
+                'tb_mensagem.id_user_enviador AS enviador',
+                'tb_mensagem.conteudo_mensagem AS ultima_mensagem',
+                DB::raw("IF(user1.id = $idUserRecebidor, user2.nome_user, user1.nome_user) AS nome_enviador"),
+                DB::raw("IF(user1.id = $idUserRecebidor, user2.img_user, user1.img_user) AS img_enviador"),
+                DB::raw("IF(user1.id = $idUserRecebidor, user2.arroba_user, user1.arroba_user) AS arroba_enviador"),
+                DB::raw("IF(user1.id = $idUserRecebidor, user2.id, user1.id) AS id_enviador"),
+                'tb_mensagem.created_at'
+            )
+            ->where(function ($query) use ($idUserRecebidor) {
+                $query->where('user1.id', $idUserRecebidor)
+                ->orWhere('user2.id', $idUserRecebidor);
+            })
+            ->where(function( $query) use ($pesquisaUsuario, $idUserRecebidor){
+               $query->whereRaw("IF(user1.id = ?, user2.nome_user, user1.nome_user) LIKE ?", [
+                $idUserRecebidor, "%{$pesquisaUsuario}%"
+               ]);
+            
+            })
+            ->orderByDesc('id_mensagem');
+
+        $chats = $queryBuilder->get();
+            return response()->json([
+                 'message' => 'chats retornados',
+                 'chats' => $chats,
+                 'sql' => $queryBuilder->toSql(),
+                 'bindings' => $queryBuilder->getBindings(),
+            ]);
+
+        }
     /**
      * Show the form for creating a new resource.
      *

@@ -40,7 +40,10 @@ public function broadcastAs()
                     'ultima_mensagem' => $msg->ultima_mensagem,
                     'id_enviador' => $msg->id_enviador,
                     'created_at' => $msg->created_at,
-                    'status_mensagem' => $msg->status_mensagem
+                    'status_mensagem' => $msg->status_mensagem,
+                    'img_enviador' => $msg->img_enviador,
+                    'nome_enviador' => $msg->nome_enviador,
+                    'arroba_enviador' => $msg->arroba_enviador
                 
             ];
         })

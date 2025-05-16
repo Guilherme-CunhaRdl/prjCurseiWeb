@@ -56,6 +56,7 @@ Route::post('/cursei/chat/adicionarChat/', [MensagemControllerApi::class, 'criar
 Route::post('/cursei/chat/enviarMensagem', [MensagemControllerApi::class, 'enviarMensagem'])->name('chat.enviarMensagem');
 Route::get('/cursei/chat/adicionarChat/{idUserLogado}/{idSeguidor}', [MensagemControllerApi::class, 'selectSeguidor'])->name('chat.seguidor');
 
+Route::get('/cursei/chat/pesquisa/{q}/{idUserLogado}', [MensagemControllerApi::class, 'pesquisarChats'])->name('chat.pesquisarChats');
 
 Route::post('cursei/user/{userId}', [UserControllerApi::class, 'alterarUser']); 
 

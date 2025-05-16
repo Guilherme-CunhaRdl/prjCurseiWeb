@@ -58,6 +58,7 @@ Route::get('/cursei/chat/adicionarChat/{idUserLogado}/{idSeguidor}', [MensagemCo
 
 
 Route::post('cursei/user/{userId}', [UserControllerApi::class, 'alterarUser']); 
+Route::post('cursei/user/autenticacao/{userId}', [UserControllerApi::class, 'atualizarDoisFatores']);
 
 //rotas para o explorar
 Route::get('/cursei/explorar/assuntosMomento',[HashtagController::class, 'maisUsadas'])->name('explorar.maisUsadas');

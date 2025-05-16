@@ -330,10 +330,11 @@ class UserControllerApi extends Controller
     } 
     public function atualizarDoisFatores(Request $request, $userId) {
         $request->validate([
-            'dois-fatores_user'=>'required|boolean'
+            'dois_fatores_user'=>'required|boolean'
         ]);
+
         User::where('id_user', $userId)->update([
-            'dois-fatores_user' => $request->dois_fatores_user,
+            'dois_fatores_user' => $request->dois_fatores_user,
         ]);
     }
     public function escolherInteresesses(Request $request)

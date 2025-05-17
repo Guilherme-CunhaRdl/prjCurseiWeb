@@ -402,35 +402,35 @@ class PostControllerApi extends Controller
         }
 
         // Cria o post associado ao usuário
-        function pegarHashtags($texto,$idPost)
+        function pegarHashtags($texto, $idPost)
         {
 
             $pattern = '/#[\w\d_]+/';
             preg_match_all($pattern, $texto, $hashtags);
-            if($hashtags[0]){
-        
-            for ($i = 0; $i < count($hashtags[0]); $i++) {
-                $hashtag = $hashtags[0][$i];
-                $verificar = Hashtag::where('nomeHashtag', $hashtag)->first();
-                
-                if (!$verificar) {
-                   $has = Hashtag::create([
-                        'nomeHashtag' => $hashtag,
+            if ($hashtags[0]) {
+
+                for ($i = 0; $i < count($hashtags[0]); $i++) {
+                    $hashtag = $hashtags[0][$i];
+                    $verificar = Hashtag::where('nomeHashtag', $hashtag)->first();
+
+                    if (!$verificar) {
+                        $has = Hashtag::create([
+                            'nomeHashtag' => $hashtag,
+                            'created_at' => now(),
+                            'update_at' => now(),
+                        ]);
+                        $id = $has->id;
+                    } else {
+                        $id = $verificar->id;
+                    }
+                    PostHashtag::create([
+                        'id_hashtag' => $id,
+                        'id_post' => $idPost,
                         'created_at' => now(),
                         'update_at' => now(),
                     ]);
-                    $id = $has->id;
-                }else{
-                    $id = $verificar->id;
                 }
-                PostHashtag::create([
-                    'id_hashtag' => $id,
-                    'id_post' => $idPost,
-                    'created_at' => now(),
-                    'update_at' => now(),
-                ]);
             }
-        }
         }
         $post = Post::create([
             'status_post' => 1,
@@ -442,7 +442,7 @@ class PostControllerApi extends Controller
             'created_at' => now(),
             'update_at' => now(),
         ]);
-        pegarHashtags($request->descricaoPost,$post->id);
+        pegarHashtags($request->descricaoPost, $post->id);
         return response()->json([
             'sucesso' => true,
             'mensagem' => 'Post criado com sucesso!',
@@ -481,7 +481,7 @@ class PostControllerApi extends Controller
      */
     public function updateApi(Request $request, $id)
     {
-          function normalizarTextoUpdate($texto)
+        function normalizarTextoUpdate($texto)
         {
             $texto = mb_strtolower($texto, 'UTF-8');
             $texto = preg_replace(
@@ -522,30 +522,30 @@ class PostControllerApi extends Controller
         }
         $conteudo = identificarAreaPorPontuacaoUpdate($request->descricaoPost);
         $post = Post::findOrFail($id);
-        
-    if ($request->hasFile('img') && $request->file('img')->isValid()) {
 
-        if ($post->image) {
-            // Deletar a imagem antiga se ela existir
-            $imagePath = public_path('img/user/imgPosts/' . $post->image);
-            if (File::exists($imagePath)) {
-                File::delete($imagePath);
+        if ($request->hasFile('img') && $request->file('img')->isValid()) {
+
+            if ($post->image) {
+                // Deletar a imagem antiga se ela existir
+                $imagePath = public_path('img/user/imgPosts/' . $post->image);
+                if (File::exists($imagePath)) {
+                    File::delete($imagePath);
+                }
             }
+
+            $extensao = $request->file('img')->getClientOriginalExtension();
+            $nomeImagem = time() . '_' . uniqid() . '.' . $extensao;
+
+            $request->file('img')->move(public_path('img/user/imgPosts'), $nomeImagem);
+
+            $post->conteudo_post = $nomeImagem;
         }
-
-        $extensao = $request->file('img')->getClientOriginalExtension();
-        $nomeImagem = time() . '_' . uniqid() . '.' . $extensao;
-
-        $request->file('img')->move(public_path('img/user/imgPosts'), $nomeImagem);
-
-        $post->conteudo_post = $nomeImagem;
-    }
         $post->descricao_post = $request->descricaoPost;
         $post->updated_at = now();
         $post->area_post = $conteudo;
         $post->save();
-        
-      return $request->descricaoPost;
+
+        return $request->descricaoPost;
     }
 
     /**
@@ -598,7 +598,13 @@ class PostControllerApi extends Controller
                 break;
 
             case 'comentarios':
-                $comentarios = Comentario::with(['usuario'])->where('id_post', $request->idPost)->get();
+                $comentarios = Comentario::with(['usuario'])
+                    ->where('id_post', $request->idPost)
+                    ->select(
+                        '*',
+                        DB::raw('TIMESTAMPDIFF(SECOND, created_at, NOW()) AS tempo_insercao')
+                    )
+                    ->get();
                 $resposta = $comentarios;
                 break;
 
@@ -671,12 +677,12 @@ class PostControllerApi extends Controller
                 }
 
                 break;
-        case 'desativar':
-            $post = post::findOrFail($request->idPost);
-            $post->status_post =0;
-            $post->save();
-            $resposta ='post desativado com sucesso';
-            break;
+            case 'desativar':
+                $post = post::findOrFail($request->idPost);
+                $post->status_post = 0;
+                $post->save();
+                $resposta = 'post desativado com sucesso';
+                break;
         }
         return $resposta;
     }

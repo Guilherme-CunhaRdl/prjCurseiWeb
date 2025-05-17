@@ -31,10 +31,7 @@ class UserControllerApi extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
-    {
-        
-    }
+    public function create() {}
 
     /**
      * Store a newly created resource in storage.
@@ -43,102 +40,100 @@ class UserControllerApi extends Controller
      * @return \Illuminate\Http\Response
      */
 
-     public function storeApi(Request $request)
-     {   
-         try {
-             // Verificação de email
-             $emailExistente = User::where('email_user', $request->emailUser)->exists();
-             if ($emailExistente) {
-                 return response()->json([
-                     'sucesso' => false,
-                     'mensagem' => 'Este email já está cadastrado',
-                     'error' => 'email_existente'
-                 ], 422);
-             }
-     
-             // Verificação de usuário
-             $usuarioExistente = User::where('arroba_user', $request->arrobaUser)->exists();
-             if ($usuarioExistente) {
-                 return response()->json([
-                     'sucesso' => false,
-                     'mensagem' => 'Este nome de usuário já está em uso',
-                     'error' => 'usuario_existente'
-                 ], 422);
-             }
-     
-             // Processamento de imagens
-             $nomeImagem = null;
-             $nomeBanner = null;
-     
-             if ($request->hasFile('imgUser') && $request->file('imgUser')->isValid()) {
-                 $extensao = $request->file('imgUser')->getClientOriginalExtension();
-                 $nomeImagem = time() . '_' . uniqid() . '.' . $extensao;
-                 $request->file('imgUser')->move(public_path('img/user/fotoPerfil'), $nomeImagem);
-             }
-     
-             if ($request->hasFile('bannerUser') && $request->file('bannerUser')->isValid()) {
-                 $extensaoBanner = $request->file('bannerUser')->getClientOriginalExtension();
-                 $nomeBanner = time() . '_' . uniqid() . '.' . $extensaoBanner;
-                 $request->file('bannerUser')->move(public_path('img/user/bannerPerfil'), $nomeBanner);
-             }
-     
-             // Criação do usuário
-             $user = User::create([
-                 'nome_user' => $request->nomeUser,
-                 'email_user' => $request->emailUser,
-                 'senha_user' => bcrypt($request->senhaUser),
-                 'img_user' => $nomeImagem,
-                 'banner_user' => $nomeBanner,
-                 'status_user' => 1,
-                 'bio_user' => $request->bioUser,
-                 'arroba_user' => $request->arrobaUser,
-                 'created_at' => now(),
-             ]);
-     
-             if (!$user) {
-                 throw new \Exception('Falha ao criar usuário');
-             }
-     
-             return response()->json([
-                 'sucesso' => true,
-                 'mensagem' => 'Usuário Cadastrado com Sucesso!',
-                 'code' => 200,
-                 'User' => $user,
-             ]);
-     
-         } catch (\Illuminate\Database\QueryException $e) {
-             $errorCode = $e->errorInfo[1];
-             
-             if($errorCode == 1062) {
-                 if (str_contains($e->getMessage(), 'email_user')) {
-                     return response()->json([
-                         'sucesso' => false,
-                         'mensagem' => 'Este email já está cadastrado (erro de banco)',
-                         'error' => 'email_existente'
-                     ], 422);
-                 } elseif (str_contains($e->getMessage(), 'arroba_user')) {
-                     return response()->json([
-                         'sucesso' => false,
-                         'mensagem' => 'Este nome de usuário já está em uso (erro de banco)',
-                         'error' => 'usuario_existente'
-                     ], 422);
-                 }
-             }
-             
-             return response()->json([
-                 'sucesso' => false,
-                 'mensagem' => 'Ocorreu um erro inesperado. Tente novamente mais tarde.',
-                 'error' => 'database_error'
-             ], 500);
-             
-         } catch (\Exception $e) {
-             return response()->json([
-                 'sucesso' => false,
-                 'mensagem' => 'Ocorreu um erro durante o cadastro: ' . $e->getMessage(),
-                 'error' => 'unexpected_error'
-             ], 500);
-         }
-     }
+    public function storeApi(Request $request)
+    {
+        try {
+            // Verificação de email
+            $emailExistente = User::where('email_user', $request->emailUser)->exists();
+            if ($emailExistente) {
+                return response()->json([
+                    'sucesso' => false,
+                    'mensagem' => 'Este email já está cadastrado',
+                    'error' => 'email_existente'
+                ], 422);
+            }
+
+            // Verificação de usuário
+            $usuarioExistente = User::where('arroba_user', $request->arrobaUser)->exists();
+            if ($usuarioExistente) {
+                return response()->json([
+                    'sucesso' => false,
+                    'mensagem' => 'Este nome de usuário já está em uso',
+                    'error' => 'usuario_existente'
+                ], 422);
+            }
+
+            // Processamento de imagens
+            $nomeImagem = null;
+            $nomeBanner = null;
+
+            if ($request->hasFile('imgUser') && $request->file('imgUser')->isValid()) {
+                $extensao = $request->file('imgUser')->getClientOriginalExtension();
+                $nomeImagem = time() . '_' . uniqid() . '.' . $extensao;
+                $request->file('imgUser')->move(public_path('img/user/fotoPerfil'), $nomeImagem);
+            }
+
+            if ($request->hasFile('bannerUser') && $request->file('bannerUser')->isValid()) {
+                $extensaoBanner = $request->file('bannerUser')->getClientOriginalExtension();
+                $nomeBanner = time() . '_' . uniqid() . '.' . $extensaoBanner;
+                $request->file('bannerUser')->move(public_path('img/user/bannerPerfil'), $nomeBanner);
+            }
+
+            // Criação do usuário
+            $user = User::create([
+                'nome_user' => $request->nomeUser,
+                'email_user' => $request->emailUser,
+                'senha_user' => bcrypt($request->senhaUser),
+                'img_user' => $nomeImagem,
+                'banner_user' => $nomeBanner,
+                'status_user' => 1,
+                'bio_user' => $request->bioUser,
+                'arroba_user' => $request->arrobaUser,
+                'created_at' => now(),
+            ]);
+
+            if (!$user) {
+                throw new \Exception('Falha ao criar usuário');
+            }
+
+            return response()->json([
+                'sucesso' => true,
+                'mensagem' => 'Usuário Cadastrado com Sucesso!',
+                'code' => 200,
+                'User' => $user,
+            ]);
+        } catch (\Illuminate\Database\QueryException $e) {
+            $errorCode = $e->errorInfo[1];
+
+            if ($errorCode == 1062) {
+                if (str_contains($e->getMessage(), 'email_user')) {
+                    return response()->json([
+                        'sucesso' => false,
+                        'mensagem' => 'Este email já está cadastrado (erro de banco)',
+                        'error' => 'email_existente'
+                    ], 422);
+                } elseif (str_contains($e->getMessage(), 'arroba_user')) {
+                    return response()->json([
+                        'sucesso' => false,
+                        'mensagem' => 'Este nome de usuário já está em uso (erro de banco)',
+                        'error' => 'usuario_existente'
+                    ], 422);
+                }
+            }
+
+            return response()->json([
+                'sucesso' => false,
+                'mensagem' => 'Ocorreu um erro inesperado. Tente novamente mais tarde.',
+                'error' => 'database_error'
+            ], 500);
+        } catch (\Exception $e) {
+            return response()->json([
+                'sucesso' => false,
+                'mensagem' => 'Ocorreu um erro durante o cadastro: ' . $e->getMessage(),
+                'error' => 'unexpected_error'
+            ], 500);
+        }
+    }
 
 
     /**
@@ -149,12 +144,12 @@ class UserControllerApi extends Controller
      */
     public function showApi($id)
     {
-        $user = User::withCount(['seguidor', 'seguindo'])
-        ->where('id', $id)
-        ->selectRaw('IF(exists(select 1 from tb_instituicao where id_user = tb_user.id and verificado_instituicao = 1), 1, 0) as instituicao')
-        ->first();
+        $user = User::withCount(['seguidor', 'seguindo', 'posts'])
+            ->where('id', $id)
+            ->selectRaw('IF(exists(select 1 from tb_instituicao where id_user = tb_user.id and verificado_instituicao = 1), 1, 0) as instituicao')
+            ->first();
 
-    
+
         return response()->json([
             'sucesso' => true,
             'mensagem' => 'Usuario Encontrado com Sucesso!',
@@ -162,7 +157,7 @@ class UserControllerApi extends Controller
             'User' => $user
         ]);
     }
-    
+
 
     /**
      * Show the form for editing the specified resource.
@@ -186,32 +181,32 @@ class UserControllerApi extends Controller
     {
         $verificarUser = User::all()->where('id', $id);
 
-        foreach($verificarUser as $item){
-            if($request->hasFile('imgUser') && $request->file('imgUser')->isValid()){
-                
-                if($item->img_user && Storage::exists($item->img_user)){
+        foreach ($verificarUser as $item) {
+            if ($request->hasFile('imgUser') && $request->file('imgUser')->isValid()) {
+
+                if ($item->img_user && Storage::exists($item->img_user)) {
                     Storage::delete($item->img_user);
                 }
-    
+
                 $extensao = $request->imgUser->extension();
-    
-                $nomeImagem =   md5($request->imgUser->getClientOriginalName() . strtotime('now'). "." . $extensao);
-    
+
+                $nomeImagem =   md5($request->imgUser->getClientOriginalName() . strtotime('now') . "." . $extensao);
+
                 $request->imgUser->move(public_path('img/img-instituicao/img-perfil'), $nomeImagem);
-    
-            } if($request->hasFile('bannerUser') && $request->file('bannerUser')->isValid()){
-                if($item->img_banner && Storage::exists($item->banner_user)){
+            }
+            if ($request->hasFile('bannerUser') && $request->file('bannerUser')->isValid()) {
+                if ($item->img_banner && Storage::exists($item->banner_user)) {
                     Storage::delete($item->banner_user);
                 }
-    
+
                 $extensaoBanner = $request->bannerUser->extension();
-    
+
                 $nomeBanner = md5($request->bannerUser->getClientOriginalName() . strtotime('now') . "." . $extensaoBanner);
-    
+
                 $request->bannerUser->move(public_path('img/img-instituicao/banners/'), $nomeBanner);
             }
         }
-       
+
 
         $user = User::where('id', $id)->update([
             'nome_user' => $request->nomeUser,
@@ -223,7 +218,7 @@ class UserControllerApi extends Controller
             'bio_user' => $request->bioUser,
             'arroba_user' => $request->arrobaUser,
             'updated_at' => now()
-        ]); 
+        ]);
 
         return response()->json([
             'sucesso' => true,
@@ -251,7 +246,7 @@ class UserControllerApi extends Controller
     }
     public function selectUserLogin(Request $request)
     {
-        try{
+        try {
 
             $user = User::where('email_user', $request->emailDigitado)->first();
 
@@ -261,8 +256,7 @@ class UserControllerApi extends Controller
                 'code' => 200,
                 'usuario' => $user
             ]);
-
-        }catch(Exception $e){
+        } catch (Exception $e) {
 
             return response()->json([
                 'sucesso' => false,
@@ -271,45 +265,44 @@ class UserControllerApi extends Controller
                 'error' => $e
             ]);
         }
-
     }
 
     public function verificarEmailExistente(Request $request)
     {
         $email = $request->query('email');
         $existe = User::where('email_user', $email)->exists();
-        
+
         return response()->json([
             'existe' => $existe
         ]);
     }
-    
+
     public function verificarUsuarioExistente(Request $request)
     {
         $usuario = $request->query('usuario');
         $existe = User::where('arroba_user', $usuario)->exists();
-        
+
         return response()->json([
             'existe' => $existe
         ]);
     }
     public function InformacoesUser($id)
     {
-       $usuario = User::where('id',$id)->get();
-       
-       return response()->json([
-        'sucesso' => true,
-        'mensagem' => 'Usuario encontrado com sucesso!',
-        'code' => 200,
-        'Post' => $usuario,
-    ]);
+        $usuario = User::where('id', $id)->get();
+
+        return response()->json([
+            'sucesso' => true,
+            'mensagem' => 'Usuario encontrado com sucesso!',
+            'code' => 200,
+            'Post' => $usuario,
+        ]);
     }
     public function verificarPreferencia($id)
     {
-        $verificar = UserPreferencia ::where('id_user',$id)->exists();
-        if($verificar){
+        $verificar = UserPreferencia::where('id_user', $id)->exists();
+        if ($verificar) {
             $resultado = true;
-        }else{
+        } else {
             $resultado = false;
         }
 
@@ -327,10 +320,11 @@ class UserControllerApi extends Controller
         ]));
         $usuario->save();
         return response()->json(['message' => 'Atualizado com sucesso']);
-    } 
-    public function atualizarDoisFatores(Request $request, $userId) {
+    }
+    public function atualizarDoisFatores(Request $request, $userId)
+    {
         $request->validate([
-            'dois_fatores_user'=>'required|boolean'
+            'dois_fatores_user' => 'required|boolean'
         ]);
 
         User::where('id_user', $userId)->update([
@@ -339,31 +333,52 @@ class UserControllerApi extends Controller
     }
     public function escolherInteresesses(Request $request)
     {
-        try{
+        try {
 
-        
-        for ($i=0; $i< count($request->escolhas); $i++){
-    
-        UserPreferencia ::create([
-            'id_user' => $request->idUser,
-            'preferencia' => $request->escolhas[$i]
-        ]);
+
+            for ($i = 0; $i < count($request->escolhas); $i++) {
+
+                UserPreferencia::create([
+                    'id_user' => $request->idUser,
+                    'preferencia' => $request->escolhas[$i]
+                ]);
+            }
+            return response()->json([
+                'sucesso' => true,
+            ]);
+        } catch (Error) {
+            return response()->json([
+                'sucesso' => false,
+            ]);
+        }
     }
-        return response()->json([
-            'sucesso' => true,
-        ]);
-    }catch(Error){
-        return response()->json([
-            'sucesso' => false,
-        ]);
-    }
-    
-    }
-    public function verificarSeSegue($idUser,$idPerfil){
-        $segue = Seguidores::where('id_user_seguidor',$idUser)->where('id_user_seguido',$idPerfil)->where('status_seguidores',1)->exists();
+    public function verificarSeSegue($idUser, $idPerfil)
+    {
+        $segue = Seguidores::where('id_user_seguidor', $idUser)->where('id_user_seguido', $idPerfil)->where('status_seguidores', 1)->exists();
         return response()->json([
             'data' => $segue,
         ]);
     }
-    
+    public function BuscarSeguidoresSeguindo($id, $acao)
+    {
+        if ($acao == 'seguindo') {
+            $seguindo = Seguidores::where('id_user_seguidor', $id)
+                ->with('usuarioSeguido')
+                ->get();
+
+            $retorno = $seguindo->map(function ($item) {
+                return $item->usuarioSeguido;
+            });
+        }elseif($acao =='seguidores'){
+               $seguindo = Seguidores::where('id_user_seguido', $id)
+                ->with('usuarioSeguidor')
+                ->get();
+
+            $retorno = $seguindo->map(function ($item) {
+                return $item->usuarioSeguidor;
+            });
+        }
+
+        return $retorno;
+    }
 }

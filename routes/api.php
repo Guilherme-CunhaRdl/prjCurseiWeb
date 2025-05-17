@@ -45,6 +45,7 @@ Route::delete('/cursei/user/{id}', [UserControllerApi::class, 'destroyApi'])->na
 Route::put('/cursei/user/{id}', [UserControllerApi::class, 'updateApi'])->name('user.update');
 Route::get('/cursei/user/{id}', [UserControllerApi::class, 'showApi'])->name('user.show');
 Route::get('/cursei/user/verificarSeSegue/{idUser}/{idPerfil}', [UserControllerApi::class, 'verificarSeSegue'])->name('user.verificarSeSegue');
+Route::get('/cursei/user/seguidoresSeguindo/{id}/{acao}', [UserControllerApi::class, 'BuscarSeguidoresSeguindo'])->name('user.BuscarSeguidoresSeguindo');
 
 Route::post('/cursei/user/logar/', [UserControllerApi::class, 'selectUserLogin'])->name('user.login');
 

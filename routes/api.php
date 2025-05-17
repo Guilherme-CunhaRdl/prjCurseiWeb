@@ -7,6 +7,7 @@ use App\Http\Controllers\UserControllerApi;
 use App\Http\Controllers\InstituicaoControllerApi;
 use App\Http\Controllers\MensagemControllerApi;
 use App\Http\Controllers\HashtagController;
+use App\Http\Controllers\CurteiController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -64,6 +65,10 @@ Route::post('cursei/user/autenticacao/{userId}', [UserControllerApi::class, 'atu
 
 //rotas para o explorar
 Route::get('/cursei/explorar/assuntosMomento',[HashtagController::class, 'maisUsadas'])->name('explorar.maisUsadas');
+
+
+//ROTAS DO CURTEI
+Route::post('/curtei/upload', [CurteiController::class, 'storeCurtei']);
  
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();

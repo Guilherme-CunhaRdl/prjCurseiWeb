@@ -56,6 +56,48 @@ class curteiController extends Controller
         ;
     }
 
+    public function storeCurtei(Request $request)
+    {
+        // Validação dos dados
+        $validated = $request->validate([
+            'caminho_curtei' => 'required|file|mimes:mp4,mov,avi|max:25600', // 25MB
+            'caminho_curtei_thumb' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // 2MB
+            'legenda_curtei' => 'nullable|string|max:220'
+        ]);
+    
+        // Criar diretórios se não existirem
+        if (!file_exists(public_path('curtei/video'))) {
+            mkdir(public_path('curtei/video'), 0755, true);
+        }
+        if (!file_exists(public_path('curtei/thumb'))) {
+            mkdir(public_path('curtei/thumb'), 0755, true);
+        }
+    
+        // Gerar nomes únicos para os arquivos
+        $videoNome = 'video_'.time().'.'.$request->file('caminho_curtei')->extension();
+        $thumbNome = 'thumb_'.time().'.'.$request->file('caminho_curtei_thumb')->extension();
+    
+        // Mover arquivos para a pasta pública
+        $request->file('caminho_curtei')->move(public_path('curtei/video'), $videoNome);
+        $request->file('caminho_curtei_thumb')->move(public_path('curtei/thumb'), $thumbNome);
+    
+        // Criar registro no banco de dados
+        $curtei = Curtei::create([
+            'caminho_curtei' => 'curtei/video/'.$videoNome,
+            'caminho_curtei_thumb' => 'curtei/thumb/'.$thumbNome,
+            'legenda_curtei' => $validated['legenda_curtei'],
+            'id_user' => auth()->check() ? auth()->id() : null, // Verifica se o usuário está autenticado
+        ]);
+    
+        return response()->json([
+            'success' => true,
+            'video' => $curtei,
+            'video_url' => asset('curtei/video/'.$videoNome),
+            'thumb_url' => asset('curtei/thumb/'.$thumbNome)
+        ], 201);
+    }
+
+
     /**
      * Show the form for creating a new resource.
      */

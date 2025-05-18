@@ -58,6 +58,7 @@ class curteiController extends Controller
 
     public function storeCurtei(Request $request)
     {
+        \Log::info('Iniciando upload', ['files' => $request->allFiles()]);
         // Validação dos dados
         $validated = $request->validate([
             'caminho_curtei' => 'required|file|mimes:mp4,mov,avi|max:25600', // 25MB
@@ -82,6 +83,8 @@ class curteiController extends Controller
        
             $request->file('caminho_curtei')->move(public_path('curtei/video'), $videoNome);
             $request->file('caminho_curtei_thumb')->move(public_path('curtei/thumb'), $thumbNome);
+            $videoPath = public_path('curtei/video/'.$videoNome);
+            \Log::info('Tentando mover arquivo para: '.$videoPath);
     
           
             $curtei = Curtei::create([

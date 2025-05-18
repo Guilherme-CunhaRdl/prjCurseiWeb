@@ -46,6 +46,7 @@ Route::put('/cursei/user/{id}', [UserControllerApi::class, 'updateApi'])->name('
 Route::get('/cursei/user/{id}', [UserControllerApi::class, 'showApi'])->name('user.show');
 Route::get('/cursei/user/verificarSeSegue/{idUser}/{idPerfil}', [UserControllerApi::class, 'verificarSeSegue'])->name('user.verificarSeSegue');
 Route::get('/cursei/user/seguidoresSeguindo/{id}/{acao}', [UserControllerApi::class, 'BuscarSeguidoresSeguindo'])->name('user.BuscarSeguidoresSeguindo');
+Route::get('/cursei/user/deseguirOuTirarSeguidor/{idUser}/{idPerfil}/{acao}', [UserControllerApi::class, 'deseguirOuTirarSeguidor'])->name('user.deseguirOuTirarSeguidor');
 
 Route::post('/cursei/user/logar/', [UserControllerApi::class, 'selectUserLogin'])->name('user.login');
 

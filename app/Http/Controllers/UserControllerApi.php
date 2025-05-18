@@ -369,8 +369,8 @@ class UserControllerApi extends Controller
             $retorno = $seguindo->map(function ($item) {
                 return $item->usuarioSeguido;
             });
-        }elseif($acao =='seguidores'){
-               $seguindo = Seguidores::where('id_user_seguido', $id)
+        } elseif ($acao == 'seguidores') {
+            $seguindo = Seguidores::where('id_user_seguido', $id)
                 ->with('usuarioSeguidor')
                 ->get();
 
@@ -380,5 +380,75 @@ class UserControllerApi extends Controller
         }
 
         return $retorno;
+    }
+    public function deseguirOuTirarSeguidor($idUser, $idPerfil, $acao)
+    {
+        switch ($acao) {
+            case 'desseguir':
+                try {
+                    Seguidores::where('id_user_seguido', $idPerfil)->where('id_user_seguidor', $idUser)->delete();
+                    return response()->json([
+                        'sucesso' => true,
+                    ]);
+                } catch (Error) {
+                    return response()->json([
+                        'sucesso' => false,
+                    ]);
+                }
+                break;
+            case 'removerSeguidor':
+                try {
+                    Seguidores::where('id_user_seguido', $idUser)->where('id_user_seguidor', $idPerfil)->delete();
+                    return response()->json([
+                        'sucesso' => true,
+                    ]);
+                } catch (Error) {
+                    return response()->json([
+                        'sucesso' => false,
+                    ]);
+                }
+                break;
+            case 'pesquisarSeguidores':
+                try {
+
+                    $seguidores = Seguidores::where('id_user_seguido', $idPerfil)
+                        ->whereHas('usuarioSeguidor', function ($query) use ($idUser) {
+                            $query->where('arroba_user', 'like', '%' . $idUser . '%')
+                                ->orWhere('nome_user', 'like', '%' . $idUser . '%');
+                        })
+                        ->with('usuarioSeguidor')
+                        ->get()
+                        ->pluck('usuarioSeguidor')
+                        ;
+                    return response()->json([
+                        'sucesso' => true,
+                        'data' => $seguidores
+                    ]);
+                } catch (Error) {
+                    return response()->json([
+                        'sucesso' => false,
+                    ]);
+                }
+            case 'pesquisarSeguindo':
+                try {
+                    $seguidores = Seguidores::where('id_user_seguidor', $idPerfil)
+                        ->whereHas('usuarioSeguido', function ($query) use ($idUser) {
+                            $query->where('arroba_user', 'like', '%' . $idUser . '%')
+                                ->orWhere('nome_user', 'like', '%' . $idUser . '%');
+                        })
+                        ->with('usuarioSeguido')
+                        ->get()
+                        ->pluck('usuarioSeguido');
+                    return response()->json([
+                        'sucesso' => true,
+                        'data' => $seguidores
+                    ]);
+                } catch (Error) {
+                    return response()->json([
+                        'sucesso' => false,
+                    ]);
+                }
+                break;
+        }
     }
 }

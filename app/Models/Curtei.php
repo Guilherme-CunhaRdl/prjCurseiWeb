@@ -12,10 +12,11 @@ class Curtei extends Model
     protected $table = 'tb_curtei';
 
     protected $fillable = [
-        'titulo_curtei',
-        'descricao_curtei',
+        'caminho_curtei',
+        'caminho_curtei_thumb',
+        'legenda_curtei',
         'id_user',
-        'id_conteudo_curtei',
+        //'id_conteudo_curtei',
         'created_at',
         'updated_at',
     ];

@@ -177,56 +177,61 @@ class UserControllerApi extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function updateApi(Request $request, $id)
-    {
-        $verificarUser = User::all()->where('id', $id);
+public function updateApi(Request $request, $id)
+{
+    $verificarUser = User::all()->where('id', $id);
+    $nomeImagem = null;
+    $nomeBanner = null;
 
-        foreach ($verificarUser as $item) {
-            if ($request->hasFile('imgUser') && $request->file('imgUser')->isValid()) {
-
-                if ($item->img_user && Storage::exists($item->img_user)) {
-                    Storage::delete($item->img_user);
-                }
-
-                $extensao = $request->imgUser->extension();
-
-                $nomeImagem =   md5($request->imgUser->getClientOriginalName() . strtotime('now') . "." . $extensao);
-
-                $request->imgUser->move(public_path('img/img-instituicao/img-perfil'), $nomeImagem);
+    foreach ($verificarUser as $item) {
+ 
+        if ($request->hasFile('imgUser') && $request->file('imgUser')->isValid()) {
+            if ($item->img_user && Storage::exists($item->img_user)) {
+                Storage::delete($item->img_user);
             }
-            if ($request->hasFile('bannerUser') && $request->file('bannerUser')->isValid()) {
-                if ($item->img_banner && Storage::exists($item->banner_user)) {
-                    Storage::delete($item->banner_user);
-                }
 
-                $extensaoBanner = $request->bannerUser->extension();
-
-                $nomeBanner = md5($request->bannerUser->getClientOriginalName() . strtotime('now') . "." . $extensaoBanner);
-
-                $request->bannerUser->move(public_path('img/img-instituicao/banners/'), $nomeBanner);
-            }
+            $extensao = $request->imgUser->extension();
+            $nomeImagem = md5($request->imgUser->getClientOriginalName() . strtotime('now') . "." . $extensao);
+            $request->imgUser->move(public_path('img/img-instituicao/img-perfil'), $nomeImagem);
         }
+        
+        if ($request->hasFile('bannerUser') && $request->file('bannerUser')->isValid()) {
+            if ($item->img_banner && Storage::exists($item->banner_user)) {
+                Storage::delete($item->banner_user);
+            }
 
-
-        $user = User::where('id', $id)->update([
-            'nome_user' => $request->nomeUser,
-            'email_user' => $request->emailUser,
-            'senha_user' => Hash::make($request->senhaUser),
-            'img_user' =>  $nomeImagem,
-            'banner_user' => $nomeBanner,
-            'status_user' => $request->statusUser,
-            'bio_user' => $request->bioUser,
-            'arroba_user' => $request->arrobaUser,
+            $extensaoBanner = $request->bannerUser->extension();
+            $nomeBanner = md5($request->bannerUser->getClientOriginalName() . strtotime('now') . "." . $extensaoBanner);
+            $request->bannerUser->move(public_path('img/img-instituicao/banners/'), $nomeBanner);
+        }
+ 
+        $dadosUpdate = [
+            'nome_user' => $request->has('nomeUser') ? $request->nomeUser : $item->nome_user,
+            'bio_user' => $request->has('bioUser') ? $request->bioUser : $item->bio_user,
             'updated_at' => now()
-        ]);
+        ];
+
+        // Mantém os valores originais se não vierem no request
+        if ($request->has('emailUser')) $dadosUpdate['email_user'] = $request->emailUser;
+        if ($request->has('senhaUser')) $dadosUpdate['senha_user'] = Hash::make($request->senhaUser);
+        if ($request->has('statusUser')) $dadosUpdate['status_user'] = $request->statusUser;
+        if ($request->has('arrobaUser')) $dadosUpdate['arroba_user'] = $request->arrobaUser;
+        if ($nomeImagem) $dadosUpdate['img_user'] = $nomeImagem;
+        if ($nomeBanner) $dadosUpdate['banner_user'] = $nomeBanner;
+
+        $user = User::where('id', $id)->update($dadosUpdate);
 
         return response()->json([
             'sucesso' => true,
             'mensagem' => 'Usuario Atualizado com Sucesso!',
             'code' => 200,
-            'Post' => $user
+            'Post' => $user,
+   
+            'novaFoto' => $nomeImagem ?: $item->img_user,
+            'novoBanner' => $nomeBanner ?: $item->banner_user
         ]);
     }
+}
 
     /**
      * Remove the specified resource from storage.
@@ -451,4 +456,60 @@ class UserControllerApi extends Controller
                 break;
         }
     }
+
+ public function updatePerfilApi(Request $request, $id)
+{
+    try {
+        $user = User::findOrFail($id);
+        
+        // Campos básicos (sempre presentes)
+        $dadosAtualizados = [
+            'nome_user' => $request->nomeUser,
+            'bio_user' => $request->bioUser
+        ];
+
+        // 1. Verifica e processa a FOTO DE PERFIL (exatamente como seu amigo faz)
+        if ($request->hasFile('imgUser')) { // ← AQUI É ONDE VOCÊ USA
+            // Remove foto antiga se existir
+            if ($user->img_user && file_exists(public_path('img/user/fotoPerfil/' . $user->img_user))) {
+                unlink(public_path('img/user/fotoPerfil/' . $user->img_user));
+            }
+
+            $file = $request->file('imgUser'); // Pega o arquivo
+            $extensao = $file->getClientOriginalExtension();
+            $nomeImagem = 'profile_' . time() . '.' . $extensao;
+            $file->move(public_path('img/user/fotoPerfil'), $nomeImagem); // Salva
+            $dadosAtualizados['img_user'] = $nomeImagem; // Atualiza no banco
+        }
+
+        // 2. Verifica e processa o BANNER (mesma lógica)
+        if ($request->hasFile('bannerUser')) { // ← AQUI É ONDE VOCÊ USA
+            if ($user->banner_user && file_exists(public_path('img/user/bannerPerfil/' . $user->banner_user))) {
+                unlink(public_path('img/user/bannerPerfil/' . $user->banner_user));
+            }
+
+            $file = $request->file('bannerUser');
+            $extensao = $file->getClientOriginalExtension();
+            $nomeBanner = 'banner_' . time() . '.' . $extensao;
+            $file->move(public_path('img/user/bannerPerfil'), $nomeBanner);
+            $dadosAtualizados['banner_user'] = $nomeBanner;
+        }
+
+        // Atualiza o usuário
+        $user->update($dadosAtualizados);
+
+        return response()->json([
+            'sucesso' => true,
+            'mensagem' => 'Perfil atualizado!',
+            'foto' => $dadosAtualizados['img_user'] ?? $user->img_user,
+            'banner' => $dadosAtualizados['banner_user'] ?? $user->banner_user
+        ]);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'sucesso' => false,
+            'mensagem' => 'Erro: ' . $e->getMessage()
+        ], 500);
+    }
+}
 }

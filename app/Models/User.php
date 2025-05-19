@@ -36,6 +36,7 @@ class User extends Authenticatable
         'status_user',
         'bio_user',
         'dois_fatores_user',
+        'codigo_verificacao',
         'created_at',
         'updated_at',
     ];

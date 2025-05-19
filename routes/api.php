@@ -66,8 +66,6 @@ Route::get('/cursei/chat/pesquisa/{q}/{idUserLogado}', [MensagemControllerApi::c
 
 Route::post('cursei/user/{userId}', [UserControllerApi::class, 'alterarUser']); 
 Route::post('cursei/user/autenticacao/{userId}', [UserControllerApi::class, 'atualizarDoisFatores']);
-Route::post('cursei/user/enviar-codigo/{userId}', [UserControllerApi::class, 'enviarCodigoVerificacao']);
-
 
 
 //ROTAS DO CURTEI

@@ -328,13 +328,45 @@ public function updateApi(Request $request, $id)
     }
     public function atualizarDoisFatores(Request $request, $userId)
     {
+        \Log::info('Requisição recebida', [
+            'userId' => $userId,
+            'dados' => $request->all()
+        ]);
+    
         $request->validate([
             'dois_fatores_user' => 'required|boolean'
         ]);
-
-        User::where('id_user', $userId)->update([
-            'dois_fatores_user' => $request->dois_fatores_user,
-        ]);
+    
+        try {
+            $user = User::where('id', $userId)->firstOrFail();
+            
+            \Log::info('Antes da atualização', [
+                'estado_atual' => $user->dois_fatores_user
+            ]);
+    
+            $user->update([
+                'dois_fatores_user' => $request->dois_fatores_user,
+            ]);
+    
+            \Log::info('Após atualização', [
+                'novo_estado' => $user->fresh()->dois_fatores_user
+            ]);
+    
+            return response()->json([
+                'success' => true,
+                'message' => 'Configuração atualizada',
+                'dois_fatores_user' => $user->dois_fatores_user
+            ]);
+    
+        } catch (\Exception $e) {
+            \Log::error('Erro ao atualizar', [
+                'error' => $e->getMessage()
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
     public function escolherInteresesses(Request $request)
     {

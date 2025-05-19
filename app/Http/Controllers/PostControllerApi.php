@@ -12,7 +12,9 @@ use App\Models\Seguidores;
 use App\Models\Bloqueado;
 use App\Models\NaoInteressado;
 use App\Models\Hashtag;
+use App\Models\CurtidaComentario;
 use App\Models\PostHashtag;
+use Error;
 use Illuminate\Support\Facades\File;
 
 use GuzzleHttp\Psr7\Query;
@@ -251,6 +253,13 @@ class PostControllerApi extends Controller
                 break;
             case 4:
                 $query = $query->where('tb_post.id', $idUser);
+                break;
+            case 5:
+                $query = $query->orderByDesc('tb_post.created_at')->where('tb_post.id_user', $idUser)->whereNotNull('tb_post.repost_id');
+                break;
+            case 6:
+                $query = $query->orderByDesc('tb_post.created_at')->where('tb_post.id_user', $idUser)->whereNotNull('tb_post.conteudo_post');
+                break;
         }
 
         $posts = $query
@@ -592,8 +601,14 @@ class PostControllerApi extends Controller
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
+
                 $usuario = User::select('id', 'arroba_user', 'img_user')->where('id', $request->idUser)->get();
-                $resposta = $usuario;
+                return response()->json([
+                   
+                    'usuario' => $usuario,
+                    'comentario' => $comentario,
+                 
+                ]);
 
                 break;
 
@@ -602,12 +617,36 @@ class PostControllerApi extends Controller
                     ->where('id_post', $request->idPost)
                     ->select(
                         '*',
-                        DB::raw('TIMESTAMPDIFF(SECOND, created_at, NOW()) AS tempo_insercao')
+                        DB::raw('TIMESTAMPDIFF(SECOND, created_at, NOW()) AS tempo_insercao'),
+                        DB::raw('(SELECT COUNT(*) FROM tb_curtida_comentario WHERE tb_curtida_comentario.id_comentario = tb_comentario.id) AS total_curtidas'),
+                        DB::raw("EXISTS (
+            SELECT 1 FROM tb_curtida_comentario 
+            WHERE tb_curtida_comentario.id_comentario = tb_comentario.id 
+            AND tb_curtida_comentario.id_user = $request->idUser
+        ) AS curtiu")
                     )
+                    ->orderByDesc('total_curtidas')
                     ->get();
                 $resposta = $comentarios;
                 break;
-
+            case 'curtirComentario':
+                try {
+                    if ($request->acao == 'curtir') {
+                        CurtidaComentario::create([
+                            'id_user' => $request->idUser,
+                            'id_comentario' => $request->idComentario,
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ]);
+                        $resposta = "Comentario curtido com sucesso";
+                    } elseif ($request->acao == 'descurtir') {
+                        CurtidaComentario::where('id_user', $request->idUser)->where('id_comentario', $request->idComentario)->delete();
+                        $resposta = "Comentario descurtir com sucesso";
+                    }
+                } catch (Error) {
+                    $resposta = "Error";
+                }
+                break;
             case 'denunciar':
                 Denuncia::create([
                     'motivo_denuncia' => $request->motivo,

@@ -11,6 +11,7 @@ use Exception;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class UserControllerApi extends Controller
 {
@@ -368,6 +369,38 @@ public function updateApi(Request $request, $id)
             ], 500);
         }
     }
+    public function enviarCodigoVerificacao(Request $request, $userId) {
+        $user = User::findOrFail($userId);
+    
+        $codigo = rand(1000, 9999); 
+        $user->codigo_verificacao = $codigo;
+        $user->save();
+    
+        Mail::raw("Seu código de verificação é: {$codigo}", function($message) use ($user) {
+            $message->to($user->email)
+                    ->subject('Código de Verificação');
+        });
+    
+        return response()->json(['success' => true, 'message' => 'Código enviado com sucesso']);
+    }
+    public function verificarCodigo(Request $request, $userId) {
+        $request->validate([
+            'codigo' => 'required|digits:4'
+        ]);
+    
+        $user = User::findOrFail($userId);
+        
+        if ($user->codigo_verificacao == $request->codigo) {
+            // opcional: zera o código ou marca como verificado
+            $user->codigo_verificacao = null;
+            $user->save();
+    
+            return response()->json(['success' => true]);
+        } else {
+            return response()->json(['success' => false, 'message' => 'Código incorreto'], 400);
+        }
+    }
+   
     public function escolherInteresesses(Request $request)
     {
         try {

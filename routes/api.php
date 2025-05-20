@@ -1,12 +1,12 @@
 <?php
 
+use App\Http\Controllers\ExplorarController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostControllerApi;
 use App\Http\Controllers\UserControllerApi;
 use App\Http\Controllers\InstituicaoControllerApi;
 use App\Http\Controllers\MensagemControllerApi;
-use App\Http\Controllers\HashtagController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -58,8 +58,9 @@ Route::get('/cursei/chat/adicionarChat/{idUserLogado}/{idSeguidor}', [MensagemCo
 Route::post('cursei/user/{userId}', [UserControllerApi::class, 'alterarUser']); 
 
 //rotas para o explorar
-Route::get('/cursei/explorar/assuntosMomento',[HashtagController::class, 'maisUsadas'])->name('explorar.maisUsadas');
- 
+Route::get('/cursei/explorar/assuntosMomento',[ExplorarController::class, 'maisUsadas'])->name('explorar.maisUsadas');
+Route::post('/cursei/explorar/buscar',[ExplorarController::class, 'buscar'])->name('explorar.buscar');
+
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });

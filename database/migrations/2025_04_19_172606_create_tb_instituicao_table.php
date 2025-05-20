@@ -15,9 +15,9 @@ return new class extends Migration
     {
         Schema::create('tb_instituicao', function (Blueprint $table) {
             $table->id();
-            $table->string('nome_representante', 100);
-            $table->string('telefone', 25);
-            $table->string('documentos_representante', 25);
+            $table->string('nome_representante', 100)->nullable();
+            $table->string('telefone', 25)->nullable();
+            $table->string('documentos_representante', 25)->nullable();
             $table->string('cnpj_instituicao', 18);
             $table->boolean('verificado_instituicao');
             $table->string('logradouro_instituicao');

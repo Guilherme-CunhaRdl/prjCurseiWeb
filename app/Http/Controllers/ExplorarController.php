@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\DB;
 use App\Models\Hashtag;
+use App\Models\Post;
+use App\Models\User;
 use Illuminate\Http\Request;
 
-class HashtagController extends Controller
+class ExplorarController extends Controller
 {
     public function maisUsadas()
     {
@@ -28,10 +30,9 @@ class HashtagController extends Controller
             ->select('id_hashtag', DB::raw('SUM(total) as total_uso'))
             ->groupBy('id_hashtag')
             ->orderByDesc('total_uso')
-            ->take(10) // top 10, por exemplo
+            ->take(10) 
             ->get();
 
-        // Pega os nomes das hashtags
         $resultados = $totais->map(function ($item) {
             $hashtag = Hashtag::find($item->id_hashtag);
             return [
@@ -46,4 +47,25 @@ class HashtagController extends Controller
     public function maisRecentes(){
         
     }   
+
+    public function buscar(Request $request) {
+        $termoPesquisado = $request->input('termoPesquisado');
+    
+        $usuarios = User::where('nome_user', 'like', "%$termoPesquisado%")
+            ->orWhere('arroba_user', 'like', "%$termoPesquisado%")
+            ->get();
+    
+        $posts = Post::where('descricao_post', 'like', "%$termoPesquisado%")
+            ->get();
+    
+        $hashtags = Hashtag::where('nomeHashtag', 'like', "%$termoPesquisado%")
+            ->get();
+    
+        return response()->json([
+            'usuarios' => $usuarios,
+            'posts' => $posts,
+            'hashtags' => $hashtags,
+        ]);
+    }
+    
 }

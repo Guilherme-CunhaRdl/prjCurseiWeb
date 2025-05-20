@@ -546,4 +546,89 @@ public function updateApi(Request $request, $id)
         ], 500);
     }
 }
+ public function notificacao($id, $acao)
+    {
+        $notificacoes = DB::table(DB::raw("(
+    -- CURTIDAS
+  SELECT 
+      CONCAT('curtida_', tb_curtida.id) AS id,
+    tb_curtida.created_at,
+    'curtida' AS tipo,
+    tb_user.nome_user AS usuario,
+    tb_user.arroba_user AS arroba,
+    tb_user.img_user AS img_user,
+    tb_post.titulo_post AS referencia,
+    TIMESTAMPDIFF(SECOND, tb_curtida.created_at, NOW()) AS tempo_inserido,
+    NULL AS mensagem
+    FROM tb_curtida
+    JOIN tb_post ON tb_curtida.id_post = tb_post.id
+    JOIN tb_user ON tb_curtida.id_user = tb_user.id
+    
+    WHERE tb_post.id_user = $id
+
+    UNION ALL
+
+    -- COMENTÁRIOS
+   SELECT 
+    CONCAT('comentario_', tb_comentario.id) AS id,
+    tb_comentario.created_at,
+    'comentario' AS tipo,
+    tb_user.nome_user AS usuario,
+    tb_user.arroba_user AS arroba,
+    tb_user.img_user AS img_user,
+    tb_post.titulo_post AS referencia,
+    TIMESTAMPDIFF(SECOND,  tb_comentario.created_at, NOW()) AS tempo_inserido,
+    tb_comentario.comentario AS mensagem
+    FROM tb_comentario
+    JOIN tb_post ON tb_comentario.id_post = tb_post.id
+    JOIN tb_user ON tb_comentario.id_user = tb_user.id
+    WHERE tb_post.id_user = $id
+
+    UNION ALL
+
+    -- NOVOS SEGUIDORES
+   SELECT 
+       CONCAT('seguido_', tb_seguidores.id) AS id,
+
+    tb_seguidores.created_at,
+    'seguido' AS tipo,
+    tb_user.nome_user AS usuario,
+    tb_user.arroba_user AS arroba,
+    tb_user.img_user AS img_user,
+    NULL AS referencia,
+    TIMESTAMPDIFF(SECOND, tb_seguidores.created_at, NOW()) AS tempo_inserido,
+    NULL AS mensagem
+    FROM tb_seguidores
+    JOIN tb_user ON tb_seguidores.id_user_seguidor = tb_user.id
+    WHERE tb_seguidores.id_user_seguido = $id
+) as notificacoes"))
+            ->orderBy('created_at', 'desc');
+
+
+        if ($acao == 'count') {
+            $notificacoesAgrupadas = $notificacoes->count();
+        } else {
+            $notificacoes = $notificacoes->get();
+            $agora = now();
+            $notificacoesAgrupadas = [
+                'ultimos_7_dias' => [],
+                'ultimos_30_dias' => [],
+                'notificacoes_antigas' => [],
+            ];
+
+            foreach ($notificacoes as $notificacao) {
+                $dataNotificacao = \Carbon\Carbon::parse($notificacao->created_at);
+
+                if ($dataNotificacao->gt($agora->copy()->subDays(7))) {
+                    $notificacoesAgrupadas['ultimos_7_dias'][] = $notificacao;
+                } elseif ($dataNotificacao->gt($agora->copy()->subDays(30))) {
+                    $notificacoesAgrupadas['ultimos_30_dias'][] = $notificacao;
+                } else {
+                    $notificacoesAgrupadas['notificacoes_antigas'][] = $notificacao;
+                }
+            }
+        }
+
+        return $notificacoesAgrupadas;
+    }
 }

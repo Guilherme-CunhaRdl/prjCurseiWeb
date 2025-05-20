@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Log;
 use App\Events\MensagemChat;
 use App\Events\TelaChat;
 use App\Models\Chat;
+use App\Models\Canal;
 use Illuminate\Support\Facades\Broadcast;
 
 
@@ -42,6 +43,7 @@ class MensagemControllerApi extends Controller
                 'tb_mensagem.status_mensagem AS status_mensagem',
                 'tb_mensagem.id_user_enviador AS enviador',
                 'tb_mensagem.conteudo_mensagem AS ultima_mensagem',
+                'tb_mensagem.img_mensagem AS foto_enviada',
                 DB::raw("IF(user1.id = $idUserRecebidor, user2.nome_user, user1.nome_user) AS nome_enviador"),
                 DB::raw("IF(user1.id = $idUserRecebidor, user2.img_user, user1.img_user) AS img_enviador"),
                 DB::raw("IF(user1.id = $idUserRecebidor, user2.arroba_user, user1.arroba_user) AS arroba_enviador"),
@@ -83,11 +85,13 @@ class MensagemControllerApi extends Controller
             ->join('tb_user AS user2','c.id_user2', '=', 'user2.id')
             ->select('c.id AS id_chat' , 
                     'tb_mensagem.id AS id_mensagem',
+                    'tb_mensagem.img_mensagem AS foto_enviada',
                     'user1.nome_user AS nome_user1', 
                     'user2.nome_user AS nome_user2',
                     'enviador.nome_user AS nome_enviador',
                     'tb_mensagem.id_user_enviador', 
                     'tb_mensagem.conteudo_mensagem', 
+                    'tb_mensagem.img_mensagem AS foto_enviada', 
                     'enviador.id AS id_enviador', 
                     'enviador.img_user' , 
                     'enviador.nome_user')
@@ -217,25 +221,33 @@ class MensagemControllerApi extends Controller
             }
 
         }
-        public function enviarMensagem(Request $request){
-            
+        public function enviarMensagem(Request $request, $tipoMensagem){
 
+            
             $request->validate([
                 'idChat' => 'required',
-                'conteudoMensagem' => 'required|string',
                 'idEnviador' => 'required',
             ]);
+
+            $nomeImagem = null;
+
+            if ($request->hasFile('imgMensagem') && $request->file('imgMensagem')->isValid()) {
+                $extensao = $request->file('imgMensagem')->getClientOriginalExtension();
+                $nomeImagem = time() . '_' . uniqid() . '.' . $extensao;
+                $request->file('imgMensagem')->move(public_path('img/chat/fotosChat'), $nomeImagem);
+            }
     
             $mensagem = new Mensagem();
             $mensagem->id_chat = $request->idChat;
             $mensagem->conteudo_mensagem = $request->conteudoMensagem;
+            $mensagem->img_mensagem = $tipoMensagem == 'semImagem' ? '' : $nomeImagem;
             $mensagem->id_user_enviador = $request->idEnviador;
             $mensagem->status_mensagem = false;
             $mensagem->created_at = now();
             $mensagem->save();
 
 
-            $idUserRecebidor = $request->idEnviador;
+            $idEnviador = $request->idEnviador;
             $sub = DB::table('tb_mensagem')
             ->select(DB::raw('MAX(id) as ultima_mensagem_id'))
             ->groupBy('id_chat');
@@ -256,15 +268,16 @@ class MensagemControllerApi extends Controller
                 'tb_mensagem.status_mensagem AS status_mensagem',
                 'tb_mensagem.id_user_enviador AS enviador',
                 'tb_mensagem.conteudo_mensagem AS ultima_mensagem',
-                DB::raw("IF(user1.id = $idUserRecebidor, user2.nome_user, user1.nome_user) AS nome_enviador"),
-                DB::raw("IF(user1.id = $idUserRecebidor, user2.img_user, user1.img_user) AS img_enviador"),
-                DB::raw("IF(user1.id = $idUserRecebidor, user2.arroba_user, user1.arroba_user) AS arroba_enviador"),
-                DB::raw("IF(user1.id = $idUserRecebidor, user2.id, user1.id) AS id_enviador"),
+                'tb_mensagem.img_mensagem AS foto_enviada',
+                DB::raw("IF(user1.id = $idEnviador, user2.nome_user, user1.nome_user) AS nome_enviador"),
+                DB::raw("IF(user1.id = $idEnviador, user2.img_user, user1.img_user) AS img_enviador"),
+                DB::raw("IF(user1.id = $idEnviador, user2.arroba_user, user1.arroba_user) AS arroba_enviador"),
+                DB::raw("IF(user1.id = $idEnviador, user2.id, user1.id) AS id_enviador"),
                 'tb_mensagem.created_at'
             )
-            ->where(function ($query) use ($idUserRecebidor) {
-                $query->where('user1.id', $idUserRecebidor)
-                ->orWhere('user2.id', $idUserRecebidor);
+            ->where(function ($query) use ($idEnviador) {
+                $query->where('user1.id', $idEnviador)
+                ->orWhere('user2.id', $idEnviador);
             })
             ->orderByDesc('id_mensagem');
 
@@ -278,7 +291,8 @@ class MensagemControllerApi extends Controller
                 'paia' => 'teste',
                 'mensagem' => $mensagem,
             ], 201);
-            
+        
+
         }
 
     
@@ -332,69 +346,36 @@ class MensagemControllerApi extends Controller
             ]);
 
         }
+        public function criarCanal(Request $request){
+
+            $imgCanal = null;
+
+            if ($request->hasFile('imgCanal') && $request->file('imgCanal')->isValid()) {
+                $extensao = $request->file('imgCanal')->getClientOriginalExtension();
+                $nomeImagem = time() . '_' . uniqid() . '.' . $extensao;
+                $request->file('imgCanal')->move(public_path('img/chat/imgCanal'), $nomeImagem);
+                
+            }
+
+            $canal = Canal::create([
+                'nome_canal' => $request->nomeCanal,
+                'descricao_canal' => $request->descricaoCanal,
+                'imagem_canal' => $nomeImagem,
+                'user_criador_canal' => $request->userCriador,
+                'created_at' => now()
+            ]);
+
+            return response()->json([
+                 'message' => 'canal retornado',
+                 'canal Criado' => $canal,
+                'sucesso' => true
+            ]);
+
+        }
     /**
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
+    
 }

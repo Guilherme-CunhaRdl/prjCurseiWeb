@@ -43,8 +43,8 @@ public function broadcastAs()
                     'status_mensagem' => $msg->status_mensagem,
                     'img_enviador' => $msg->img_enviador,
                     'nome_enviador' => $msg->nome_enviador,
-                    'arroba_enviador' => $msg->arroba_enviador
-                
+                    'arroba_enviador' => $msg->arroba_enviador,
+                    'foto_enviada' => $msg->foto_enviada
             ];
         })
     ];

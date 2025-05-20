@@ -12,7 +12,10 @@ use App\Models\Seguidores;
 use App\Models\Bloqueado;
 use App\Models\NaoInteressado;
 use App\Models\Hashtag;
+use App\Models\CurtidaComentario;
 use App\Models\PostHashtag;
+use Error;
+use Illuminate\Support\Facades\File;
 
 use GuzzleHttp\Psr7\Query;
 use Illuminate\Support\Facades\DB;
@@ -250,6 +253,13 @@ class PostControllerApi extends Controller
                 break;
             case 4:
                 $query = $query->where('tb_post.id', $idUser);
+                break;
+            case 5:
+                $query = $query->orderByDesc('tb_post.created_at')->where('tb_post.id_user', $idUser)->whereNotNull('tb_post.repost_id');
+                break;
+            case 6:
+                $query = $query->orderByDesc('tb_post.created_at')->where('tb_post.id_user', $idUser)->whereNotNull('tb_post.conteudo_post');
+                break;
         }
 
         $posts = $query
@@ -401,35 +411,35 @@ class PostControllerApi extends Controller
         }
 
         // Cria o post associado ao usuário
-        function pegarHashtags($texto,$idPost)
+        function pegarHashtags($texto, $idPost)
         {
 
             $pattern = '/#[\w\d_]+/';
             preg_match_all($pattern, $texto, $hashtags);
-            if($hashtags[0]){
-        
-            for ($i = 0; $i < count($hashtags[0]); $i++) {
-                $hashtag = $hashtags[0][$i];
-                $verificar = Hashtag::where('nomeHashtag', $hashtag)->first();
-                
-                if (!$verificar) {
-                   $has = Hashtag::create([
-                        'nomeHashtag' => $hashtag,
+            if ($hashtags[0]) {
+
+                for ($i = 0; $i < count($hashtags[0]); $i++) {
+                    $hashtag = $hashtags[0][$i];
+                    $verificar = Hashtag::where('nomeHashtag', $hashtag)->first();
+
+                    if (!$verificar) {
+                        $has = Hashtag::create([
+                            'nomeHashtag' => $hashtag,
+                            'created_at' => now(),
+                            'update_at' => now(),
+                        ]);
+                        $id = $has->id;
+                    } else {
+                        $id = $verificar->id;
+                    }
+                    PostHashtag::create([
+                        'id_hashtag' => $id,
+                        'id_post' => $idPost,
                         'created_at' => now(),
                         'update_at' => now(),
                     ]);
-                    $id = $has->id;
-                }else{
-                    $id = $verificar->id;
                 }
-                PostHashtag::create([
-                    'id_hashtag' => $id,
-                    'id_post' => $idPost,
-                    'created_at' => now(),
-                    'update_at' => now(),
-                ]);
             }
-        }
         }
         $post = Post::create([
             'status_post' => 1,
@@ -441,7 +451,7 @@ class PostControllerApi extends Controller
             'created_at' => now(),
             'update_at' => now(),
         ]);
-        pegarHashtags($request->descricaoPost,$post->id);
+        pegarHashtags($request->descricaoPost, $post->id);
         return response()->json([
             'sucesso' => true,
             'mensagem' => 'Post criado com sucesso!',
@@ -478,9 +488,73 @@ class PostControllerApi extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function updateApi(Request $request, $id)
     {
-        //
+        function normalizarTextoUpdate($texto)
+        {
+            $texto = mb_strtolower($texto, 'UTF-8');
+            $texto = preg_replace(
+                ['/[áàãâä]/u', '/[éèêë]/u', '/[íìîï]/u', '/[óòõôö]/u', '/[úùûü]/u', '/[ç]/u'],
+                ['a', 'e', 'i', 'o', 'u', 'c'],
+                $texto
+            );
+            return $texto;
+        }
+        function identificarAreaPorPontuacaoUpdate($texto)
+        {
+            $areas = config('areas');
+
+            $pontuacoes = array_fill_keys(array_keys($areas), 0);
+
+            // Normaliza o texto de entrada e quebra em palavras
+            $palavras = explode(' ', normalizarTextoUpdate($texto));
+
+            foreach ($palavras as $palavra) {
+                foreach ($areas as $area => $keywords) {
+                    // Normaliza as palavras-chave também
+                    foreach ($keywords as $keyword) {
+                        if ($palavra === normalizarTextoUpdate($keyword)) {
+                            $pontuacoes[$area]++;
+                        }
+                    }
+                }
+            }
+
+            arsort($pontuacoes);
+
+            $maiorPontuacao = reset($pontuacoes);
+            if ($maiorPontuacao === 0) {
+                return 'indefinido';
+            }
+
+            return array_key_first($pontuacoes);
+        }
+        $conteudo = identificarAreaPorPontuacaoUpdate($request->descricaoPost);
+        $post = Post::findOrFail($id);
+
+        if ($request->hasFile('img') && $request->file('img')->isValid()) {
+
+            if ($post->image) {
+                // Deletar a imagem antiga se ela existir
+                $imagePath = public_path('img/user/imgPosts/' . $post->image);
+                if (File::exists($imagePath)) {
+                    File::delete($imagePath);
+                }
+            }
+
+            $extensao = $request->file('img')->getClientOriginalExtension();
+            $nomeImagem = time() . '_' . uniqid() . '.' . $extensao;
+
+            $request->file('img')->move(public_path('img/user/imgPosts'), $nomeImagem);
+
+            $post->conteudo_post = $nomeImagem;
+        }
+        $post->descricao_post = $request->descricaoPost;
+        $post->updated_at = now();
+        $post->area_post = $conteudo;
+        $post->save();
+
+        return $request->descricaoPost;
     }
 
     /**
@@ -527,16 +601,52 @@ class PostControllerApi extends Controller
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
+
                 $usuario = User::select('id', 'arroba_user', 'img_user')->where('id', $request->idUser)->get();
-                $resposta = $usuario;
+                return response()->json([
+                   
+                    'usuario' => $usuario,
+                    'comentario' => $comentario,
+                 
+                ]);
 
                 break;
 
             case 'comentarios':
-                $comentarios = Comentario::with(['usuario'])->where('id_post', $request->idPost)->get();
+                $comentarios = Comentario::with(['usuario'])
+                    ->where('id_post', $request->idPost)
+                    ->select(
+                        '*',
+                        DB::raw('TIMESTAMPDIFF(SECOND, created_at, NOW()) AS tempo_insercao'),
+                        DB::raw('(SELECT COUNT(*) FROM tb_curtida_comentario WHERE tb_curtida_comentario.id_comentario = tb_comentario.id) AS total_curtidas'),
+                        DB::raw("EXISTS (
+            SELECT 1 FROM tb_curtida_comentario 
+            WHERE tb_curtida_comentario.id_comentario = tb_comentario.id 
+            AND tb_curtida_comentario.id_user = $request->idUser
+        ) AS curtiu")
+                    )
+                    ->orderByDesc('total_curtidas')
+                    ->get();
                 $resposta = $comentarios;
                 break;
-
+            case 'curtirComentario':
+                try {
+                    if ($request->acao == 'curtir') {
+                        CurtidaComentario::create([
+                            'id_user' => $request->idUser,
+                            'id_comentario' => $request->idComentario,
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ]);
+                        $resposta = "Comentario curtido com sucesso";
+                    } elseif ($request->acao == 'descurtir') {
+                        CurtidaComentario::where('id_user', $request->idUser)->where('id_comentario', $request->idComentario)->delete();
+                        $resposta = "Comentario descurtir com sucesso";
+                    }
+                } catch (Error) {
+                    $resposta = "Error";
+                }
+                break;
             case 'denunciar':
                 Denuncia::create([
                     'motivo_denuncia' => $request->motivo,
@@ -606,12 +716,12 @@ class PostControllerApi extends Controller
                 }
 
                 break;
-        case 'desativar':
-            $post = post::findOrFail($request->idPost);
-            $post->status_post =0;
-            $post->save();
-            $resposta ='post desativado com sucesso';
-            break;
+            case 'desativar':
+                $post = post::findOrFail($request->idPost);
+                $post->status_post = 0;
+                $post->save();
+                $resposta = 'post desativado com sucesso';
+                break;
         }
         return $resposta;
     }

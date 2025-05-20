@@ -56,6 +56,98 @@ class curteiController extends Controller
         ;
     }
 
+    public function storeCurtei(Request $request)
+    {
+        \Log::info('Iniciando upload', ['files' => $request->allFiles()]);
+        // Validação dos dados
+        $validated = $request->validate([
+            'caminho_curtei' => 'required|file|mimes:mp4,mov,avi|max:25600', // 25MB
+            'caminho_curtei_thumb' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // 2MB
+            'legenda_curtei' => 'nullable|string|max:220',
+            'id_user' => 'required|integer|exists:tb_user,id' 
+        ]);
+    
+        try {
+        
+            if (!file_exists(public_path('curtei/video'))) {
+                mkdir(public_path('curtei/video'), 0755, true);
+            }
+            if (!file_exists(public_path('curtei/thumb'))) {
+                mkdir(public_path('curtei/thumb'), 0755, true);
+            }
+    
+           
+            $videoNome = 'video_'.$validated['id_user'].'_'.time().'.'.$request->file('caminho_curtei')->extension();
+            $thumbNome = 'thumb_'.$validated['id_user'].'_'.time().'.'.$request->file('caminho_curtei_thumb')->extension();
+    
+       
+            $request->file('caminho_curtei')->move(public_path('curtei/video'), $videoNome);
+            $request->file('caminho_curtei_thumb')->move(public_path('curtei/thumb'), $thumbNome);
+            $videoPath = public_path('curtei/video/'.$videoNome);
+            \Log::info('Tentando mover arquivo para: '.$videoPath);
+    
+          
+            $curtei = Curtei::create([
+                'caminho_curtei' => 'curtei/video/'.$videoNome,
+                'caminho_curtei_thumb' => 'curtei/thumb/'.$thumbNome,
+                'legenda_curtei' => $validated['legenda_curtei'],
+                'id_user' => $validated['id_user'] 
+            ]);
+    
+            return response()->json([
+                'success' => true,
+                'video' => $curtei,
+                'video_url' => asset('curtei/video/'.$videoNome),
+                'thumb_url' => asset('curtei/thumb/'.$thumbNome)
+            ], 201);
+    
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erro no servidor',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function mostrarVideos()
+    {
+        try {
+         
+            $videos = Curtei::with(['usuario'])
+                ->orderBy('created_at', 'desc')
+                ->get()
+                ->map(function ($video) {
+                    return [
+                        'id' => $video->id,
+                        'video_url' => asset($video->caminho_curtei),
+                        'thumb_url' => asset($video->caminho_curtei_thumb),
+                        'legenda' => $video->legenda_curtei,
+                        'usuario' => [
+                            'id' => $video->usuario->id,
+                            'nome' => $video->usuario->nome_user,
+                            'foto' => $video->usuario->img_user ? asset($video->usuario->img_user) : null,
+                            'arroba' => $video->usuario->arroba_user
+                        ],
+                        'data_postagem' => $video->created_at->format('d/m/Y H:i')
+                    ];
+                });
+    
+            return response()->json([
+                'success' => true,
+                'videos' => $videos
+            ]);
+    
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erro ao carregar vídeos',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+
     /**
      * Show the form for creating a new resource.
      */

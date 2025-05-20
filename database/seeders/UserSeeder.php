@@ -4,38 +4,368 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
-use Carbon\Carbon;
+use Illuminate\Support\Carbon;
 
 class UserSeeder extends Seeder
 {
-    public function run(): void
+    /**
+     * Run the database seeds.
+     *
+     * @return void
+     */
+    public function run()
     {
-        $nomes = [
-            'Guilherme', 'Rian', 'Breno', 'Hugo', 'Victor', 'Eduardo', 'Ellen', 'Caroline',
-            'Felipe', 'Klayver', 'O alencar', 'Clara', 'O sergio', 'Clodoaldo', 'Rafaela', 'Thiago',
-            'Luciano', 'O santana', 'Junior & Aline', 'Vinicius', 'Fatec', 'Senai', 'SESI', 'Enap', 'Etec',
-        ];
-
-        $users = [];
-
-        foreach ($nomes as $i => $nome) {
-            $users[] = [
-                'nome_user'    => $nome,
-                'email_user'   => strtolower($nome) . $i . '@gmail.com',
-                'senha_user'   => Hash::make('senha123'),
-                'img_user'     => 'default' . ($i + 1) . '.png',              
-                'banner_user'  => 'default_banner' . ($i + 1) . '.png',       
-                'token_user'   => Str::random(40),
-                'status_user'  => 1,
-                'bio_user'     => "Olá, eu sou {$nome}!",
-                'arroba_user'  => strtolower($nome) . $i,
-                'created_at'   => Carbon::now(),
-                'updated_at'   => Carbon::now(),
-            ];
-        }
-
-        DB::table('tb_user')->insert($users);
+        DB::table('tb_user')->insert([
+            [
+                'id' => 1,
+                'nome_user' => 'Guilherme',
+                'email_user' => 'guilherme0@gmail.com',
+                'senha_user' => '$2y$10$QuKXZEcWqvfoxIWUbPf9x.v1yMIdMnnSi9ZbfY4etYCrC9dmgDxj2',
+                'img_user' => 'default1.png',
+                'banner_user' => 'default_banner1.png',
+                'token_user' => 'SkCVnCBnM0yup9rS7y1scPyZx49Q43dWIEhNS39Q',
+                'status_user' => 1,
+                'bio_user' => 'Olá, eu sou Guilherme!',
+                'arroba_user' => 'guilherme0',
+                'created_at' => Carbon::parse('2025-04-27 00:39:14'),
+                'updated_at' => Carbon::parse('2025-04-27 00:39:14')
+            ],
+            [
+                'id' => 2,
+                'nome_user' => 'Rian',
+                'email_user' => 'rian1@gmail.com',
+                'senha_user' => '$2y$10$FWW7MJ3g09OveKUrEHgDn.i8DQiobzqyqw7Veso56/sC4BSdDQ0H.',
+                'img_user' => 'default2.png',
+                'banner_user' => 'default_banner2.png',
+                'token_user' => 'SAaBtQYHK2Xm4pjynXBSQrDWr9KpSkXLrdQerf0I',
+                'status_user' => 1,
+                'bio_user' => 'Olá, eu sou Rian!',
+                'arroba_user' => 'rian1',
+                'created_at' => Carbon::parse('2025-04-27 00:39:14'),
+                'updated_at' => Carbon::parse('2025-04-27 00:39:14')
+            ],
+            [
+                'id' => 3,
+                'nome_user' => 'Breno',
+                'email_user' => 'breno2@gmail.com',
+                'senha_user' => '$2y$10$jLio6rij5QMXz7qEIzbpDe7KykThM5sYtd969MOODNmGGLOTN.hf.',
+                'img_user' => 'default3.png',
+                'banner_user' => 'default_banner3.png',
+                'token_user' => '1DgMWJ6AP9LbSTwzrv54oiDmEUHzbk5mrYc5BmAK',
+                'status_user' => 1,
+                'bio_user' => 'Olá, eu sou Breno!',
+                'arroba_user' => 'breno2',
+                'created_at' => Carbon::parse('2025-04-27 00:39:14'),
+                'updated_at' => Carbon::parse('2025-04-27 00:39:14')
+            ],
+            [
+                'id' => 4,
+                'nome_user' => 'Hugo',
+                'email_user' => 'hugo3@gmail.com',
+                'senha_user' => '$2y$10$5LtYPZETzoM0vtcfKff3q.0VRs7vqSHlVVMlOJxKCMGMwQ0/bjKiG',
+                'img_user' => 'default4.png',
+                'banner_user' => 'default_banner4.png',
+                'token_user' => 'pBmW8f6hndPBAX9vZabMRrDrg7d0E60WFdukYVO9',
+                'status_user' => 1,
+                'bio_user' => 'Olá, eu sou Hugo!',
+                'arroba_user' => 'hugo3',
+                'created_at' => Carbon::parse('2025-04-27 00:39:14'),
+                'updated_at' => Carbon::parse('2025-04-27 00:39:14')
+            ],
+            [
+                'id' => 5,
+                'nome_user' => 'Victor',
+                'email_user' => 'victor4@gmail.com',
+                'senha_user' => '$2y$10$rDt8NODvpWvYLL5t9NlXH.fxwf7sX5.nDeIFJD2eonH/KRBa2KM76',
+                'img_user' => 'default5.png',
+                'banner_user' => 'default_banner5.png',
+                'token_user' => 'lVzijXWwfTKz2rln1iwm0eDGNzSAgDT6shcwCOuB',
+                'status_user' => 1,
+                'bio_user' => 'Olá, eu sou Victor!',
+                'arroba_user' => 'victor4',
+                'created_at' => Carbon::parse('2025-04-27 00:39:14'),
+                'updated_at' => Carbon::parse('2025-04-27 00:39:14')
+            ],
+            [
+                'id' => 6,
+                'nome_user' => 'Eduardo',
+                'email_user' => 'eduardo5@gmail.com',
+                'senha_user' => '$2y$10$LhyN3LyMqrKvl4C83A2dCu1aSa8BOsGXOXswyOvB18NoMA1GNu312',
+                'img_user' => 'default6.png',
+                'banner_user' => 'default_banner6.png',
+                'token_user' => 'uf8ZdikVTQ6OoW4FZOBW72M6EgvHKO1XjcJbojCn',
+                'status_user' => 1,
+                'bio_user' => 'Olá, eu sou Eduardo!',
+                'arroba_user' => 'eduardo5',
+                'created_at' => Carbon::parse('2025-04-27 00:39:14'),
+                'updated_at' => Carbon::parse('2025-04-27 00:39:14')
+            ],
+            [
+                'id' => 7,
+                'nome_user' => 'Ellen',
+                'email_user' => 'ellen6@gmail.com',
+                'senha_user' => '$2y$10$iA.86SSSxW2ZIYrSpJb2VuFF9lLqIrR7RhEzmTBasFYqJoRsQ0fpa',
+                'img_user' => 'default7.png',
+                'banner_user' => 'default_banner7.png',
+                'token_user' => '0a5cVMXdoKa65VRtKizfWu0iLFkhemJOa9OgA7Hx',
+                'status_user' => 1,
+                'bio_user' => 'Olá, eu sou Ellen!',
+                'arroba_user' => 'ellen6',
+                'created_at' => Carbon::parse('2025-04-27 00:39:14'),
+                'updated_at' => Carbon::parse('2025-04-27 00:39:14')
+            ],
+            [
+                'id' => 8,
+                'nome_user' => 'Caroline',
+                'email_user' => 'caroline7@gmail.com',
+                'senha_user' => '$2y$10$N856YVxUt8zvLgnBDPaZgeHHr9PYkUZjaOmvmhIBHoFNCTAaJLWFO',
+                'img_user' => 'default8.png',
+                'banner_user' => 'default_banner8.png',
+                'token_user' => 'FgOU9SCpPHazg7KiWIzuOnr40oRtQ1Uort0fLZH8',
+                'status_user' => 1,
+                'bio_user' => 'Olá, eu sou Caroline!',
+                'arroba_user' => 'caroline7',
+                'created_at' => Carbon::parse('2025-04-27 00:39:14'),
+                'updated_at' => Carbon::parse('2025-04-27 00:39:14')
+            ],
+            [
+                'id' => 9,
+                'nome_user' => 'Felipe',
+                'email_user' => 'felipe8@gmail.com',
+                'senha_user' => '$2y$10$81oECzcI34ceVRRrRuFRW.dwe5PQob4GNxzSlbgYfBpY093l7ys6S',
+                'img_user' => 'default9.png',
+                'banner_user' => 'default_banner9.png',
+                'token_user' => 'zyOLALXbxAwhmE8skNxQeTU8FbeViJm454lEMKlx',
+                'status_user' => 1,
+                'bio_user' => 'Olá, eu sou Felipe!',
+                'arroba_user' => 'felipe8',
+                'created_at' => Carbon::parse('2025-04-27 00:39:14'),
+                'updated_at' => Carbon::parse('2025-04-27 00:39:14')
+            ],
+            [
+                'id' => 10,
+                'nome_user' => 'Klayver',
+                'email_user' => 'klayver9@gmail.com',
+                'senha_user' => '$2y$10$aCMItXkvqkJ8QX3XGOJmp.fpCxsWyWs7g8Qfl/7IF9uq09RUovyZC',
+                'img_user' => 'default10.png',
+                'banner_user' => 'default_banner10.png',
+                'token_user' => 'kYptLDV0MbWZH3AIYYC51o5xVW4TKg5bJpmsfupn',
+                'status_user' => 1,
+                'bio_user' => 'Olá, eu sou Klayver!',
+                'arroba_user' => 'klayver9',
+                'created_at' => Carbon::parse('2025-04-27 00:39:14'),
+                'updated_at' => Carbon::parse('2025-04-27 00:39:14')
+            ],
+            [
+                'id' => 11,
+                'nome_user' => 'O alencar',
+                'email_user' => 'o alencar10@gmail.com',
+                'senha_user' => '$2y$10$TRQajfJ7Fn/usOPGl/ikq.HrO1G8YpW5EmHDKCUjArCqawZ3/hvgu',
+                'img_user' => 'default11.png',
+                'banner_user' => 'default_banner11.png',
+                'token_user' => '6W6Vz1tMkoLKtETYWoo9fL7K2pXgsz4YSAXDZXzK',
+                'status_user' => 1,
+                'bio_user' => 'Olá, eu sou O alencar!',
+                'arroba_user' => 'o alencar10',
+                'created_at' => Carbon::parse('2025-04-27 00:39:14'),
+                'updated_at' => Carbon::parse('2025-04-27 00:39:14')
+            ],
+            [
+                'id' => 12,
+                'nome_user' => 'Clara',
+                'email_user' => 'clara11@gmail.com',
+                'senha_user' => '$2y$10$VZZ55IIXJj5FcqvcGIrdWOQOMTyDxgFs3wzOoSxgXIMNUnUjmm75u',
+                'img_user' => 'default12.png',
+                'banner_user' => 'default_banner12.png',
+                'token_user' => 'fbHXSJqupxWDgwDov4xe9DATq6YbWZ96JYTpsmQm',
+                'status_user' => 1,
+                'bio_user' => 'Olá, eu sou Clara!',
+                'arroba_user' => 'clara11',
+                'created_at' => Carbon::parse('2025-04-27 00:39:14'),
+                'updated_at' => Carbon::parse('2025-04-27 00:39:14')
+            ],
+            [
+                'id' => 13,
+                'nome_user' => 'O sergio',
+                'email_user' => 'o sergio12@gmail.com',
+                'senha_user' => '$2y$10$tNeA5ByP1l4BTKmBhAtSfuVZONV4jn9KyRRwZen4SNwFf7Y8mW2z.',
+                'img_user' => 'default13.png',
+                'banner_user' => 'default_banner13.png',
+                'token_user' => 'nsGbGFXMFsgbUoFBU6NepwFTtwSD9iV73HzKOYUg',
+                'status_user' => 1,
+                'bio_user' => 'Olá, eu sou O sergio!',
+                'arroba_user' => 'o sergio12',
+                'created_at' => Carbon::parse('2025-04-27 00:39:14'),
+                'updated_at' => Carbon::parse('2025-04-27 00:39:14')
+            ],
+            [
+                'id' => 14,
+                'nome_user' => 'Clodoaldo',
+                'email_user' => 'clodoaldo13@gmail.com',
+                'senha_user' => '$2y$10$N72nI7IhhmDJijvZFxBTIO1FTojsJtUPPaVS.zG8SvGfmXrIG.Zyi',
+                'img_user' => 'default14.png',
+                'banner_user' => 'default_banner14.png',
+                'token_user' => 'dxIQB9BJRtfQrkCCL5ruRb13gM0ajecPIqxuzvSq',
+                'status_user' => 1,
+                'bio_user' => 'Olá, eu sou Clodoaldo!',
+                'arroba_user' => 'clodoaldo13',
+                'created_at' => Carbon::parse('2025-04-27 00:39:14'),
+                'updated_at' => Carbon::parse('2025-04-27 00:39:14')
+            ],
+            [
+                'id' => 15,
+                'nome_user' => 'Rafaela',
+                'email_user' => 'rafaela14@gmail.com',
+                'senha_user' => '$2y$10$NJvaaecD6m4IBo3xPQiXkOnik3CbngQuV3ncicZ97OLYXFXWdXr8a',
+                'img_user' => 'default15.png',
+                'banner_user' => 'default_banner15.png',
+                'token_user' => 'B05ygaF3eRMG8PKJ1KWRXMb5XqkJiEfaIa3A5qkg',
+                'status_user' => 1,
+                'bio_user' => 'Olá, eu sou Rafaela!',
+                'arroba_user' => 'rafaela14',
+                'created_at' => Carbon::parse('2025-04-27 00:39:14'),
+                'updated_at' => Carbon::parse('2025-04-27 00:39:14')
+            ],
+            [
+                'id' => 16,
+                'nome_user' => 'Thiago',
+                'email_user' => 'thiago15@gmail.com',
+                'senha_user' => '$2y$10$B4Y4xjcv4DZI7IdZNLDDCO6.fGN46LHrfSOSMC.AU9IfN2iuRl3Ze',
+                'img_user' => 'default16.png',
+                'banner_user' => 'default_banner16.png',
+                'token_user' => 'efeLBciMZb3Qsbx4Ra0Ln9sAJMFDcZMeIfHBA6tl',
+                'status_user' => 1,
+                'bio_user' => 'Olá, eu sou Thiago!',
+                'arroba_user' => 'thiago15',
+                'created_at' => Carbon::parse('2025-04-27 00:39:14'),
+                'updated_at' => Carbon::parse('2025-04-27 00:39:14')
+            ],
+            [
+                'id' => 17,
+                'nome_user' => 'Luciano',
+                'email_user' => 'luciano16@gmail.com',
+                'senha_user' => '$2y$10$LYS8NPHSPFrrKI0oIQtJLOiiSmVAUofDJxPKzp8vPz7q9FLrJcJiW',
+                'img_user' => 'default17.png',
+                'banner_user' => 'default_banner17.png',
+                'token_user' => 'qZFdHHfNSInOD45aUl0VkNKyMLSGLdg0zrEhJ8Lt',
+                'status_user' => 1,
+                'bio_user' => 'Olá, eu sou Luciano!',
+                'arroba_user' => 'luciano16',
+                'created_at' => Carbon::parse('2025-04-27 00:39:14'),
+                'updated_at' => Carbon::parse('2025-04-27 00:39:14')
+            ],
+            [
+                'id' => 18,
+                'nome_user' => 'O santana',
+                'email_user' => 'o santana17@gmail.com',
+                'senha_user' => '$2y$10$VhqqX.BtiOhP4Wm1r3jVK.52yibe0Q9K1Tyd/dEAAnsJgRvX2q4Rq',
+                'img_user' => 'default18.png',
+                'banner_user' => 'default_banner18.png',
+                'token_user' => 'XQGETdbGPxYPwT4PAayRVm2Avlhtd719SiE8cqL8',
+                'status_user' => 1,
+                'bio_user' => 'Olá, eu sou O santana!',
+                'arroba_user' => 'o santana17',
+                'created_at' => Carbon::parse('2025-04-27 00:39:14'),
+                'updated_at' => Carbon::parse('2025-04-27 00:39:14')
+            ],
+            [
+                'id' => 19,
+                'nome_user' => 'Junior & Aline',
+                'email_user' => 'o inesqucido18@gmail.com',
+                'senha_user' => '$2y$10$.3jtPyAGpIb9lGfngUklfuY6vcSHF.5GVU95RszNXLZhg5vArBYcu',
+                'img_user' => 'default19.png',
+                'banner_user' => 'default_banner19.png',
+                'token_user' => '7JT8U7qse8bt95zkU0c2z9Ns49H5XzU79xuag2jz',
+                'status_user' => 1,
+                'bio_user' => 'Olá, eu sou O inesqucido!',
+                'arroba_user' => 'o inesqucido18',
+                'created_at' => Carbon::parse('2025-04-27 00:39:14'),
+                'updated_at' => Carbon::parse('2025-04-27 00:39:14')
+            ],
+            [
+                'id' => 20,
+                'nome_user' => 'Vinicius',
+                'email_user' => 'junior & aline19@gmail.com',
+                'senha_user' => '$2y$10$KqQsEWB95xVgc1ceTK9lb.GyP3LTqle/o7kxGUahrt0lmrA9beqRO',
+                'img_user' => 'default20.png',
+                'banner_user' => 'default_banner20.png',
+                'token_user' => 'xGgAOO2yjOjbSVx4ztt3c18IxxNSiV3qT5F6baLd',
+                'status_user' => 1,
+                'bio_user' => 'Olá, eu sou Junior & Aline!',
+                'arroba_user' => 'junior & aline19',
+                'created_at' => Carbon::parse('2025-04-27 00:39:15'),
+                'updated_at' => Carbon::parse('2025-04-27 00:39:15')
+            ],
+            [
+                'id' => 21,
+                'nome_user' => 'Fatec',
+                'email_user' => 'fatec20@gmail.com',
+                'senha_user' => '$2y$10$CncHu.zPR849kljwQHqMBupzQGTidosJncQcHlJ3nO3J2d4tkITLS',
+                'img_user' => 'default21.png',
+                'banner_user' => 'default_banner21.png',
+                'token_user' => 'nmU8Q8WKO4pbObkt2jtSmIq0FrLJLpgcBGIU3SWc',
+                'status_user' => 1,
+                'bio_user' => 'Olá, eu sou Fatec!',
+                'arroba_user' => 'fatec20',
+                'created_at' => Carbon::parse('2025-04-27 00:39:15'),
+                'updated_at' => Carbon::parse('2025-04-27 00:39:15')
+            ],
+            [
+                'id' => 22,
+                'nome_user' => 'Senai',
+                'email_user' => 'senai21@gmail.com',
+                'senha_user' => '$2y$10$rEJFGUb02SF4TOoNv5nM/eFBMPLYmxFKOFbTwtlsZwZu.BD1SUruu',
+                'img_user' => 'default22.png',
+                'banner_user' => 'default_banner22.png',
+                'token_user' => '3UORPsl5uQwWDD6ZlrIsS7SWB0DDqJVOjTzxKfLy',
+                'status_user' => 1,
+                'bio_user' => 'Olá, eu sou Senai!',
+                'arroba_user' => 'senai21',
+                'created_at' => Carbon::parse('2025-04-27 00:39:15'),
+                'updated_at' => Carbon::parse('2025-04-27 00:39:15')
+            ],
+            [
+                'id' => 23,
+                'nome_user' => 'SESI',
+                'email_user' => 'sesi22@gmail.com',
+                'senha_user' => '$2y$10$m9kCTRNcbd81cBZeghC1oe3uK6x4EMcCXVl1Di6VcGmq/pIt1Zwq.',
+                'img_user' => 'default23.png',
+                'banner_user' => 'default_banner23.png',
+                'token_user' => 'zeoibH0KLG5ZUJ5CCHkdW081vzRabdHt5rllJXlS',
+                'status_user' => 1,
+                'bio_user' => 'Olá, eu sou SESI!',
+                'arroba_user' => 'sesi22',
+                'created_at' => Carbon::parse('2025-04-27 00:39:15'),
+                'updated_at' => Carbon::parse('2025-04-27 01:21:34')
+            ],
+            [
+                'id' => 24,
+                'nome_user' => 'Enap',
+                'email_user' => 'enap23@gmail.com',
+                'senha_user' => '$2y$10$KTe1UtIvBkhjYBrsYrGsm.eIW8CkcNWFHH7gmKg9YBFQLQa9eo8N2',
+                'img_user' => 'default24.png',
+                'banner_user' => 'default_banner24.png',
+                'token_user' => 'OXNJMObSYYYt8oEH3xJcIqdvaGmJctqsdrKeNd3m',
+                'status_user' => 1,
+                'bio_user' => 'Olá, eu sou Enap!',
+                'arroba_user' => 'enap23',
+                'created_at' => Carbon::parse('2025-04-27 00:39:15'),
+                'updated_at' => Carbon::parse('2025-04-27 00:39:15')
+            ],
+            [
+                'id' => 25,
+                'nome_user' => 'Etec de Guaianases',
+                'email_user' => 'etec24@gmail.com',
+                'senha_user' => '$2y$10$KqQsEWB95xVgc1ceTK9lb.GyP3LTqle/o7kxGUahrt0lmrA9beqRO',
+                'img_user' => '8531b4d9bc66e09526e17fbab01db96e',
+                'banner_user' => '131fa96e50395bd674dc7d2ba0c5239e',
+                'token_user' => 'mllvEOnmFhziRy0pXW94u9NoiY7opECtNTapC5tv',
+                'status_user' => 1,
+                'bio_user' => 'Olá, eu sou Etec!',
+                'arroba_user' => 'etec24',
+                'created_at' => Carbon::parse('2025-04-27 00:39:15'),
+                'updated_at' => Carbon::parse('2025-04-27 00:57:16')
+            ]
+        ]);
     }
 }

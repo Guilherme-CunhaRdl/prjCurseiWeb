@@ -44,7 +44,7 @@ class PostControllerApi extends Controller
         //         ->on('tb_seguidores.id_user_seguido', '=', 'tb_post.id_user');
         // });
 
-        if ($tipo == 1 || $tipo ==7) {
+        if ($tipo == 1 || $tipo ==7 || $tipo ==8) {
             
             $preferencias = DB::table('tb_user_preferencia')
                 ->where('id_user', $idUser)
@@ -180,7 +180,7 @@ IF(
             // Transforma a subquery em uma tabela temporária e ordena por score
             $query = DB::table(DB::raw("({$subQuery->toSql()}) as posts"))
                 ->mergeBindings($subQuery)
-                ->orderByDesc('score')
+                ->orderByDesc($tipo == 1 ? 'score' : 'curtidas')
                 ->offset($ignorarPosts)
                 ->limit($quantidade);
                 

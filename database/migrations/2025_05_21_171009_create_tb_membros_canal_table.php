@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('tb_membro_canal', function (Blueprint $table) {
+        Schema::create('tb_membros_canal', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('id_canal');
             $table->foreign('id_canal')->references('id')->on('tb_canal')->onDelete('cascade');
@@ -30,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('tb_membro_canal');
+        Schema::dropIfExists('tb_membros_canal');
     }
 };

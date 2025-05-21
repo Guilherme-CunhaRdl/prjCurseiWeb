@@ -44,7 +44,8 @@ class PostControllerApi extends Controller
         //         ->on('tb_seguidores.id_user_seguido', '=', 'tb_post.id_user');
         // });
 
-        if ($tipo == 1) {
+        if ($tipo == 1 || $tipo ==7) {
+            
             $preferencias = DB::table('tb_user_preferencia')
                 ->where('id_user', $idUser)
                 ->pluck('preferencia')
@@ -163,9 +164,17 @@ class PostControllerApi extends Controller
             + IF(tb_nao_interessado_post.id IS NOT NULL, -25, 0)
              + IF(tb_post.id_user IN ($usuariosStr), -50, 0)
             + IF(tb_post.area_post IN ($areasStr), -30, 0)
-        + COUNT(DISTINCT tb_comentario.id) * 3
-  + (250000 / (TIMESTAMPDIFF(SECOND, tb_post.created_at, NOW()) + 60))
-) AS score
+       + (250000 / (TIMESTAMPDIFF(SECOND, tb_post.created_at, NOW()) + 60))
+) AS score,
+
+IF(
+    EXISTS (
+        SELECT 1 
+        FROM tb_instituicao 
+        WHERE tb_instituicao.id_user = tb_post.id_user and tb_instituicao.verificado_instituicao = 1
+    ), 1, 0
+) AS instituicao
+
         ");
 
             // Transforma a subquery em uma tabela temporária e ordena por score
@@ -174,8 +183,10 @@ class PostControllerApi extends Controller
                 ->orderByDesc('score')
                 ->offset($ignorarPosts)
                 ->limit($quantidade);
-
-
+                
+            if($tipo ==7){
+                $query = $query->where('instituicao',1);
+            }
             $posts = $query->get();
 
             return response()->json([

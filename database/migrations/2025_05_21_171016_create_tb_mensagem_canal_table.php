@@ -13,13 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('tb_mensagem_grupo', function (Blueprint $table) {
+        Schema::create('tb_mensagem_canal', function (Blueprint $table) {
             $table->id();
-            $table->longText('conteudo_mensagem_grupo');
-            $table->unsignedBigInteger('id_chat');
-            $table->foreign('id_chat')->references('id')->on('tb_chat')->onDelete('cascade');
+            $table->longText('conteudo_mensagem_canal');
+            $table->string('img_mensagem_canal', 300);
             $table->unsignedBigInteger('id_user_enviador');
-            $table->foreign('id_user_enviador')->references('id')->on('tb_user')->onDelete('cascade');
+            $table->foreign('id_user_enviador')->references('id')->on('tb_canal')->onDelete('cascade');
+            $table->unsignedBigInteger('id_canal');
+            $table->foreign('id_canal')->references('id')->on('tb_user')->onDelete('cascade');            
             $table->timestamps();
         });
     }
@@ -31,6 +32,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('tb_mensagem_grupo');
+        Schema::dropIfExists('tb_mensagem_canal');
     }
 };

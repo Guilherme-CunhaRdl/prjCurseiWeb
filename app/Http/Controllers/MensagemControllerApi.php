@@ -89,6 +89,7 @@ $sub = DB::table('tb_mensagem')
             ->joinSub($sub, 'sub', function ($join) {
                 $join->on('tb_mensagem.id', '=', 'sub.ultima_mensagem_id');
             })
+            ->distinct()
             ->select(
                 'tb_mensagem.id AS id_mensagem_instituicao',
                 'c.id AS id_chat',
@@ -451,12 +452,12 @@ $sub = DB::table('tb_mensagem')
                 'canal.descricao_canal',
                 'canal.imagem_canal AS img_canal',
                 'canal.created_at AS data_criacao',
-                'user.id AS id_criador',
-                'user.nome_user AS nome_criador',
-                'user.arroba_user AS arroba_criador',
-                'user.img_user AS foto_perfil_criador',
+                'user.id AS id_enviador',
+                'user.nome_user AS nome_enviador',
+                'user.arroba_user AS arroba_enviador',
+                'user.img_user AS img_enviador',
                 'mensagemC.id AS id_mensagem',
-                'mensagemC.conteudo_mensagem_canal AS mensagem_enviada',
+                'mensagemC.conteudo_mensagem_canal AS ultima_mensagem',
                 'mensagemC.created_at AS data_envio_mensagem',
             ])
             ->get();
@@ -466,6 +467,46 @@ $sub = DB::table('tb_mensagem')
                  'canais' => $canais,
                 'sucesso' => true
             ]);
-    }   
+    }  
+    
+    public function selectMensagensCanalApi($idEnviador)
+        {
+$mensagensCanal = DB::table('tb_canal AS canal')
+    ->join('tb_user AS user', 'canal.user_criador_canal', '=', 'user.id')
+    ->join('tb_mensagem_canal AS mensagemC', 'mensagemC.id_canal', '=', 'canal.id')
+    ->select([
+        'canal.id AS id_canal',
+        'canal.nome_canal',
+        'canal.descricao_canal',
+        'canal.imagem_canal AS img_canal',
+        'canal.created_at AS data_criacao',
+        'user.id AS id_enviador',
+        'user.nome_user AS nome_enviador',
+        'user.arroba_user AS arroba_enviador',
+        'user.img_user AS img_enviador',
+        'mensagemC.id AS id_mensagem',
+        'mensagemC.conteudo_mensagem_canal AS conteudo_mensagem',
+        'mensagemC.created_at AS data_envio_mensagem',
+        'mensagemC.img_mensagem_canal AS foto_enviada', 
+
+    ])
+    ->where('canal.user_criador_canal', '=', $idEnviador)
+    ->orderBy('mensagemC.created_at', 'asc')
+    ->get();
+
+            
+
+    
+
+            return response()->json([
+                'sucesso' => true,
+                'mensagensCanal' => $mensagensCanal,
+                
+                'message' => 'Mensagens Retornadas com Sucesso',
+                'code' => 200,
+            ]);
+
+
+        }
     
 }

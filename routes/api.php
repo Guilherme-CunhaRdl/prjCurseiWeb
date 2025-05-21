@@ -57,7 +57,8 @@ Route::post('/cursei/user/update-perfil/{id}', [UserControllerApi::class, 'updat
 Route::post('/cursei/user/logar/', [UserControllerApi::class, 'selectUserLogin'])->name('user.login');
 
 //rotas do chat
-Route::get('/cursei/chat/{idChat}', [MensagemControllerApi::class, 'selectMensagensApi'])->name('chat.todosChats');
+Route::get('/cursei/chat/mensagens/{idChat}', [MensagemControllerApi::class, 'selectMensagensApi'])->name('chat.todosChats');
+Route::get('/cursei/chat/mensagensCanal/{idCanal}', [MensagemControllerApi::class, 'selectMensagensCanalApi'])->name('chat.todosChats');
 Route::get('/cursei/chat/recebidor/{idUserRecebidor}/{filtro}', [MensagemControllerApi::class, 'selectChatApi'])->name('chat.todosChats');
 Route::get('/cursei/chat/adicionarChat/{idUserLogado}', [MensagemControllerApi::class, 'selectSeguidoresSugestoes'])->name('chat.telaSeguidores');
 Route::post('/cursei/chat/adicionarChat/', [MensagemControllerApi::class, 'criarChat'])->name('chat.criarChat');
@@ -65,7 +66,7 @@ Route::post('/cursei/chat/enviarMensagem/{tipoMensagem}', [MensagemControllerApi
 Route::get('/cursei/chat/adicionarChat/{idUserLogado}/{idSeguidor}', [MensagemControllerApi::class, 'selectSeguidor'])->name('chat.seguidor');
 Route::get('/cursei/chat/pesquisa/{q}/{idUserLogado}', [MensagemControllerApi::class, 'pesquisarChats'])->name('chat.pesquisarChats');
 Route::post('/cursei/chat/criarCanal', [MensagemControllerApi::class, 'criarCanal'])->name('chat.criarCanal');
-Route::get('/cursei/chat/selecionarCanal/pegarTodos', [MensagemControllerApi::class, 'selecionarCanais'])->name('chat.selecionarCanais');
+Route::get('/cursei/chat/selecionarCanal/pegarTodos/{id}', [MensagemControllerApi::class, 'selecionarCanais'])->name('chat.selecionarCanais');
 
 Route::post('cursei/user/{userId}', [UserControllerApi::class, 'alterarUser']); 
 Route::post('cursei/user/autenticacao/{userId}', [UserControllerApi::class, 'atualizarDoisFatores']);

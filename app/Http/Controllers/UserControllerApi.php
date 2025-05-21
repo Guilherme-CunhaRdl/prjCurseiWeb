@@ -254,13 +254,22 @@ class UserControllerApi extends Controller
     {
         try {
 
-            $user = User::where('email_user', $request->emailDigitado)->first();
+            $user = DB::table('tb_instituicao')
+                ->join('tb_user', 'tb_instituicao.id_user', '=', 'tb_user.id')
+                ->select(['tb_instituicao.id AS id_instituicao', 'tb_user.*'])
+                ->where('tb_user.email_user', $request->emailDigitado)
+                ->first();
+
+            if(!$user){
+                $user = User::where('email_user', $request->emailDigitado)->first();
+            }
 
             return response()->json([
                 'sucesso' => true,
                 'mensagem' => 'Fim do Processo',
                 'code' => 200,
-                'usuario' => $user
+                'usuario' => $user,
+                'id_instituicao' => $user->id_instituicao ?? '0' 
             ]);
         } catch (Exception $e) {
 

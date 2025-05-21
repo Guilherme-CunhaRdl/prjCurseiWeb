@@ -16,7 +16,8 @@ return new class extends Migration
         Schema::create('tb_mensagem', function (Blueprint $table) {
             $table->id();
             $table->longText('conteudo_mensagem');
-            $table->enum('status_mensagem',['enviado', 'recebido','visto']);
+            $table->boolean('status_mensagem');
+            $table->string('img_mensagem', 300);
             $table->unsignedBigInteger('id_user_enviador');
             $table->unsignedBigInteger('id_chat');
             $table->foreign('id_chat')->references('id')->on('tb_chat')->onDelete('cascade');

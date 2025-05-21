@@ -178,61 +178,61 @@ class UserControllerApi extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-public function updateApi(Request $request, $id)
-{
-    $verificarUser = User::all()->where('id', $id);
-    $nomeImagem = null;
-    $nomeBanner = null;
+    public function updateApi(Request $request, $id)
+    {
+        $verificarUser = User::all()->where('id', $id);
+        $nomeImagem = null;
+        $nomeBanner = null;
 
-    foreach ($verificarUser as $item) {
- 
-        if ($request->hasFile('imgUser') && $request->file('imgUser')->isValid()) {
-            if ($item->img_user && Storage::exists($item->img_user)) {
-                Storage::delete($item->img_user);
+        foreach ($verificarUser as $item) {
+
+            if ($request->hasFile('imgUser') && $request->file('imgUser')->isValid()) {
+                if ($item->img_user && Storage::exists($item->img_user)) {
+                    Storage::delete($item->img_user);
+                }
+
+                $extensao = $request->imgUser->extension();
+                $nomeImagem = md5($request->imgUser->getClientOriginalName() . strtotime('now') . "." . $extensao);
+                $request->imgUser->move(public_path('img/img-instituicao/img-perfil'), $nomeImagem);
             }
 
-            $extensao = $request->imgUser->extension();
-            $nomeImagem = md5($request->imgUser->getClientOriginalName() . strtotime('now') . "." . $extensao);
-            $request->imgUser->move(public_path('img/img-instituicao/img-perfil'), $nomeImagem);
-        }
-        
-        if ($request->hasFile('bannerUser') && $request->file('bannerUser')->isValid()) {
-            if ($item->img_banner && Storage::exists($item->banner_user)) {
-                Storage::delete($item->banner_user);
+            if ($request->hasFile('bannerUser') && $request->file('bannerUser')->isValid()) {
+                if ($item->img_banner && Storage::exists($item->banner_user)) {
+                    Storage::delete($item->banner_user);
+                }
+
+                $extensaoBanner = $request->bannerUser->extension();
+                $nomeBanner = md5($request->bannerUser->getClientOriginalName() . strtotime('now') . "." . $extensaoBanner);
+                $request->bannerUser->move(public_path('img/img-instituicao/banners/'), $nomeBanner);
             }
 
-            $extensaoBanner = $request->bannerUser->extension();
-            $nomeBanner = md5($request->bannerUser->getClientOriginalName() . strtotime('now') . "." . $extensaoBanner);
-            $request->bannerUser->move(public_path('img/img-instituicao/banners/'), $nomeBanner);
+            $dadosUpdate = [
+                'nome_user' => $request->has('nomeUser') ? $request->nomeUser : $item->nome_user,
+                'bio_user' => $request->has('bioUser') ? $request->bioUser : $item->bio_user,
+                'updated_at' => now()
+            ];
+
+            // Mantém os valores originais se não vierem no request
+            if ($request->has('emailUser')) $dadosUpdate['email_user'] = $request->emailUser;
+            if ($request->has('senhaUser')) $dadosUpdate['senha_user'] = Hash::make($request->senhaUser);
+            if ($request->has('statusUser')) $dadosUpdate['status_user'] = $request->statusUser;
+            if ($request->has('arrobaUser')) $dadosUpdate['arroba_user'] = $request->arrobaUser;
+            if ($nomeImagem) $dadosUpdate['img_user'] = $nomeImagem;
+            if ($nomeBanner) $dadosUpdate['banner_user'] = $nomeBanner;
+
+            $user = User::where('id', $id)->update($dadosUpdate);
+
+            return response()->json([
+                'sucesso' => true,
+                'mensagem' => 'Usuario Atualizado com Sucesso!',
+                'code' => 200,
+                'Post' => $user,
+
+                'novaFoto' => $nomeImagem ?: $item->img_user,
+                'novoBanner' => $nomeBanner ?: $item->banner_user
+            ]);
         }
- 
-        $dadosUpdate = [
-            'nome_user' => $request->has('nomeUser') ? $request->nomeUser : $item->nome_user,
-            'bio_user' => $request->has('bioUser') ? $request->bioUser : $item->bio_user,
-            'updated_at' => now()
-        ];
-
-        // Mantém os valores originais se não vierem no request
-        if ($request->has('emailUser')) $dadosUpdate['email_user'] = $request->emailUser;
-        if ($request->has('senhaUser')) $dadosUpdate['senha_user'] = Hash::make($request->senhaUser);
-        if ($request->has('statusUser')) $dadosUpdate['status_user'] = $request->statusUser;
-        if ($request->has('arrobaUser')) $dadosUpdate['arroba_user'] = $request->arrobaUser;
-        if ($nomeImagem) $dadosUpdate['img_user'] = $nomeImagem;
-        if ($nomeBanner) $dadosUpdate['banner_user'] = $nomeBanner;
-
-        $user = User::where('id', $id)->update($dadosUpdate);
-
-        return response()->json([
-            'sucesso' => true,
-            'mensagem' => 'Usuario Atualizado com Sucesso!',
-            'code' => 200,
-            'Post' => $user,
-   
-            'novaFoto' => $nomeImagem ?: $item->img_user,
-            'novoBanner' => $nomeBanner ?: $item->banner_user
-        ]);
     }
-}
 
     /**
      * Remove the specified resource from storage.
@@ -333,32 +333,31 @@ public function updateApi(Request $request, $id)
             'userId' => $userId,
             'dados' => $request->all()
         ]);
-    
+
         $request->validate([
             'dois_fatores_user' => 'required|boolean'
         ]);
-    
+
         try {
             $user = User::where('id', $userId)->firstOrFail();
-            
+
             \Log::info('Antes da atualização', [
                 'estado_atual' => $user->dois_fatores_user
             ]);
-    
+
             $user->update([
                 'dois_fatores_user' => $request->dois_fatores_user,
             ]);
-    
+
             \Log::info('Após atualização', [
                 'novo_estado' => $user->fresh()->dois_fatores_user
             ]);
-    
+
             return response()->json([
                 'success' => true,
                 'message' => 'Configuração atualizada',
                 'dois_fatores_user' => $user->dois_fatores_user
             ]);
-    
         } catch (\Exception $e) {
             \Log::error('Erro ao atualizar', [
                 'error' => $e->getMessage()
@@ -369,7 +368,7 @@ public function updateApi(Request $request, $id)
             ], 500);
         }
     }
-   
+
     public function escolherInteresesses(Request $request)
     {
         try {
@@ -457,8 +456,7 @@ public function updateApi(Request $request, $id)
                         })
                         ->with('usuarioSeguidor')
                         ->get()
-                        ->pluck('usuarioSeguidor')
-                        ;
+                        ->pluck('usuarioSeguidor');
                     return response()->json([
                         'sucesso' => true,
                         'data' => $seguidores
@@ -491,62 +489,61 @@ public function updateApi(Request $request, $id)
         }
     }
 
- public function updatePerfilApi(Request $request, $id)
-{
-    try {
-        $user = User::findOrFail($id);
-        
-        // Campos básicos (sempre presentes)
-        $dadosAtualizados = [
-            'nome_user' => $request->nomeUser,
-            'bio_user' => $request->bioUser
-        ];
+    public function updatePerfilApi(Request $request, $id)
+    {
+        try {
+            $user = User::findOrFail($id);
 
-        // 1. Verifica e processa a FOTO DE PERFIL (exatamente como seu amigo faz)
-        if ($request->hasFile('imgUser')) { // ← AQUI É ONDE VOCÊ USA
-            // Remove foto antiga se existir
-            if ($user->img_user && file_exists(public_path('img/user/fotoPerfil/' . $user->img_user))) {
-                unlink(public_path('img/user/fotoPerfil/' . $user->img_user));
+            // Campos básicos (sempre presentes)
+            $dadosAtualizados = [
+                'nome_user' => $request->nomeUser,
+                'bio_user' => $request->bioUser
+            ];
+
+            // 1. Verifica e processa a FOTO DE PERFIL (exatamente como seu amigo faz)
+            if ($request->hasFile('imgUser')) { // ← AQUI É ONDE VOCÊ USA
+                // Remove foto antiga se existir
+                if ($user->img_user && file_exists(public_path('img/user/fotoPerfil/' . $user->img_user))) {
+                    unlink(public_path('img/user/fotoPerfil/' . $user->img_user));
+                }
+
+                $file = $request->file('imgUser'); // Pega o arquivo
+                $extensao = $file->getClientOriginalExtension();
+                $nomeImagem = 'profile_' . time() . '.' . $extensao;
+                $file->move(public_path('img/user/fotoPerfil'), $nomeImagem); // Salva
+                $dadosAtualizados['img_user'] = $nomeImagem; // Atualiza no banco
             }
 
-            $file = $request->file('imgUser'); // Pega o arquivo
-            $extensao = $file->getClientOriginalExtension();
-            $nomeImagem = 'profile_' . time() . '.' . $extensao;
-            $file->move(public_path('img/user/fotoPerfil'), $nomeImagem); // Salva
-            $dadosAtualizados['img_user'] = $nomeImagem; // Atualiza no banco
-        }
+            // 2. Verifica e processa o BANNER (mesma lógica)
+            if ($request->hasFile('bannerUser')) { // ← AQUI É ONDE VOCÊ USA
+                if ($user->banner_user && file_exists(public_path('img/user/bannerPerfil/' . $user->banner_user))) {
+                    unlink(public_path('img/user/bannerPerfil/' . $user->banner_user));
+                }
 
-        // 2. Verifica e processa o BANNER (mesma lógica)
-        if ($request->hasFile('bannerUser')) { // ← AQUI É ONDE VOCÊ USA
-            if ($user->banner_user && file_exists(public_path('img/user/bannerPerfil/' . $user->banner_user))) {
-                unlink(public_path('img/user/bannerPerfil/' . $user->banner_user));
+                $file = $request->file('bannerUser');
+                $extensao = $file->getClientOriginalExtension();
+                $nomeBanner = 'banner_' . time() . '.' . $extensao;
+                $file->move(public_path('img/user/bannerPerfil'), $nomeBanner);
+                $dadosAtualizados['banner_user'] = $nomeBanner;
             }
 
-            $file = $request->file('bannerUser');
-            $extensao = $file->getClientOriginalExtension();
-            $nomeBanner = 'banner_' . time() . '.' . $extensao;
-            $file->move(public_path('img/user/bannerPerfil'), $nomeBanner);
-            $dadosAtualizados['banner_user'] = $nomeBanner;
+            // Atualiza o usuário
+            $user->update($dadosAtualizados);
+
+            return response()->json([
+                'sucesso' => true,
+                'mensagem' => 'Perfil atualizado!',
+                'foto' => $dadosAtualizados['img_user'] ?? $user->img_user,
+                'banner' => $dadosAtualizados['banner_user'] ?? $user->banner_user
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'sucesso' => false,
+                'mensagem' => 'Erro: ' . $e->getMessage()
+            ], 500);
         }
-
-        // Atualiza o usuário
-        $user->update($dadosAtualizados);
-
-        return response()->json([
-            'sucesso' => true,
-            'mensagem' => 'Perfil atualizado!',
-            'foto' => $dadosAtualizados['img_user'] ?? $user->img_user,
-            'banner' => $dadosAtualizados['banner_user'] ?? $user->banner_user
-        ]);
-
-    } catch (\Exception $e) {
-        return response()->json([
-            'sucesso' => false,
-            'mensagem' => 'Erro: ' . $e->getMessage()
-        ], 500);
     }
-}
- public function notificacao($id, $acao)
+    public function notificacao($id, $acao)
     {
         $notificacoes = DB::table(DB::raw("(
     -- CURTIDAS
@@ -631,4 +628,105 @@ public function updateApi(Request $request, $id)
 
         return $notificacoesAgrupadas;
     }
+    public function sugerirUsuario($idUser,$limite)
+    {
+      
+
+
+   // Primeiro, obtemos as preferências do usuário
+    $userPreferences = DB::table('tb_user_preferencia')
+        ->where('id_user', $idUser)
+        ->pluck('preferencia')
+        ->toArray();
+
+    // Se não houver preferências, usar array vazio para evitar erro no SQL
+    $preferencesList = !empty($userPreferences) ? $userPreferences : ['Indefinido'];
+
+    $recommendedUsers = DB::table('tb_user as u')
+        ->select(
+            'u.id',
+            'u.nome_user',
+            'u.arroba_user',
+            'u.img_user',
+            DB::raw('
+                (SELECT COUNT(*) FROM tb_user_preferencia up 
+                 WHERE up.id_user = u.id AND up.preferencia IN ("'.implode('","', $preferencesList).'")) * 5 AS interest_score'),
+            DB::raw('
+                (SELECT COUNT(*) FROM tb_seguidores s1 
+                 WHERE s1.id_user_seguidor = u.id 
+                 AND s1.id_user_seguido IN (SELECT id_user_seguido FROM tb_seguidores WHERE id_user_seguidor = '.$idUser.')) * 4 AS following_score'),
+            DB::raw('
+                (SELECT COUNT(*) FROM tb_seguidores s2 
+                 WHERE s2.id_user_seguido = u.id 
+                 AND s2.id_user_seguidor IN (SELECT id_user_seguido FROM tb_seguidores WHERE id_user_seguidor = '.$idUser.')) * 4 AS follower_score'),
+            DB::raw('
+                ((SELECT COUNT(*) FROM tb_comentario c WHERE c.id_user = u.id AND c.id_post IN 
+                    (SELECT id FROM tb_post WHERE id_user = '.$idUser.')) +
+                 (SELECT COUNT(*) FROM tb_post p WHERE p.repost_id IN 
+                    (SELECT id FROM tb_post WHERE id_user = '.$idUser.') AND p.id_user = u.id)) * 3 AS interaction_score'),
+            DB::raw('
+                (SELECT COUNT(DISTINCT ph1.id_hashtag) FROM tb_post_hashtag ph1 
+                 JOIN tb_post p1 ON ph1.id_post = p1.id 
+                 WHERE p1.id_user = u.id 
+                 AND ph1.id_hashtag IN 
+                    (SELECT ph2.id_hashtag FROM tb_post_hashtag ph2 
+                     JOIN tb_post p2 ON ph2.id_post = p2.id 
+                     WHERE p2.id_user = '.$idUser.')) * 2 AS hashtag_score'),
+            DB::raw('
+                (SELECT COUNT(*) FROM tb_comentario c 
+                 WHERE c.id_user = '.$idUser.' 
+                 AND c.id_user = u.id) * 2 AS comment_like_score'),
+            DB::raw('
+                (SELECT COUNT(*) FROM tb_user_preferencia up 
+                 WHERE up.id_user = u.id AND up.preferencia IN ("'.implode('","', $preferencesList).'")) * 5 +
+                (SELECT COUNT(*) FROM tb_seguidores s1 
+                 WHERE s1.id_user_seguidor = u.id 
+                 AND s1.id_user_seguido IN (SELECT id_user_seguido FROM tb_seguidores WHERE id_user_seguidor = '.$idUser.')) * 4 +
+                (SELECT COUNT(*) FROM tb_seguidores s2 
+                 WHERE s2.id_user_seguido = u.id 
+                 AND s2.id_user_seguidor IN (SELECT id_user_seguido FROM tb_seguidores WHERE id_user_seguidor = '.$idUser.')) * 4 +
+                ((SELECT COUNT(*) FROM tb_comentario c WHERE c.id_user = u.id AND c.id_post IN 
+                    (SELECT id FROM tb_post WHERE id_user = '.$idUser.')) +
+                 (SELECT COUNT(*) FROM tb_post p WHERE p.repost_id IN 
+                    (SELECT id FROM tb_post WHERE id_user = '.$idUser.') AND p.id_user = u.id)) * 3 +
+                (SELECT COUNT(DISTINCT ph1.id_hashtag) FROM tb_post_hashtag ph1 
+                 JOIN tb_post p1 ON ph1.id_post = p1.id 
+                 WHERE p1.id_user = u.id 
+                 AND ph1.id_hashtag IN 
+                    (SELECT ph2.id_hashtag FROM tb_post_hashtag ph2 
+                     JOIN tb_post p2 ON ph2.id_post = p2.id 
+                     WHERE p2.id_user = '.$idUser.')) * 2 +
+                (SELECT COUNT(*) FROM tb_comentario c 
+                 WHERE c.id_user = '.$idUser.' 
+                 AND c.id_user = u.id) * 2 AS total_score')
+        )
+        ->where('u.id', '!=', $idUser)
+        ->whereNotIn('u.id', function($query) use ($idUser) {
+            $query->select('id_user_bloqueado')
+                  ->from('tb_bloqueado')
+                  ->where('id_user_bloqueando', $idUser)
+                  ->orWhere('id_user_bloqueado', $idUser);
+        })
+        ->whereNotIn('u.id', function($query) use ($idUser) {
+            $query->select('id_user')
+                  ->from('tb_nao_interessado_post')
+                  ->where('id_user', $idUser);
+        })
+        
+        ->whereNotIn('u.id', function($query) use ($idUser) {
+            // Exclui usuários que o $idUser já segue
+            $query->select('id_user_seguido')
+                  ->from('tb_seguidores')
+                  ->where('id_user_seguidor', $idUser)
+                  ->where('status_seguidores', 1);
+                        })
+        ->where('u.status_user', 1)
+        ->orderByDesc('total_score')
+        ->limit($limite)
+        ->get();
+
+
+    return $recommendedUsers;
+}
+
 }

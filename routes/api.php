@@ -50,6 +50,7 @@ Route::get('/cursei/user/verificarSeSegue/{idUser}/{idPerfil}', [UserControllerA
 Route::get('/cursei/user/seguidoresSeguindo/{id}/{acao}', [UserControllerApi::class, 'BuscarSeguidoresSeguindo'])->name('user.BuscarSeguidoresSeguindo');
 Route::get('/cursei/user/deseguirOuTirarSeguidor/{idUser}/{idPerfil}/{acao}', [UserControllerApi::class, 'deseguirOuTirarSeguidor'])->name('user.deseguirOuTirarSeguidor');
 Route::get('/cursei/user/notificacao/{id}/{acao}', [UserControllerApi::class, 'notificacao'])->name('user.notificacao');
+Route::get('/cursei/user/sugerirUsuario/{idUser}/{limite}', [UserControllerApi::class, 'sugerirUsuario'])->name('user.sugerirUsuario');
 
 Route::post('/cursei/user/update-perfil/{id}', [UserControllerApi::class, 'updatePerfilApi']);
 

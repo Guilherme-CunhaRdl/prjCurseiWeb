@@ -269,7 +269,7 @@ class UserControllerApi extends Controller
                 'mensagem' => 'Fim do Processo',
                 'code' => 200,
                 'usuario' => $user,
-                'id_instituicao' => $user->id_instituicao ?? '0' 
+                'id_instituicao' => $user->id_instituicao ? $user->id : '0' 
             ]);
         } catch (Exception $e) {
 

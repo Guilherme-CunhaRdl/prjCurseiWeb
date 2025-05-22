@@ -442,34 +442,37 @@ $queryBuilder = DB::table('tb_mensagem')
     public function selecionarCanais($idUser){
         
        $subQ = DB::table('tb_mensagem_canal AS mensagemC')
-        ->join('tb_canal AS canal', 'mensagemC.id_canal', '=', 'canal.id')
-        ->select(DB::raw('MAX(mensagemC.id) as ultima_mensagem_id'))
-        ->groupBy('canal.user_criador_canal');
+    ->select(DB::raw('MAX(mensagemC.id) as ultima_mensagem_id'))
+    ->groupBy('mensagemC.id_canal');
 
-        $canais = DB::table('tb_membros_canal AS membrosC')
-            ->join('tb_canal AS canal', 'membrosC.id_canal', '=', 'canal.id')
-            ->join('tb_user AS user', 'canal.user_criador_canal', '=', 'user.id')
-            ->join('tb_mensagem_canal AS mensagemC', 'mensagemC.id_canal', '=', 'canal.id')
-            ->joinSub($subQ, 'sub', function ($join) {
-                $join->on('mensagemC.id', '=', 'sub.ultima_mensagem_id');
-            })
-            ->where('membrosC.id_user', '=', $idUser)
-            ->orWhere('canal.user_criador_canal', '!=', $idUser)
-            ->select([
-                'canal.id AS id_canal',
-                'canal.nome_canal',
-                'canal.descricao_canal',
-                'canal.imagem_canal AS img_canal',
-                'canal.created_at AS data_criacao',
-                'user.id AS id_enviador',
-                'user.nome_user AS nome_enviador',
-                'user.arroba_user AS arroba_enviador',
-                'user.img_user AS img_enviador',
-                'mensagemC.id AS id_mensagem',
-                'mensagemC.conteudo_mensagem_canal AS ultima_mensagem',
-                'mensagemC.created_at AS data_envio_mensagem',
-            ])
-            ->get();
+// Canais que o usuário criou ou participa
+$canais = DB::table('tb_canal AS canal')
+    ->leftJoin('tb_membros_canal AS membrosC', 'canal.id', '=', 'membrosC.id_canal')
+    ->join('tb_user AS user', 'canal.user_criador_canal', '=', 'user.id')
+    ->join('tb_mensagem_canal AS mensagemC', 'mensagemC.id_canal', '=', 'canal.id')
+    ->joinSub($subQ, 'sub', function ($join) {
+        $join->on('mensagemC.id', '=', 'sub.ultima_mensagem_id');
+    })
+    ->where(function ($query) use ($idUser) {
+        $query->where('membrosC.id_user', '=', $idUser)
+              ->orWhere('canal.user_criador_canal', '=', $idUser);
+    })
+    ->select([
+        'canal.id AS id_canal',
+        'canal.nome_canal',
+        'canal.descricao_canal',
+        'canal.imagem_canal AS img_canal',
+        'canal.created_at AS data_criacao',
+        'user.id AS id_enviador',
+        'user.nome_user AS nome_enviador',
+        'user.arroba_user AS arroba_enviador',
+        'user.img_user AS img_enviador',
+        'mensagemC.id AS id_mensagem',
+        'mensagemC.conteudo_mensagem_canal AS ultima_mensagem',
+        'mensagemC.created_at AS data_envio_mensagem',
+    ])
+    ->distinct()
+    ->get();
 
         return response()->json([
                  'message' => 'canal retornado com sucesso',

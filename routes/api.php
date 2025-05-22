@@ -61,6 +61,7 @@ Route::get('/cursei/chat/mensagens/{idChat}', [MensagemControllerApi::class, 'se
 Route::get('/cursei/chat/mensagensCanal/{idCanal}', [MensagemControllerApi::class, 'selectMensagensCanalApi'])->name('chat.todosChats');
 Route::get('/cursei/chat/recebidor/{idUserRecebidor}/{filtro}', [MensagemControllerApi::class, 'selectChatApi'])->name('chat.todosChats');
 Route::get('/cursei/chat/adicionarChat/{idUserLogado}', [MensagemControllerApi::class, 'selectSeguidoresSugestoes'])->name('chat.telaSeguidores');
+Route::get('/cursei/chat/adicionarChat/conexoes/{idUserLogado}', [MensagemControllerApi::class, 'selectConexoesSugestoes'])->name('chat.telaSeguidores');
 Route::post('/cursei/chat/adicionarChat/', [MensagemControllerApi::class, 'criarChat'])->name('chat.criarChat');
 Route::post('/cursei/chat/enviarMensagem/{tipoMensagem}', [MensagemControllerApi::class, 'enviarMensagem'])->name('chat.enviarMensagem');
 Route::get('/cursei/chat/adicionarChat/{idUserLogado}/{idSeguidor}', [MensagemControllerApi::class, 'selectSeguidor'])->name('chat.seguidor');

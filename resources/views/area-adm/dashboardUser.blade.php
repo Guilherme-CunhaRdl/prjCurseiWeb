@@ -1,143 +1,150 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DashBoard Do Usuario</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <title>Dashboard do Usuário</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     @include('area-adm.componentes.links-base')
+    <link rel="stylesheet" href="{{asset('css/dashboardUser.css')}}">
     <link rel="stylesheet" href="{{asset('css/instituicoesAdm.css')}}">
 </head>
 <body>
-@include('area-adm.componentes.sidebar')
+    @include('area-adm.componentes.sidebar')
+    
     <main>
         <div class="painel-usuario">
 
-        <div class="headerUserAdm">
-
-            <div class="cabecalhoUser">
-                <img class="fotoUser" src="{{ asset('img/user/fotoPerfil/' . ($usuario->img_user ?? 'default-banner.jpg')) }}" alt="Logo">
-                <h2>{{ $usuario->nome_user }}</h2>
+            <div class="headerUserAdm">
+                <div class="cabecalhoUser">
+                    <div class="fotoUser">
+                        <img src="{{ asset('img/user/fotoPerfil/' . ($usuario->img_user ?? 'default-avatar.jpg')) }}" alt="Foto do usuário">
+                    </div>
+                    <h2>{{ $usuario->nome_user }}</h2>
+                </div>
+                
+                <div class="buttonSair">
+                    @if($usuario->status_user == 1)
+                        <a href="/curseiAdm/desativarUsuarios/{{$usuario->id}}" class="botaoSair">
+                            <i class="bi bi-power"></i> Desativar conta
+                        </a>
+                    @else
+                        <a href="/curseiAdm/ativarUsuarios/{{$usuario->id}}" style="color: var(--verde);">
+                            <i class="bi bi-power"></i> Ativar conta
+                        </a>
+                    @endif
+                </div>
             </div>
-          <div class="buttonSair">
-            @if($usuario->status_user == 1)
-            <a href="/curseiAdm/desativarUsuarios/{{$usuario -> id}}" style="font-weight: 600; color:#8F0000; display: flex; gap: 10px; align-items: center; justify-content: center;">Desativar conta</a>
-            @else
-            <a href="/curseiAdm/ativarUsuarios/{{$usuario -> id}}" style="font-weight: 600; color:var(--verde); display: flex; gap: 10px; align-items: center; justify-content: center;">Ativar conta</a>
-            @endif
 
 
-          </div>
-        </div>
+            <div class="layout">
 
-      
-<div class="layout">
+                <div class="conteudo-principal">
 
-            <div class="conteudo-principal">
+                    <div class="estatisticasUser">
+                        <div class="itemDoUsuario">
+                            <i class="bi bi-people"></i>
+                            <div class="textoEstatiUser">
+                                <span>{{ $numeroSeguidores }}</span>
+                                <p>Seguidores</p>
+                            </div>
+                        </div>
 
-              <div class="estatisticasUser">
-      <div class="itemDoUsuario">
-          <i class="bi bi-person fs-1"></i>
-          <div class="textoEstatiUser">
-              <span>{{ $numeroSeguidores }}</span>
-              <p>Seguidores</p>
-          </div>
-      </div>
+                        <div class="itemDoUsuario">
+                            <i class="bi bi-file-post"></i>
+                            <div class="textoEstatiUser">
+                                <span>{{ $numeroPosts }}</span>
+                                <p>Posts</p>
+                            </div>
+                        </div>
 
-      <div class="itemDoUsuario">
-      <i class="bi bi-image fs-1"></i>
-          <div class="textoEstatiUser">
-              <span>{{ $numeroPosts }}</span>
-              <p>Posts</p>
-          </div>
-      </div>
+                        <div class="itemDoUsuario">
+                            <i class="bi bi-camera-reels"></i>
+                            <div class="textoEstatiUser">
+                                <span>{{ $quantidadeCurtei }}</span>
+                                <p>Reels</p>
+                            </div>
+                        </div>
 
-      <div class="itemDoUsuario">
-      <i class="bi bi-camera-video fs-1"></i>
-          <div class="textoEstatiUser">
-              <span>{{ $quantidadeCurtei }}</span>
-              <p>Reels</p>
-          </div>
-      </div>
+                        <div class="itemDoUsuario">
+                            <i class="bi bi-heart"></i>
+                            <div class="textoEstatiUser">
+                                <span>{{ $numeroCurtidas }}</span>
+                                <p>Curtidas</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+            <div class="listas-container">
+                    <div class="listaSeguidores">
+                        <div class="textoSeguidores">
+                            <h3><i class="bi bi-people-fill"></i> Seguidores</h3>
+                            <span>{{ $numeroSeguidores }}</span>
+                        </div>
+                        <ul>
+                            @foreach ($ultimosSeguidores as $seg)
+                                <li>
+                                    <img src="{{ asset('img/user/fotoPerfil/' . ($seg->usuarioSeguidor->img_user ?? 'default-avatar.jpg')) }}" alt="Seguidor">
+                                    {{ $seg->usuarioSeguidor->nome_user ?? 'Usuário removido' }}
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
 
-      <div class="itemDoUsuario">
-      <i class="bi bi-heart fs-1"></i>
-          <div class="textoEstatiUser">
-              <span>{{ $numeroCurtidas }}</span>
-              <p>Curtidas</p>
-          </div>
-      </div>
-  </div>
-            
-
-        <div class="listaSeguidores">
-          <div class="textoSeguidores"><h3>Seguidores </h3> <span>{{ $numeroSeguidores }}</span> </div>
-          <ul>
-          @foreach ($ultimosSeguidores as $seg)
-            <li><img src="{{ asset('img/user/fotoPerfil/' . ($seg->usuarioSeguidor->img_user ?? 'default-banner.jpg')) }}">{{ $seg->usuarioSeguidor->nome_user ?? 'Desconhecido' }}</li>
-          @endforeach
-           
-           
-      
-          </ul>
-        </div>
-
-        <div class="listaSeguidores">
-          <div class="textoSeguidores"><h3>Seguindo </h3> <span>{{ $numeroSeguindo }}</span> </div>
-          <ul>
-          @foreach ($seguindo  as $segui)
-            <li><img src="{{ asset('img/user/fotoPerfil/' . ($segui->usuarioSeguido->img_user ?? 'default-banner.jpg')) }}">{{ $segui->usuarioSeguido->nome_user ?? 'Desconhecido' }}</li>
-          @endforeach
-          </ul>
-        </div>
-
-
-        </div>
-
-
-        <div class="painelInformacoes">
-            <div class="d-flex justify-content-between align-items-center botoesInfo">
-              <div class="d-flex align-items-center">
-                <i class="bi bi-info-circle fs-5 me-2"></i>
-                <h3 class="mb-0">Informações</h3>
-              </div>
-              <button  onclick="abrirModalAlter()"  style="border: none;background-color: transparent;"> 
-                <i class="bi bi-pencil-square fs-5" style="color:#05A4B6"></i>
-              </button>
+                    <div class="listaSeguidores">
+                        <div class="textoSeguidores">
+                            <h3><i class="bi bi-person-plus-fill"></i> Seguindo</h3>
+                            <span>{{ $numeroSeguindo }}</span>
+                        </div>
+                        <ul>
+                            @foreach ($seguindo as $segui)
+                                <li>
+                                    <img src="{{ asset('img/user/fotoPerfil/' . ($segui->usuarioSeguido->img_user ?? 'default-avatar.jpg')) }}" alt="Seguindo">
+                                    {{ $segui->usuarioSeguido->nome_user ?? 'Usuário removido' }}
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
             </div>
-         
-          <p><strong>ID:</strong> {{ $usuario->id }} </p>
-          <p><strong>Nome:</strong> {{ $usuario->nome_user }} </p>
-          <p><strong>Email:</strong> {{ $usuario->email_user }} </p>
 
-          <p><strong>Data de registro:</strong> {{ $usuario->created_at }} </p>
-          <p><strong>Ultima alteração:</strong> {{ $usuario->updated_at }} </p>
 
-          <p><strong>Status da conta:</strong>  {{ $usuario->status_user == 1 ? 'Ativo' : 'Desativado' }} </p>
-
+                <div class="painelInformacoes">
+                    <div class="botoesInfo">
+                        <h3><i class="bi bi-info-circle"></i> Informações</h3>
+                        <button onclick="abrirModalAlter()" class="botaoEdicao">
+                            <i class="bi bi-pencil-square"></i>
+                        </button>
+                    </div>
+                
+                    <p><strong>ID:</strong> {{ $usuario->id }}</p>
+                    <p><strong>Nome:</strong> {{ $usuario->nome_user }}</p>
+                    <p><strong>Email:</strong> {{ $usuario->email_user }}</p>
+                    <p><strong>Data de registro:</strong> {{ date('d/m/Y H:i', strtotime($usuario->created_at)) }}</p>
+                    <p><strong>Última atualização:</strong> {{ date('d/m/Y H:i', strtotime($usuario->updated_at)) }}</p>
+                    <p>
+                        <strong>Status:</strong> 
+                        <span style="color: {{ $usuario->status_user == 1 ? 'var(--verde)' : 'var(--vermelho)' }};">
+                            {{ $usuario->status_user == 1 ? 'Ativo' : 'Desativado' }}
+                        </span>
+                    </p>
+                </div>
+            </div>
         </div>
-
-  </div>
-
-
-        </div>
-
-
-        
     </main>
 
-    <div class="container-fluid container-modal" id="contmodal" onclick="fecharModal(event)" >
-        <div class="modal-perfil" id="modal-perfil" style="height: 700px;">
+
+    <div class="container-fluid container-modal" id="contmodal" onclick="fecharModal(event)">
+        <div class="modal-perfil" id="modal-perfil">
             <div class="titulo-modal">
-                Editar conta do usuario
+                <i class="bi bi-person-gear"></i> Editar conta do usuário
             </div>
 
             <form action="{{ route('usuario.atualizar', $usuario->id) }}" method="POST" enctype="multipart/form-data">
-            @csrf
-            @method('PUT')
-            <div class="topo-modal">
+                @csrf
+                @method('PUT')
+                <div class="topo-modal">
                 <div class="banner-modal">
                     <img src="{{ asset('img/user/bannerPerfil/' . ($usuario->banner_user ?? 'default-banner.jpg')) }}" alt="">
                 </div>
@@ -176,51 +183,24 @@
                     </div>
                 </div>
             </div>
-            <!-- <div class="inputs-modal">
-                <p class="titulo-inputs"></html><i class='bx bx-location-plus' ></i> Endereço</p>
-                <div class="lista-de-inputs">
-                    <div class="input-modal-container">
-                        <label for="cep">Cep</label>
-                        <input type="text" name="cep" value="ChaveDo.grau22@gmail.com">
-                    </div>
-                    <div class="input-modal-container">
-                        <label for="endereço">Endereço</label>
-                        <input type="text" name="endereço" value="">
-                    </div>
-                    <div class="input-modal-container">
-                        <label for="numero">Numero</label>
-                        <input type="text" name="numero" value="">
-                    </div>
-                    <div class="input-modal-container">
-                        <label for="bairro">Bairro</label>
-                        <input type="text" name="bairro" value="">
-                    </div>
-                    <div class="input-modal-container">
-                        <label for="cidade">Cidade</label>
-                        <input type="text" name="cidade" value="">
-                    </div>
-                    <div class="input-modal-container">
-                        <label for="estado">Estado</label>
-                        <input type="text" name="estado" value="">
-                    </div>
-                </div>
-            </div> -->
             <div class="botoes-salva-cancelar">
                 <button>Cancelar</button>
                 <button class="salvar">Salvar</button>
-
-</form>
-            </div>
+            </form>
         </div>
     </div>
 
-
-
-    <script src="{{asset('js/abrirModalUser.js')}}"></script>
-
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq"
-        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function abrirModalAlter() {
+            document.getElementById('contmodal').style.display = 'flex';
+        }
+        
+        function fecharModal(event) {
+            if (event.target === document.getElementById('contmodal')) {
+                document.getElementById('contmodal').style.display = 'none';
+            }
+        }
+    </script>
 </body>
 </html>

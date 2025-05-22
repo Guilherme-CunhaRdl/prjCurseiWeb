@@ -1,0 +1,362 @@
+:root {
+    --verde: #05A4B6;
+    --fundo: #F6F6F6;
+    --branco: #fff;
+    --preto: #2c2c2c;
+    --cinzaClaro: #898989;
+    --cinzaEscuro: #616161;
+    --vermelho: #CC0000;
+}
+
+
+body {
+    font-family: sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: var(--fundo);
+    color: var(--preto);
+    overflow-x: hidden;
+}
+
+html, body {
+    overflow-x: hidden;
+    max-width: 100%;
+}
+
+
+/* Painel principal */
+.painel-usuario {
+    margin: 2rem 1rem;
+    gap: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    width: calc(100% - 2rem);
+    box-sizing: border-box; 
+}
+
+
+/* Header do usuário */
+.headerUserAdm {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.cabecalhoUser {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.fotoUser {
+    width: 105px;
+    height: 105px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+    border: 3px solid var(--verde);
+}
+
+.fotoUser img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.buttonSair {
+    align-self: center;
+}
+
+.botaoSair {
+    color: var(--vermelho);
+    border: none;
+    background-color: transparent;
+    font-size: 1.1rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Layout principal */
+.layout {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 100%;
+}
+
+.conteudo-principal {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    flex: 1;
+}
+
+.listas-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+    .listas-container {
+        grid-template-columns: 1fr 1fr; 
+    }
+
+    .painel-usuario {
+        width: calc(100% - 5rem);
+    }
+}
+
+/* Estatísticas */
+.estatisticasUser {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    width: 100%;
+}
+
+.estatisticasUser .itemDoUsuario {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background-color: var(--branco);
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+    border-left: 3px solid var(--verde);
+    color: var(--cinzaClaro);
+    font-size: 1rem;
+    padding: 0.8rem;
+    min-height: 100px;
+}
+
+.estatisticasUser .itemDoUsuario i {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(5, 164, 182, 0.1);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    color: var(--verde);
+    font-size: 1.5rem;
+}
+
+.estatisticasUser .itemDoUsuario .textoEstatiUser {
+    display: flex;
+    flex-direction: column;
+}
+
+.estatisticasUser .itemDoUsuario .textoEstatiUser span {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--cinzaEscuro);
+}
+
+.estatisticasUser .itemDoUsuario .textoEstatiUser p {
+    margin: 0;
+    color: var(--cinzaClaro);
+}
+
+/* Listas de seguidores */
+.listaSeguidores {
+    background-color: var(--branco);
+    padding: 1.2rem;
+    border-radius: 12px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.textoSeguidores {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.textoSeguidores h3 {
+    color: var(--verde);
+    font-weight: bold;
+    margin: 0;
+}
+
+.textoSeguidores span {
+    color: var(--cinzaClaro);
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.listaSeguidores ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 300px;
+    overflow-y: auto;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.8rem;
+}
+
+.listaSeguidores li {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.5rem;
+    background: var(--fundo);
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+
+.listaSeguidores li:hover {
+    background-color: rgba(5, 164, 182, 0.1);
+}
+
+.listaSeguidores img {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+/* Painel de informações */
+.painelInformacoes {
+    background-color: var(--branco);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 0 10px rgba(0,0,0,0.08);
+    font-size: 0.95rem;
+    color: var(--cinzaEscuro);
+    line-height: 1.6;
+    order: -1;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.botoesInfo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.botoesInfo h3 {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--verde);
+}
+
+.botaoEdicao {
+    background: transparent;
+    border: none;
+    color: var(--verde);
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.botaoEdicao:hover {
+    transform: scale(1.1);
+}
+
+.painelInformacoes p {
+    margin-bottom: 0.8rem;
+}
+
+.painelInformacoes strong {
+    color: var(--cinzaEscuro);
+}
+
+/* Modal */
+.container-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-perfil {
+    background: var(--branco);
+    border-radius: 12px;
+    width: 95%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 0 20px rgba(0,0,0,0.2);
+}
+
+/* Responsividade */
+@media (min-width: 768px) {
+    .painel-usuario {
+        margin: 2rem 2rem 2rem 4rem;
+    }
+    
+    .headerUserAdm {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .cabecalhoUser {
+        flex-direction: row;
+        text-align: left;
+        gap: 1rem;
+    }
+    
+    .fotoUser {
+        margin-bottom: 0;
+    }
+    
+    .estatisticasUser {
+        grid-template-columns: repeat(4, 1fr);
+    }
+    
+    .listaSeguidores ul {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 992px) {
+    .layout {
+        flex-direction: row;
+    }
+    
+    .painelInformacoes {
+        order: 0;
+        width: 300px;
+        min-width: 300px;
+    }
+    
+    .conteudo-principal {
+        flex: 1;
+    }
+    
+    .listaSeguidores ul {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (min-width: 1200px) {
+    .estatisticasUser .itemDoUsuario {
+        padding: 1rem;
+    }
+    
+    .estatisticasUser .itemDoUsuario i {
+        width: 60px;
+        height: 60px;
+        font-size: 1.8rem;
+    }
+    
+    .painelInformacoes {
+        width: 350px;
+    }
+}

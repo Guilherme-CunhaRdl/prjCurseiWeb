@@ -43,7 +43,66 @@ class HashtagController extends Controller
         return response()->json($resultados);
     }
 
-    public function maisRecentes(){
-        
-    }   
+    public function recomendarHashtags($idUser)
+    {
+
+
+
+        // Primeiro, obtemos as preferências do usuário
+        $userPreferences = DB::table('tb_user_preferencia')
+            ->where('id_user', $idUser)
+            ->pluck('preferencia')
+            ->toArray();
+
+        // Se não houver preferências, usar array vazio para evitar erro no SQL
+        $preferencesList = !empty($userPreferences) ? $userPreferences : ['Indefinido'];
+
+        $recommendedHashtags = DB::table('tb_hashtag as h')
+            ->select(
+                'h.id',
+                'h.nomeHashtag',
+                DB::raw('(SELECT COUNT(*) FROM tb_post_hashtag ph 
+                     JOIN tb_post p ON ph.id_post = p.id 
+                     WHERE ph.id_hashtag = h.id AND p.id_user = ' . $idUser . ') * 5 AS user_usage_score'),
+                DB::raw('(SELECT COUNT(DISTINCT ph.id_post) FROM tb_post_hashtag ph
+                     JOIN tb_post p ON ph.id_post = p.id
+                     JOIN tb_seguidores s ON p.id_user = s.id_user_seguido
+                     WHERE ph.id_hashtag = h.id AND s.id_user_seguidor = ' . $idUser . ' AND s.status_seguidores = 1) * 4 AS following_usage_score'),
+                DB::raw('(SELECT COUNT(DISTINCT ph.id_post) FROM tb_post_hashtag ph
+                     JOIN tb_post p ON ph.id_post = p.id
+                     WHERE ph.id_hashtag = h.id AND p.area_post IN ("' . implode('","', $preferencesList) . '")) * 3 AS interest_score'),
+                DB::raw('((SELECT COUNT(DISTINCT ph.id_post) FROM tb_post_hashtag ph
+                      JOIN tb_comentario c ON ph.id_post = c.id_post
+                      WHERE ph.id_hashtag = h.id AND c.id_user = ' . $idUser . ') +
+                     (SELECT COUNT(DISTINCT ph.id_post) FROM tb_post_hashtag ph
+                      JOIN tb_post p ON ph.id_post = p.id
+                      WHERE ph.id_hashtag = h.id AND p.repost_id IN 
+                        (SELECT id FROM tb_post WHERE id_user = ' . $idUser . '))) * 2 AS interaction_score'),
+                DB::raw('
+                (SELECT COUNT(*) FROM tb_post_hashtag ph 
+                 JOIN tb_post p ON ph.id_post = p.id 
+                 WHERE ph.id_hashtag = h.id AND p.id_user = ' . $idUser . ') * 5 +
+                (SELECT COUNT(DISTINCT ph.id_post) FROM tb_post_hashtag ph
+                 JOIN tb_post p ON ph.id_post = p.id
+                 JOIN tb_seguidores s ON p.id_user = s.id_user_seguido
+                 WHERE ph.id_hashtag = h.id AND s.id_user_seguidor = ' . $idUser . ' AND s.status_seguidores = 1) * 4 +
+                (SELECT COUNT(DISTINCT ph.id_post) FROM tb_post_hashtag ph
+                 JOIN tb_post p ON ph.id_post = p.id
+                 WHERE ph.id_hashtag = h.id AND p.area_post IN ("' . implode('","', $preferencesList) . '")) * 3 +
+                ((SELECT COUNT(DISTINCT ph.id_post) FROM tb_post_hashtag ph
+                  JOIN tb_comentario c ON ph.id_post = c.id_post
+                  WHERE ph.id_hashtag = h.id AND c.id_user = ' . $idUser . ') +
+                 (SELECT COUNT(DISTINCT ph.id_post) FROM tb_post_hashtag ph
+                  JOIN tb_post p ON ph.id_post = p.id
+                  WHERE ph.id_hashtag = h.id AND p.repost_id IN 
+                    (SELECT id FROM tb_post WHERE id_user = ' . $idUser . '))) * 2
+                AS total_score')
+            )
+           
+            ->orderByDesc('total_score')
+            ->limit(5)
+            ->get();
+
+        return $recommendedHashtags;
+    }
 }

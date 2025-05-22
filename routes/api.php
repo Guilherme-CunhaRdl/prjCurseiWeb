@@ -79,6 +79,7 @@ Route::get('/curtei/videos', [CurteiController::class, 'mostrarVideos']);
 
 //rotas para o explorar
 Route::get('/cursei/explorar/assuntosMomento',[HashtagController::class, 'maisUsadas'])->name('explorar.maisUsadas');
+Route::get('/cursei/explorar/recomendarHashtags/{id}',[HashtagController::class, 'recomendarHashtags'])->name('explorar.recomendarHashtags');
 
 //ROTAS DO CURTEI
 Route::post('/curtei/upload', [CurteiController::class, 'storeCurtei']);

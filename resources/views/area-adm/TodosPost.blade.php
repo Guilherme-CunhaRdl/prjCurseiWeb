@@ -10,6 +10,7 @@
     @include('area-adm.componentes.links-base')
 
     <link rel="stylesheet" href="{{asset('css/instituicoesAdm.css')}}">
+    <link rel="stylesheet" href="{{asset('css/TodosPosts.css')}}">
 </head>
 <body>
 @include('area-adm.componentes.sidebar')
@@ -67,37 +68,50 @@
                             <div class="listarCards">
 
             @foreach($posts as $post)     
-                            <div class="cardsPost">
-                                <div class="topoCard">
-                                    <img src="{{asset('img/user/fotoPerfil/' . ($post->usuario->img_user ?? 'default-banner.jpg'))}}" alt="Logo" class="logoInstituicao">
-                                    <h3 class="nomeInstituicao">{{'@'.$post->usuario->arroba_user ?? 'Desconhecido' }}</h3>
-                                </div>
+            <div class="cardsPost">
+    <div class="conteudo-flex"> <!-- Adicionado esta div envolvente -->
+        <div class="topoCard">
+            <img src="{{asset('img/user/fotoPerfil/' . ($post->usuario->img_user ?? 'default-banner.jpg'))}}" alt="Logo" class="logoInstituicao">
+            <h3 class="nomeInstituicao">{{'@'.$post->usuario->arroba_user ?? 'Desconhecido' }}</h3>
+        </div>
 
-                                <p class="descricaoInstituicao">
-                                {{ $post->descricao_post }}
-                                </p>
+        <p class="descricaoInstituicao">
+            {{ $post->descricao_post }}
+        </p>
 
+        <div class="imagemPostagem">
+            @if($post->conteudo_post && file_exists(public_path('img/user/imgPosts/' . $post->conteudo_post)))
+                <img src="{{ asset('img/user/imgPosts/' . $post->conteudo_post) }}" alt="Imagem do post">
+            @else
+                <div class="no-image-placeholder">
 
-                                <div class="imagemPostagem">
-
-                                
-                <img src="{{ asset('img/user/imgPosts/' . ($post->conteudo_post ?? 'default-banner.jpg')) }}" alt="Imagem do post">
+                           <!---ISSO AQUI EU QUERO VER QUAL A MELHOR FORMA PQ OU DEIXA ISSO OU DEIXA SEM NADA
+            <div class="no-image-placeholder">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                    <polyline points="21 15 16 10 5 21"></polyline>
+                </svg>
+                <span>Sem imagem</span>
             </div>
+-->
+                 
+                </div>
+            @endif
+        </div>
+    </div> 
 
-
-                            <div class="infoCard">
-                                <div>
-                                <span>10.5k</span>
-                                Comentarios
-                                </div>
-                                <div>
-                                <span>{{ $post->curtidas_count }}</span>
-                                Curtidas
-                                </div>
-                            </div>
-                                        
-                                        
-                                    </div>
+    <div class="infoCard">
+        <div>
+            <span>10.5k</span>
+            Comentarios
+        </div>
+        <div>
+            <span>{{ $post->curtidas_count }}</span>
+            Curtidas
+        </div>
+    </div>
+</div>
             @endforeach
                
 

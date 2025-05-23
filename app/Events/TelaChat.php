@@ -7,21 +7,23 @@ use Illuminate\Broadcasting\Channel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Support\Facades\Log;
 
 class TelaChat implements ShouldBroadcast
 {
     use InteractsWithSockets, SerializesModels;
 
-    public $chats;
+    public $chats, $idChat;
 
-    public function __construct($chats)
+    public function __construct($chats, $idChat)
     {
         $this->chats = $chats;
+        $this->idChat = $idChat;
     }
 
     public function broadcastOn()
     {
-        return new Channel('trazer_chats');
+        return new Channel('trazer_chats.' . $this->idChat);
     }
 
 
@@ -31,10 +33,13 @@ public function broadcastAs()
     }
     public function broadcastWith()
 {
+    \Log::info('chats para evento TelaChat', [$this->chats]);
+    Log::info("Evento TelaChat enviado para canal trazer_chats.{$this->idChat}");
+
     return[
     'msgs' =>  $this->chats->map(function($msg){
         return [
-                
+                    'id_ultima_mensagem' => $this->idChat,
                     'id_mensagem' => $msg->id_mensagem,
                     'id_chat' => $msg->id_chat,
                     'ultima_mensagem' => $msg->ultima_mensagem,

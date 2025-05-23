@@ -182,30 +182,32 @@ class MensagemControllerApi extends Controller
 
 
         $seguidores = DB::table('tb_seguidores AS seg')
-            ->join('tb_user AS seguidor', 'seg.id_user_seguidor', '=', 'seguidor.id')
-            ->join('tb_user AS seguido', 'seg.id_user_seguido', '=', 'seguido.id')
-            ->leftJoin('tb_chat AS c', function ($join) use ($idUser) {
-                $join->on(function ($q) use ($idUser) {
-                    $q->on('c.id_user1', '=', 'seg.id_user_seguidor')
-                        ->where('c.id_user2', '=', $idUser);
-                })->orOn(function ($q) use ($idUser) {
-                    $q->on('c.id_user2', '=', 'seg.id_user_seguidor')
-                        ->where('c.id_user1', '=', $idUser);
-                });
-            })
-            ->where('seg.id_user_seguido', $idUser)
-            ->select(
-                'seguidor.id AS id_seguidor',
-                'seguidor.nome_user AS nome_seguidor',
-                'seguidor.img_user AS img_seguidor',
-                'seguidor.arroba_user AS arroba_seguidor',
-                'c.id AS id_chat',
-                'seguido.id AS id_seguido',
+    ->join('tb_user AS seguidor', 'seg.id_user_seguidor', '=', 'seguidor.id')
+    ->join('tb_user AS seguido', 'seg.id_user_seguido', '=', 'seguido.id')
+    ->leftJoin('tb_chat AS c', function ($join) use ($idUser) {
+        $join->on(function ($q) use ($idUser) {
+            $q->on('c.id_user1', '=', 'seg.id_user_seguidor')
+                ->where('c.id_user2', '=', $idUser);
+        })->orOn(function ($q) use ($idUser) {
+            $q->on('c.id_user2', '=', 'seg.id_user_seguidor')
+                ->where('c.id_user1', '=', $idUser);
+        });
+    })
+    ->leftJoin('tb_mensagem AS m', 'm.id_chat', '=', 'c.id') // join mensagens do chat
+    ->where('seg.id_user_seguido', $idUser)
+    ->whereNull('m.id') // excluir quem tem mensagem (ou seja, mostrar só chats sem mensagens ou sem chat)
+    ->select(
+        'seguidor.id AS id_seguidor',
+        'seguidor.nome_user AS nome_seguidor',
+        'seguidor.img_user AS img_seguidor',
+        'seguidor.arroba_user AS arroba_seguidor',
+        'c.id AS id_chat',
+        'seguido.id AS id_seguido'
+    )
+    ->orderByDesc('seg.created_at')
+    ->distinct()
+    ->get();
 
-            )
-            ->orderByDesc('seg.created_at')
-            ->distinct()
-            ->get();
 
 
         return response()->json([
@@ -216,7 +218,7 @@ class MensagemControllerApi extends Controller
         ]);
     }
 
-    public function selectConexoesSugestoes($idUser)
+    public function selectSeguidoresConexoes($idUser)
     {
 
 
@@ -252,6 +254,19 @@ class MensagemControllerApi extends Controller
             )
             ->get();
 
+
+
+
+
+        return response()->json([
+            'sucesso' => true,
+            'conexoes' => $conexoesComChat,
+            'message' => 'Mensagens Retornadas com Sucesso',
+            'code' => 200,
+        ]);
+    }
+    public function selectAddChatSugestoes($idUser)
+    {
         // Primeiro, obtemos as preferências do usuário
         $userPreferences = DB::table('tb_user_preferencia')
             ->where('id_user', $idUser)
@@ -262,11 +277,35 @@ class MensagemControllerApi extends Controller
         $preferencesList = !empty($userPreferences) ? $userPreferences : ['Indefinido'];
 
         $recommendedUsers = DB::table('tb_user as u')
+            ->leftJoin('tb_seguidores as s1', function ($join) use ($idUser) {
+                $join->on('s1.id_user_seguidor', '=', 'u.id')
+                    ->where('s1.id_user_seguido', '=', $idUser);
+            })
+            ->leftJoin('tb_seguidores as s2', function ($join) use ($idUser) {
+                $join->on('s2.id_user_seguido', '=', 'u.id')
+                    ->where('s2.id_user_seguidor', '=', $idUser);
+            })
+            ->leftJoin('tb_chat as c', function ($join) use ($idUser) {
+                $join->on(function ($query) use ($idUser) {
+                    $query->where(function ($q) use ($idUser) {
+                        $q->whereColumn('c.id_user1', 'u.id')
+                            ->where('c.id_user2', '=', $idUser);
+                    })->orWhere(function ($q) use ($idUser) {
+                        $q->whereColumn('c.id_user2', 'u.id')
+                            ->where('c.id_user1', '=', $idUser);
+                    });
+                });
+            })
             ->select(
                 'u.id',
-                'u.nome_user',
-                'u.arroba_user',
-                'u.img_user',
+                'u.nome_user AS nome_seguidor',
+                'u.arroba_user AS arroba_seguidor',
+                'u.img_user AS img_seguidor',
+                'c.id as id_chat',
+                's1.id_user_seguidor AS id_seguidor',
+                's2.id_user_seguido AS id_seguido',
+                'c.id_user1',
+                'c.id_user2',
                 DB::raw('
                 (SELECT COUNT(*) FROM tb_user_preferencia up 
                  WHERE up.id_user = u.id AND up.preferencia IN ("' . implode('","', $preferencesList) . '")) * 5 AS interest_score'),
@@ -340,11 +379,13 @@ class MensagemControllerApi extends Controller
                     ->where('status_seguidores', 1);
             })
             ->whereNotIn('u.id', function ($query) use ($idUser) {
-                $query->selectRaw('CASE 
-                            WHEN c.id_user1 = ? THEN c.id_user2 
-                            ELSE c.id_user1 
-                        END', [$idUser])
+                $query->selectRaw('
+        CASE 
+            WHEN c.id_user1 = ? THEN c.id_user2 
+            ELSE c.id_user1 
+        END', [$idUser])
                     ->from('tb_chat as c')
+                    ->join('tb_mensagem as m', 'm.id_chat', '=', 'c.id')
                     ->where(function ($q) use ($idUser) {
                         $q->where('c.id_user1', $idUser)
                             ->orWhere('c.id_user2', $idUser);
@@ -352,24 +393,29 @@ class MensagemControllerApi extends Controller
             })
 
             ->where('u.status_user', 1)
+            ->groupBy(
+                'u.id',
+                'u.nome_user',
+                'u.arroba_user',
+                'u.img_user',
+                'c.id',
+                's1.id_user_seguidor',
+                's2.id_user_seguido',
+                'c.id_user1',
+                'c.id_user2'
+            )
             ->orderByDesc('total_score')
             ->limit(50)
             ->get();
 
 
-        return $recommendedUsers;
-
-
-
         return response()->json([
             'sucesso' => true,
-            'conexoes' => $conexoesComChat,
             'sugestoes' => $recommendedUsers,
             'message' => 'Mensagens Retornadas com Sucesso',
             'code' => 200,
         ]);
     }
-
     public function selectSeguidor($idUser, $idSeguidor)
     {
 
@@ -503,7 +549,7 @@ class MensagemControllerApi extends Controller
         $chats = $queryBuilder->get();
 
         Broadcast(new MensagemChat($mensagem))->toOthers();
-        Broadcast(new TelaChat($chats));
+        broadcast(new TelaChat($chats, $request->idChat));
 
         return response()->json([
             'message' => 'Mensagem enviada com sucesso!',

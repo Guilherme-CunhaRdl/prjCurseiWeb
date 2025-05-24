@@ -44,8 +44,8 @@ class PostControllerApi extends Controller
         //         ->on('tb_seguidores.id_user_seguido', '=', 'tb_post.id_user');
         // });
 
-        if ($tipo == 1 || $tipo ==7 || $tipo ==8) {
-            
+        if ($tipo == 1 || $tipo == 7 || $tipo == 8) {
+
             $preferencias = DB::table('tb_user_preferencia')
                 ->where('id_user', $idUser)
                 ->pluck('preferencia')
@@ -183,9 +183,9 @@ IF(
                 ->orderByDesc($tipo == 1 ? 'score' : 'curtidas')
                 ->offset($ignorarPosts)
                 ->limit($quantidade);
-                
-            if($tipo ==7){
-                $query = $query->where('instituicao',1);
+
+            if ($tipo == 7) {
+                $query = $query->where('instituicao', 1);
             }
             $posts = $query->get();
 
@@ -615,10 +615,10 @@ IF(
 
                 $usuario = User::select('id', 'arroba_user', 'img_user')->where('id', $request->idUser)->get();
                 return response()->json([
-                   
+
                     'usuario' => $usuario,
                     'comentario' => $comentario,
-                 
+
                 ]);
 
                 break;
@@ -659,14 +659,19 @@ IF(
                 }
                 break;
             case 'denunciar':
-                Denuncia::create([
+                $dadosDenuncia = [
                     'motivo_denuncia' => $request->motivo,
-                    'id_post_denunciado' => $request->idPost,
                     'id_user_denunciador' => $request->idUser,
                     'id_user_denunciado' => $request->denunciado,
                     'created_at' => now(),
                     'updated_at' => now(),
-                ]);
+                ];
+
+                if ($request->idPost != 'undefined') {
+                    $dadosDenuncia['id_post_denunciado'] = $request->idPost;
+                }
+
+                Denuncia::create($dadosDenuncia);
                 $verificar = Bloqueado::select('id')->where('id_user_bloqueado', $request->denunciado)->where('id_user_bloqueando', $request->idUser)->get();
                 if ($verificar->isEmpty()) {
                     Bloqueado::create([

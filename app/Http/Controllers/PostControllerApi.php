@@ -262,6 +262,12 @@ IF(
                     ->orWhere('tb_user.nome_user', 'like', "%$pesquisa%")
                     ->orWhere('tb_post.descricao_post', 'like', "%$pesquisa%");
                 break;
+            case 9:
+                $query = $query->orderByDesc('created_at')
+                    ->where('tb_user.arroba_user', 'like', "%$pesquisa%")
+                    ->orWhere('tb_user.nome_user', 'like', "%$pesquisa%")
+                    ->orWhere('tb_post.descricao_post', 'like', "%$pesquisa%");
+                break;
             case 4:
                 $query = $query->where('tb_post.id', $idUser);
                 break;

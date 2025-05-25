@@ -36,8 +36,10 @@ Route::post('/cursei/postsUpdate/{id}', [PostControllerApi::class, 'updateApi'])
 
  Route::post('/cursei/posts/{idUser}', [PostControllerApi::class, 'storeApi'])->name('posts.store');
  Route::get('/cursei/posts/user/{idUser}', [PostControllerApi::class, 'getPostsByUser'])->name('posts.byUser');
- Route::post('instituicao', [instituicaoControllerApi::class, 'cadastrarInstituicao']);
- 
+
+Route::post('instituicao', [instituicaoControllerApi::class, 'cadastrarInstituicao']);
+Route::get('/cursei/instituicao/procurarInstituicao/{pesquisa}', [instituicaoControllerApi::class, 'procurarInstituicao'])->name('instituicao.procurarInstituicao');
+
  Route::get('/verificar-email', [UserControllerApi::class, 'verificarEmailExistente']);
 Route::get('/verificar-usuario', [UserControllerApi::class, 'verificarUsuarioExistente']);
 
@@ -51,6 +53,7 @@ Route::get('/cursei/user/seguidoresSeguindo/{id}/{acao}', [UserControllerApi::cl
 Route::get('/cursei/user/deseguirOuTirarSeguidor/{idUser}/{idPerfil}/{acao}', [UserControllerApi::class, 'deseguirOuTirarSeguidor'])->name('user.deseguirOuTirarSeguidor');
 Route::get('/cursei/user/notificacao/{id}/{acao}', [UserControllerApi::class, 'notificacao'])->name('user.notificacao');
 Route::get('/cursei/user/sugerirUsuario/{idUser}/{limite}', [UserControllerApi::class, 'sugerirUsuario'])->name('user.sugerirUsuario');
+Route::get('/cursei/user/procurarUsuario/{pesquisa}', [UserControllerApi::class, 'procurarUsuario'])->name('user.procurarUsuario');
 
 Route::post('/cursei/user/update-perfil/{id}', [UserControllerApi::class, 'updatePerfilApi']);
 

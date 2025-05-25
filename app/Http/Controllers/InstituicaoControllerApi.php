@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 use App\Models\Instituicao;
 use Illuminate\Http\Request;
-
+use App\Models\User;
 class instituicaoControllerApi extends Controller
 {
     public function cadastrarInstituicao(Request $request)
@@ -40,5 +40,22 @@ class instituicaoControllerApi extends Controller
             'id_user' => $request->user_id,
             'verificado_instituicao' => 0,
         ]);
+
+
+    }
+
+    public function procurarInstituicao($pesquisa)
+    {
+    $instituicoes = Instituicao::join('tb_user', 'tb_instituicao.id_user', '=', 'tb_user.id')
+        ->where('tb_user.nome_user', 'LIKE', '%' . $pesquisa . '%')
+        ->orWhere('arroba_user', 'like', '%' . $pesquisa . '%')
+        ->get();
+        
+    return response()->json([
+        'sucesso' => true,
+        'mensagem' => 'Instituições encontradas com sucesso.',
+        'code' => 200,
+        'data' => $instituicoes,
+    ]);
     }
 }

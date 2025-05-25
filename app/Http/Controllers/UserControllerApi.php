@@ -738,4 +738,17 @@ class UserControllerApi extends Controller
     return $recommendedUsers;
 }
 
+public function procurarUsuario($pesquisa) // Adicione o parâmetro
+{
+    $usuarios = User::where('nome_user', 'like', '%' . $pesquisa . '%')
+        ->orWhere('arroba_user', 'like', '%' . $pesquisa . '%')
+        ->get();
+        
+    return response()->json([
+        'sucesso' => true,
+        'mensagem' => 'Usuarios encontrados com sucesso.',
+        'code' => 200,
+        'data' => $usuarios,
+    ]);
+}
 }

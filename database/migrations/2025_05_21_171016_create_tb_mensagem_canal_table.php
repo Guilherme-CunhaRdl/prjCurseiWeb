@@ -18,9 +18,9 @@ return new class extends Migration
             $table->longText('conteudo_mensagem_canal');
             $table->string('img_mensagem_canal', 300);
             $table->unsignedBigInteger('id_user_enviador');
-            $table->foreign('id_user_enviador')->references('id')->on('tb_canal')->onDelete('cascade');
+            $table->foreign('id_user_enviador')->references('id')->on('tb_user')->onDelete('cascade');
             $table->unsignedBigInteger('id_canal');
-            $table->foreign('id_canal')->references('id')->on('tb_user')->onDelete('cascade');            
+            $table->foreign('id_canal')->references('id')->on('tb_canal')->onDelete('cascade');            
             $table->timestamps();
         });
     }

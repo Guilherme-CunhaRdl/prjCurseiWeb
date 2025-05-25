@@ -436,36 +436,38 @@ return response()->json([
     {
 
 
-        $seguidor = DB::table('tb_seguidores AS seg')
-            ->join('tb_user AS seguidor', 'seg.id_user_seguidor', '=', 'seguidor.id')
-            ->join('tb_user AS seguido', 'seg.id_user_seguido', '=', 'seguido.id')
-            ->leftJoin('tb_chat AS c', function ($join) use ($idUser) {
-                $join->on(function ($q) use ($idUser) {
-                    $q->on('c.id_user1', '=', 'seg.id_user_seguidor')
-                        ->where('c.id_user2', '=', $idUser);
-                })->orOn(function ($q) use ($idUser) {
-                    $q->on('c.id_user2', '=', 'seg.id_user_seguidor')
-                        ->where('c.id_user1', '=', $idUser);
-                });
-            })
-            ->where('seg.id_user_seguido', $idUser)
-            ->where('seguidor.id', $idSeguidor)
-            ->select(
-                'seguidor.id AS id_seguidor',
-                'seguidor.nome_user AS nome_seguidor',
-                'seguidor.img_user AS img_seguidor',
-                'seguidor.arroba_user AS arroba_seguidor',
-                'c.id AS id_chat',
-                'seguido.id AS id_seguido',
+        $usuario = DB::table('tb_user AS seguidor')
+    ->leftJoin('tb_seguidores AS seg', function ($join) use ($idUser) {
+        $join->on('seg.id_user_seguidor', '=', 'seguidor.id')
+            ->where('seg.id_user_seguido', '=', $idUser);
+    })
+    ->leftJoin('tb_user AS seguido', 'seg.id_user_seguido', '=', 'seguido.id')
+    ->leftJoin('tb_chat AS c', function ($join) use ($idUser) {
+        $join->on(function ($q) use ($idUser) {
+            $q->on('c.id_user1', '=', 'seguidor.id')
+              ->where('c.id_user2', '=', $idUser);
+        })->orOn(function ($q) use ($idUser) {
+            $q->on('c.id_user2', '=', 'seguidor.id')
+              ->where('c.id_user1', '=', $idUser);
+        });
+    })
+    ->where('seguidor.id', $idSeguidor) 
+    ->select(
+        'seguidor.id AS id_seguidor',
+        'seguidor.nome_user AS nome_seguidor',
+        'seguidor.img_user AS img_seguidor',
+        'seguidor.arroba_user AS arroba_seguidor',
+        'c.id AS id_chat',
+        'seguido.id AS id_seguido'
+    )
+    ->first();
 
-            )
-            ->first();
 
 
         return response()->json([
             'sucesso' => true,
-            'seguidor' => $seguidor,
-            'message' => 'Mensagens Retornadas com Sucesso',
+            'seguidor' => $usuario,
+            'message' => 'Seguidores Retornados com Sucesso',
             'code' => 200,
         ]);
     }

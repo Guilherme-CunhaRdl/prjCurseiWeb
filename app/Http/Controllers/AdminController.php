@@ -6,6 +6,7 @@ use App\Models\Seguidores;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use App\Models\Adm;
 use App\Models\Instituicao;
 use App\Models\Post;
@@ -214,51 +215,51 @@ class AdminController extends Controller
         return view('area-adm.TodosRells', compact('Curtei'));
     }
 
+
+
     public function DashDoUserAdm($userId)
     {
-        $usuario = User::find($userId);
-
+        $usuario = User::withCount(['seguidor', 'seguindo'])->find($userId);
+    
         if (!$usuario) {
             return redirect()->back()->with('error', 'Usuário não encontrado.');
         }
-
+    
+     
         $numeroPosts = Post::where('id_user', $userId)->count();
         $numeroCurtidas = Curtida::whereIn('id_post', Post::where('id_user', $userId)->pluck('id'))->count();
-        $numeroSeguidores = Seguidores::where('id_user_seguido', $userId)->count();
-        $numeroSeguindo = Seguidores::where('id_user_seguidor', $userId)->count();
         $quantidadeCurtei = Curtei::where('id_user', $userId)->count();
-
-
-        $ultimosSeguidores = Seguidores::with(['usuarioSeguidor' => function($q) {
-            $q->withCount('seguidores');
+    
+      
+        $ultimosSeguidores = Seguidores::with(['usuarioSeguidor' => function($query) {
+            $query->select('id', 'nome_user', 'img_user', 'arroba_user');
         }])
         ->where('id_user_seguido', $userId)
-        ->where('status_seguidores', 1)
+        ->where('status_seguidores', true)
         ->orderBy('created_at', 'desc')
         ->limit(5)
         ->get();
     
-            
-
-        $seguindo = Seguidores::with(['usuarioSeguido' => function($q) {
-            $q->withCount('seguindo');
+   
+        $seguindo = Seguidores::with(['usuarioSeguido' => function($query) {
+            $query->select('id', 'nome_user', 'img_user', 'arroba_user');
         }])
         ->where('id_user_seguidor', $userId)
-        ->where('status_seguidores', 1)
+        ->where('status_seguidores', true)
         ->orderBy('created_at', 'desc')
         ->limit(5)
         ->get();
-
-        return view('area-adm.dashboardUser', compact(
-            'usuario',
-            'numeroPosts',
-            'numeroCurtidas',
-            'numeroSeguidores',
-            'numeroSeguindo',
-            'ultimosSeguidores',
-            'seguindo',
-            'quantidadeCurtei'
-        ));
+    
+        return view('area-adm.dashboardUser', [
+            'usuario' => $usuario,
+            'numeroPosts' => $numeroPosts,
+            'numeroCurtidas' => $numeroCurtidas,
+            'numeroSeguidores' => $usuario->seguidor_count, 
+            'numeroSeguindo' => $usuario->seguindo_count,
+            'ultimosSeguidores' => $ultimosSeguidores,
+            'seguindo' => $seguindo,
+            'quantidadeCurtei' => $quantidadeCurtei
+        ]);
     }
 
     public function DashDaInstAdm($userId)
@@ -284,88 +285,117 @@ class AdminController extends Controller
         ));
     }
 
-    public function atualizar(Request $request,$id){
-
-        $request-> validate([
+    public function atualizar(Request $request, $id)
+    {
+        $request->validate([
             'nome' => 'required|string|max:255',
-            'email' => 'required|email',
-            'senha' => 'required|string|max:255',
-            'foto' => 'nullable|image|max:2048',
-
-            'banner' => 'nullable|image|max:2048',
-
+            'email' => 'required|email|unique:tb_user,email_user,'.$id,
+            'usuario' => 'required|string|max:255|unique:tb_user,arroba_user,'.$id,
+            'senha' => 'nullable|string|min:6', // Senha opcional
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'banner' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
-      
+    
         $usuario = User::findOrFail($id);
-        
-        $nomeImagem = $usuario->img_user;
-        $nomeBanner = $usuario->banner_user;
+    
        
-
-        if ($request->hasFile('foto') && $request->file('foto')->isValid()) {
-            $extensao = $request->foto->extension();
-            $nomeImagem = md5($request->foto->getClientOriginalName() . strtotime('now')) . '.' . $extensao;
+        if ($request->hasFile('foto')) {
+   
+            if ($usuario->img_user && file_exists(public_path('img/user/fotoPerfil/'.$usuario->img_user))) {
+                unlink(public_path('img/user/fotoPerfil/'.$usuario->img_user));
+            }
+            
+            $nomeImagem = 'perfil_'.time().'.'.$request->foto->extension();
             $request->foto->move(public_path('img/user/fotoPerfil'), $nomeImagem);
+            $usuario->img_user = $nomeImagem;
         }
     
-        if ($request->hasFile('banner') && $request->file('banner')->isValid()) {
-            $extensaoBanner = $request->banner->extension();
-            $nomeBanner = md5($request->banner->getClientOriginalName() . strtotime('now')) . '.' . $extensaoBanner;
+     
+        if ($request->hasFile('banner')) {
+       
+            if ($usuario->banner_user && file_exists(public_path('img/user/bannerPerfil/'.$usuario->banner_user))) {
+                unlink(public_path('img/user/bannerPerfil/'.$usuario->banner_user));
+            }
+            
+            $nomeBanner = 'banner_'.time().'.'.$request->banner->extension();
             $request->banner->move(public_path('img/user/bannerPerfil'), $nomeBanner);
+            $usuario->banner_user = $nomeBanner;
         }
-
-
-        $usuario->nome_user= $request->input('nome');
-        $usuario->email_user= $request->input('email');
-        $usuario->senha_user= $request->input('senha');
-        $usuario->img_user = $nomeImagem;
-        $usuario->banner_user = $nomeBanner;
-
-
+    
+   
+        $usuario->nome_user = $request->nome;
+        $usuario->arroba_user = $request->usuario;
+        $usuario->email_user = $request->email;
+        
+     
+        if ($request->filled('senha')) {
+            $usuario->senha_user = Hash::make($request->senha);
+        }
+    
         $usuario->save();
-
-        return redirect()->route('usuario');
+    
+        return redirect()->route('usuario')->with('success', 'Usuário atualizado com sucesso!');
     }
 
 
 
     public function atualizarInst(Request $request, $id)
     {
-        $request->validate([
+ 
+        $validated = $request->validate([
             'nome' => 'required|string|max:255',
-            'email' => 'required|email',
-            'senha' => 'required|string|max:255',
-            'foto' => 'nullable|image|max:2048',
-            'banner' => 'nullable|image|max:2048',
+            'email' => 'required|email|unique:tb_user,email_user,'.$id,
+            'usuario' => 'required|string|max:255|unique:tb_user,arroba_user,'.$id,
+            'senha' => 'nullable|string|min:6',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'banner' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
         ]);
     
-        $usuario = User::findOrFail($id);
+        try {
+            $usuario = User::findOrFail($id);
+            if ($request->hasFile('foto')) {
+                if ($usuario->img_user && file_exists(public_path('img/user/fotoPerfil/'.$usuario->img_user))) {
+                    unlink(public_path('img/user/fotoPerfil/'.$usuario->img_user));
+                }
+                $nomeImagem = 'perfil_'.$id.'_'.time().'.'.$request->foto->extension();
+                $request->foto->move(public_path('img/user/fotoPerfil'), $nomeImagem);
+                
+
+                $usuario->img_user = $nomeImagem;
+            }
     
-        $nomeImagem = $usuario->img_user;
-        $nomeBanner = $usuario->banner_user;
+
+            if ($request->hasFile('banner')) {
+                if ($usuario->banner_user && file_exists(public_path('img/user/bannerPerfil/'.$usuario->banner_user))) {
+                    unlink(public_path('img/user/bannerPerfil/'.$usuario->banner_user));
+                }
+                $nomeBanner = 'banner_'.$id.'_'.time().'.'.$request->banner->extension();
+                $request->banner->move(public_path('img/user/bannerPerfil'), $nomeBanner);
+                $usuario->banner_user = $nomeBanner;
+            }
     
-        if ($request->hasFile('foto') && $request->file('foto')->isValid()) {
-            $extensao = $request->foto->extension();
-            $nomeImagem = md5($request->foto->getClientOriginalName() . strtotime('now')) . '.' . $extensao;
-            $request->foto->move(public_path('img/fotos'), $nomeImagem);
+  
+            $usuario->nome_user = $validated['nome'];
+            $usuario->email_user = $validated['email'];
+            $usuario->arroba_user = $validated['usuario'];
+    
+     
+            if (!empty($validated['senha'])) {
+                $usuario->senha_user = Hash::make($validated['senha']);
+            }
+    
+            $usuario->save();
+    
+            return redirect()->route('instituicao')->with('success', 'Perfil atualizado com sucesso!');
+    
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Erro ao atualizar perfil: '.$e->getMessage())
+                ->withInput();
         }
-    
-        if ($request->hasFile('banner') && $request->file('banner')->isValid()) {
-            $extensaoBanner = $request->banner->extension();
-            $nomeBanner = md5($request->banner->getClientOriginalName() . strtotime('now')) . '.' . $extensaoBanner;
-            $request->banner->move(public_path('img/fotos'), $nomeBanner);
-        }
-    
-        $usuario->nome_user = $request->input('nome');
-        $usuario->email_user = $request->input('email');
-        $usuario->senha_user = bcrypt($request->input('senha'));
-        $usuario->img_user = $nomeImagem;
-        $usuario->banner_user = $nomeBanner;
-    
-        $usuario->save();
-    
-        return redirect()->route('instituicao');
     }
+
+    
     
 
 

@@ -90,15 +90,15 @@ object-fit: cover;
 
 .SelecInputs {
     display: flex;
-    flex-wrap: wrap; /* Permite quebra de linha */
-    gap: 20px; /* Reduzi o gap para mobile */
+    flex-wrap: wrap;
+    gap: 20px;
     margin-top: 5%;
     width: 100%;
 }
 
 .pesqInput {
-    width: 100%; /* Agora responsivo */
-    max-width: 476px; /* Mantém o tamanho máximo original */
+    width: 100%; 
+    max-width: 476px;
     height: 50px;
     border-radius: 5px;
     background-color: var(--branco);
@@ -131,8 +131,8 @@ object-fit: cover;
 }
 
 .selectInst {
-    width: 100%; /* Agora responsivo */
-    max-width: 287px; /* Mantém o tamanho máximo original */
+    width: 100%; 
+    max-width: 287px;
     height: 50px;
     border-radius: 5px;
     background-color: var(--branco);

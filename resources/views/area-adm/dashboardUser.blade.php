@@ -46,7 +46,7 @@
                         <div class="itemDoUsuario">
                             <i class="bi bi-people"></i>
                             <div class="textoEstatiUser">
-                                <span>{{ $numeroSeguidores }}</span>
+                                <span>{{ $numeroSeguidores}}</span>
                                 <p>Seguidores</p>
                             </div>
                         </div>
@@ -146,19 +146,22 @@
                 @method('PUT')
                 <div class="topo-modal">
                 <div class="banner-modal">
-                    <img src="{{ asset('img/user/bannerPerfil/' . ($usuario->banner_user ?? 'default-banner.jpg')) }}" alt="">
+                    <img id="banner-preview" src="{{ asset('img/user/bannerPerfil/' . ($usuario->banner_user ?? 'default-banner.jpg')) }}" alt="Banner">
                 </div>
                 <div class="abaixo-do-banner">
                     <div class="img-perfil-modal">
-                        <img src="{{ asset('img/user/fotoPerfil/' . ($usuario->img_user ?? 'default-avatar.jpg')) }}" alt="">
+                        <img id="foto-preview" src="{{ asset('img/user/fotoPerfil/' . ($usuario->img_user ?? 'default-avatar.jpg')) }}" alt="Foto de perfil">
                     </div>
                     <div class="botoes-alter-modal">
-                    <label for="banner-upload" class="upload-label">Alterar foto de perfil</label>
-                    <input type="file" id="banner-upload" class="upload-input" name="foto">
+                        <label for="foto-upload" class="upload-label">
+                            <i class="bi bi-camera"></i> Alterar foto de perfil
+                        </label>
+                        <input type="file" id="foto-upload" class="upload-input" name="foto" accept="image/*">
 
-                    <label for="banner" class="upload-label">Alterar foto do banner</label>
-                    <input type="file" id="banner" class="upload-input" name="banner">
-                        
+                        <label for="banner-upload" class="upload-label">
+                            <i class="bi bi-image"></i> Alterar foto do banner
+                        </label>
+                        <input type="file" id="banner-upload" class="upload-input" name="banner" accept="image/*">
                     </div>
                 </div>
             </div>
@@ -191,16 +194,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        function abrirModalAlter() {
-            document.getElementById('contmodal').style.display = 'flex';
-        }
-        
-        function fecharModal(event) {
-            if (event.target === document.getElementById('contmodal')) {
-                document.getElementById('contmodal').style.display = 'none';
-            }
-        }
-    </script>
+    <script src="{{asset('js/abrirModalUser.js')}}"></script>
+
 </body>
 </html>

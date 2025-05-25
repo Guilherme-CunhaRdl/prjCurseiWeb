@@ -41,8 +41,8 @@ route::prefix('curseiAdm')->group(function(){
     Route::get('/ativarUsuarios/{id}','App\Http\Controllers\userController@ativarUsuarios')->middleware('auth:adm');
 
     Route::get('/alterarAdm/{id}','App\Http\Controllers\AdminController@update')->middleware('auth:adm');
-    Route::put('/usuario/{id}/atualizar', [AdminController::class, 'atualizar'])->name('usuario.atualizar');
-    Route::put('/instituicao/{id}/atualizarDados', [AdminController::class, 'atualizarInst'])->name('instituicao.atualizarDados');
+    Route::put('/usuario/{id}', [AdminController::class, 'atualizar'])->name('usuario.atualizar');
+    Route::put('/instituicao/{id}/atualizarInst', [AdminController::class, 'atualizarInst'])->name('instituicao.atualizarDados');
     Route::put('/instituicao/{id}/atualizarEndereco', [AdminController::class, 'atualizarInstDados'])->name('instituicao.atualizarEndereco');
     Route::get('/verificarInts/{id}/{acao}', 'App\Http\Controllers\AdminController@verificarInst');
 

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\UserPreferencia;
 use App\Models\Seguidores;
+use App\Models\Bloqueado;
 use Error;
 use Exception;
 use Illuminate\Support\Facades\Hash;
@@ -143,11 +144,14 @@ class UserControllerApi extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function showApi($id)
+    public function showApi($idPerfil,$idUser)
     {
         $user = User::withCount(['seguidor', 'seguindo', 'posts'])
-            ->where('id', $id)
+            ->where('id', $idPerfil)
             ->selectRaw('IF(exists(select 1 from tb_instituicao where id_user = tb_user.id and verificado_instituicao = 1), 1, 0) as instituicao')
+            ->selectRaw('IF(exists(select 1 from tb_bloqueado where id_user_bloqueado = tb_user.id and id_user_bloqueando = '.$idUser.'), 1, 0) as bloqueando')
+            ->selectRaw('IF(exists(select 1 from tb_bloqueado where id_user_bloqueando = tb_user.id and id_user_bloqueado = '.$idUser.'), 1, 0) as bloqueado')
+
             ->first();
 
 
@@ -716,6 +720,12 @@ class UserControllerApi extends Controller
                   ->where('id_user_bloqueando', $idUser)
                   ->orWhere('id_user_bloqueado', $idUser);
         })
+          ->whereNotIn('u.id', function($query) use ($idUser) {
+            $query->select('id_user_bloqueando')
+                  ->from('tb_bloqueado')
+                  ->where('id_user_bloqueando', $idUser)
+                  ->orWhere('id_user_bloqueado', $idUser);
+        })
         ->whereNotIn('u.id', function($query) use ($idUser) {
             $query->select('id_user')
                   ->from('tb_nao_interessado_post')
@@ -738,17 +748,36 @@ class UserControllerApi extends Controller
     return $recommendedUsers;
 }
 
-public function procurarUsuario($pesquisa) // Adicione o parâmetro
+public function procurarUsuario($pesquisa,$idUser) // Adicione o parâmetro
 {
-    $usuarios = User::where('nome_user', 'like', '%' . $pesquisa . '%')
-        ->orWhere('arroba_user', 'like', '%' . $pesquisa . '%')
-        ->get();
+    $usuarios = User::where(function($query) use ($pesquisa) {
+        $query->where('nome_user', 'like', '%' . $pesquisa . '%')
+              ->orWhere('arroba_user', 'like', '%' . $pesquisa . '%');
+    })
+    ->whereNotIn('id', function($query) use ($idUser) {
+        // Exclui usuários que bloquearam o $idUser
+        $query->select('id_user_bloqueando')
+              ->from('tb_bloqueado')
+              ->where('id_user_bloqueado', $idUser);
+    })
+    ->whereNot('id',$idUser)
+    ->get();
         
     return response()->json([
         'sucesso' => true,
         'mensagem' => 'Usuarios encontrados com sucesso.',
         'code' => 200,
         'data' => $usuarios,
+    ]);
+}
+public function debloquearUser ($idPerfil,$idUser){
+        $bloqueado = Bloqueado::where('id_user_bloqueado',$idPerfil)->where('id_user_bloqueando',$idUser)->delete();
+
+       return response()->json([
+        'sucesso' => true,
+        'mensagem' => 'Usuarios desbloqueado com sucesso.',
+        'code' => 200,
+        
     ]);
 }
 }

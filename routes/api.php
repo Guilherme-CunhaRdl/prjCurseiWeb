@@ -47,13 +47,14 @@ Route::get('/cursei/user', [UserControllerApi::class, 'indexApi'])->name('user.i
 Route::post('/cursei/user', [UserControllerApi::class, 'storeApi'])->name('user.store');
 Route::delete('/cursei/user/{id}', [UserControllerApi::class, 'destroyApi'])->name('user.destroy');
 Route::put('/cursei/user/{id}', [UserControllerApi::class, 'updateApi'])->name('user.update');
-Route::get('/cursei/user/{id}', [UserControllerApi::class, 'showApi'])->name('user.show');
+Route::get('/cursei/user/{idPerfil}/{idUser}', [UserControllerApi::class, 'showApi'])->name('user.show');
 Route::get('/cursei/user/verificarSeSegue/{idUser}/{idPerfil}', [UserControllerApi::class, 'verificarSeSegue'])->name('user.verificarSeSegue');
 Route::get('/cursei/user/seguidoresSeguindo/{id}/{acao}', [UserControllerApi::class, 'BuscarSeguidoresSeguindo'])->name('user.BuscarSeguidoresSeguindo');
 Route::get('/cursei/user/deseguirOuTirarSeguidor/{idUser}/{idPerfil}/{acao}', [UserControllerApi::class, 'deseguirOuTirarSeguidor'])->name('user.deseguirOuTirarSeguidor');
 Route::get('/cursei/user/notificacao/{id}/{acao}', [UserControllerApi::class, 'notificacao'])->name('user.notificacao');
 Route::get('/cursei/user/sugerirUsuario/{idUser}/{limite}', [UserControllerApi::class, 'sugerirUsuario'])->name('user.sugerirUsuario');
-Route::get('/cursei/user/procurarUsuario/{pesquisa}', [UserControllerApi::class, 'procurarUsuario'])->name('user.procurarUsuario');
+Route::get('/cursei/user/procurarUsuario/{pesquisa}/{idUser}', [UserControllerApi::class, 'procurarUsuario'])->name('user.procurarUsuario');
+Route::get('/cursei/user/desbloquear/{idPerfil}/{idUser}', [UserControllerApi::class, 'debloquearUser'])->name('user.debloquearUser');
 
 Route::post('/cursei/user/update-perfil/{id}', [UserControllerApi::class, 'updatePerfilApi']);
 

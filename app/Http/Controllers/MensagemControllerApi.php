@@ -53,6 +53,7 @@ $privadasQuery = DB::table('tb_mensagem')
     IF(user1.id = ?, user2.img_user, user1.img_user) AS img,
     IF(user1.id = ?, user2.arroba_user, user1.arroba_user) AS arroba,
     IF(user1.id = ?, user2.id, user1.id) AS id_remetente,
+    tb_mensagem.img_mensagem AS img_mensagem,
     tb_mensagem.conteudo_mensagem AS ultima_mensagem,
     tb_mensagem.created_at,
     'privada' AS tipo
@@ -95,6 +96,7 @@ $instituicoesQuery = DB::table('tb_mensagem')
     IF(user1.id = ?, user2.img_user, user1.img_user) AS img,
     IF(user1.id = ?, user2.arroba_user, user1.arroba_user) AS arroba,
     IF(user1.id = ?, user2.id, user1.id) AS id_remetente,
+    tb_mensagem.img_mensagem AS img_mensagem,
     tb_mensagem.conteudo_mensagem AS ultima_mensagem,
     tb_mensagem.created_at,
     'instituicao' AS tipo
@@ -125,6 +127,7 @@ $canaisQuery = DB::table('tb_canal AS canal')
     canal.imagem_canal AS img,
     user.arroba_user as arroba,
     mensagemC.id_user_enviador AS id_remetente,
+    mensagemC.img_mensagem_canal AS img_mensagem, 
     mensagemC.conteudo_mensagem_canal AS ultima_mensagem,
     mensagemC.created_at,
     'canal' AS tipo

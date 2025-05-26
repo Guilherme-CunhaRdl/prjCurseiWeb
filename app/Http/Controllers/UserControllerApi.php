@@ -262,18 +262,23 @@ class UserControllerApi extends Controller
                 ->join('tb_user', 'tb_instituicao.id_user', '=', 'tb_user.id')
                 ->select(['tb_instituicao.id AS id_instituicao', 'tb_user.*'])
                 ->where('tb_user.email_user', $request->emailDigitado)
+                // ->where('tb_user.senha_user', $request->senhaDigitada)
                 ->first();
 
             if(!$user){
-                $user = User::where('email_user', $request->emailDigitado)->first();
+                $user = User::where('email_user', $request->emailDigitado)                
+                // ->where('senha_user', $request->senhaDigitada)
+                ->first();
             }
+
+            $converterNumero = strval($user->id);
 
             return response()->json([
                 'sucesso' => true,
                 'mensagem' => 'Fim do Processo',
                 'code' => 200,
                 'usuario' => $user,
-                'id_instituicao' => $user->id_instituicao ? $user->id : '0' 
+                'id_instituicao' => $user->id_instituicao ? $converterNumero : '0' 
             ]);
         } catch (Exception $e) {
 

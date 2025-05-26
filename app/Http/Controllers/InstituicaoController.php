@@ -197,20 +197,23 @@ class InstituicaoController extends Controller
         ]);
     
         $instituicao = DB::table('tb_user')
-            ->where('email_user', $request->email)
+            ->join('tb_instituicao', 'tb_user.id', '=', 'tb_instituicao.id_user')
+            ->where('tb_user.email_user', $request->email)
+            ->where('tb_instituicao.verificado_instituicao', true)
             ->first();
-    
+
         if ($instituicao && Hash::check($request->senha, $instituicao->senha_user)) {
             // Se a senha estiver correta
-    
             // Autenticar o usuário
-            session(['instituicao_id' => $instituicao->id]);
+            session(['instituicao_id' => $instituicao->id_user]);
     
             // Redirecionar para a página inicial da instituição
-            return redirect()->route('dashboard.index');
+            return redirect()->route('dashboard.index')
+                ->with('success', 'Login realizado com sucesso!');
         } else {
             return redirect()->route('login')->withErrors('Email ou senha inválidos.');
         }
+
     }
 
     public function logoutInstituicao()

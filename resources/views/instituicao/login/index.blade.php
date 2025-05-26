@@ -22,12 +22,16 @@
                     <p class="textoCursei"> Cursei </p>
                 </div>
                 <div class="d-flex align-items-center justify-content-center  h-50 w-75 bg-white flex-grow-1">
-                            <form  action="{{route('fazerLogin')}}" method="POST">
+                            <form  action="{{route('fazerLogin')}}" method="post">
                                 @csrf
                             <div class="conteudoPagina bg-white mh-100 mw-100 ">
                             <p class="text-black-50 mb-1">Instituição</p>
-                            <h1 class="fw-semibold mb-4">Faça login ao Cursei!</h1>
-
+                            <h1 class="fw-semibold mb-2">Faça login ao Cursei!</h1>
+                                @if ($errors->any())
+                                    <div class="text-center text-danger mb-2">
+                                        {{ $errors->first() }}
+                                    </div>
+                                @endif
                             <div class="mb-3 position-relative">
                                 <input type="email" class="form-control estilizacaoInput pe-5" name="email" placeholder="E-mail">
                             <img src="{{ url('img/img-instituicao/img-login/iconEmail.png') }}" class="position-absolute top-50 end-0 translate-middle-y me-3 text-muted "  >
@@ -37,7 +41,7 @@
                                 <img src="{{ url('img/img-instituicao/img-login/iconSenha.png') }}" class="position-absolute top-50 end-0 translate-middle-y me-3 text-muted" id="verSenha" style="cursor: pointer;" >
                               </div>
 
-                            <a href="{{ route('dashboard.index') }}"> <button class="btn botaoLogin w-100 text-white fw-bold"> LOGIN</button></a>
+                             <button type="submit" class="btn botaoLogin w-100 text-white fw-bold">LOGIN</button>
                             </div>
                             </form>
                 </div>

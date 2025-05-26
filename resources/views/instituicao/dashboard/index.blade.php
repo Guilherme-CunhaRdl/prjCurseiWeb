@@ -37,7 +37,7 @@
                 </div>
 
                 <div class="container-fluid  mt-5  d-flex justify-content-center align-items-center ">
-                    <div class="info-dashboard  ">
+                    <div class="info-dashboard  mb-5">
                         <div class="box-grafico-engajamento d-none  d-md-grid align-items-start ">
                             <div class="conteudo-grafico-engajamento">
                                 <div class="d-flex flex-row justify-content-between col-12">
@@ -163,7 +163,6 @@
 
 
 
-                </div>
 
 
 

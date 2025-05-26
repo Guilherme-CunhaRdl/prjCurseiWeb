@@ -99,6 +99,7 @@ class PostControllerApi extends Controller
                 ->whereNull('bloqueio1.id')->whereNull('bloqueio2.id')
                 ->where('tb_post.id_user', '!=', $idUser)
                 ->where('tb_post.status_post', 1)
+                ->where('tb_user.status_user', 1)
                 ->groupBy(
                     'tb_post.id_user',
                     'tb_post.id',
@@ -282,7 +283,6 @@ IF(
         $posts = $query
             ->offset($ignorarPosts)
             ->limit($quantidade)
-            ->where('tb_post.status_post', 1)
             ->get();
 
         return  response()->json([

@@ -73,12 +73,17 @@ class UserControllerApi extends Controller
                 $extensao = $request->file('imgUser')->getClientOriginalExtension();
                 $nomeImagem = time() . '_' . uniqid() . '.' . $extensao;
                 $request->file('imgUser')->move(public_path('img/user/fotoPerfil'), $nomeImagem);
+            }else{
+                $nomeImagem ='padrao.png';
             }
 
             if ($request->hasFile('bannerUser') && $request->file('bannerUser')->isValid()) {
                 $extensaoBanner = $request->file('bannerUser')->getClientOriginalExtension();
                 $nomeBanner = time() . '_' . uniqid() . '.' . $extensaoBanner;
                 $request->file('bannerUser')->move(public_path('img/user/bannerPerfil'), $nomeBanner);
+            }
+            else{
+                $nomeBanner ='padrao.png';
             }
 
             // Criação do usuário
@@ -718,6 +723,7 @@ class UserControllerApi extends Controller
                  WHERE c.id_user = '.$idUser.' 
                  AND c.id_user = u.id) * 2 AS total_score')
         )
+        
         ->where('u.id', '!=', $idUser)
         ->whereNotIn('u.id', function($query) use ($idUser) {
             $query->select('id_user_bloqueado')
@@ -755,17 +761,22 @@ class UserControllerApi extends Controller
 
 public function procurarUsuario($pesquisa,$idUser) // Adicione o parâmetro
 {
-    $usuarios = User::where(function($query) use ($pesquisa) {
+    $usuarios = User::leftJoin('tb_instituicao', 'tb_instituicao.id_user', '=', 'tb_user.id')
+    ->select(
+        'tb_user.*',
+        DB::raw('CASE WHEN tb_instituicao.verificado_instituicao = 1 THEN 1 ELSE 0 END as instituicao')
+    )
+    ->where(function($query) use ($pesquisa) {
         $query->where('nome_user', 'like', '%' . $pesquisa . '%')
               ->orWhere('arroba_user', 'like', '%' . $pesquisa . '%');
     })
-    ->whereNotIn('id', function($query) use ($idUser) {
-        // Exclui usuários que bloquearam o $idUser
+    ->whereNotIn('tb_user.id', function($query) use ($idUser) {
         $query->select('id_user_bloqueando')
               ->from('tb_bloqueado')
               ->where('id_user_bloqueado', $idUser);
     })
-    ->whereNot('id',$idUser)
+    ->where('tb_user.id', '!=', $idUser)
+    ->where('tb_user.status_user',1)
     ->get();
         
     return response()->json([

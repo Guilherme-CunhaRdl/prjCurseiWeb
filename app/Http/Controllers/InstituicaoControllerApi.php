@@ -49,6 +49,7 @@ class instituicaoControllerApi extends Controller
     $instituicoes = Instituicao::join('tb_user', 'tb_instituicao.id_user', '=', 'tb_user.id')
         ->where('tb_user.nome_user', 'LIKE', '%' . $pesquisa . '%')
         ->orWhere('arroba_user', 'like', '%' . $pesquisa . '%')
+        ->where('tb_user.status_user',1)
         ->get();
         
     return response()->json([

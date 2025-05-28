@@ -73,12 +73,16 @@ class UserControllerApi extends Controller
                 $extensao = $request->file('imgUser')->getClientOriginalExtension();
                 $nomeImagem = time() . '_' . uniqid() . '.' . $extensao;
                 $request->file('imgUser')->move(public_path('img/user/fotoPerfil'), $nomeImagem);
+            } else {
+                $nomeImagem = 'padrao.png';
             }
 
             if ($request->hasFile('bannerUser') && $request->file('bannerUser')->isValid()) {
                 $extensaoBanner = $request->file('bannerUser')->getClientOriginalExtension();
                 $nomeBanner = time() . '_' . uniqid() . '.' . $extensaoBanner;
                 $request->file('bannerUser')->move(public_path('img/user/bannerPerfil'), $nomeBanner);
+            } else {
+                $nomeBanner = 'padrao.png';
             }
 
             // Criação do usuário
@@ -144,13 +148,13 @@ class UserControllerApi extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function showApi($idPerfil,$idUser)
+    public function showApi($idPerfil, $idUser)
     {
         $user = User::withCount(['seguidor', 'seguindo', 'posts'])
             ->where('id', $idPerfil)
             ->selectRaw('IF(exists(select 1 from tb_instituicao where id_user = tb_user.id and verificado_instituicao = 1), 1, 0) as instituicao')
-            ->selectRaw('IF(exists(select 1 from tb_bloqueado where id_user_bloqueado = tb_user.id and id_user_bloqueando = '.$idUser.'), 1, 0) as bloqueando')
-            ->selectRaw('IF(exists(select 1 from tb_bloqueado where id_user_bloqueando = tb_user.id and id_user_bloqueado = '.$idUser.'), 1, 0) as bloqueado')
+            ->selectRaw('IF(exists(select 1 from tb_bloqueado where id_user_bloqueado = tb_user.id and id_user_bloqueando = ' . $idUser . '), 1, 0) as bloqueando')
+            ->selectRaw('IF(exists(select 1 from tb_bloqueado where id_user_bloqueando = tb_user.id and id_user_bloqueado = ' . $idUser . '), 1, 0) as bloqueado')
 
             ->first();
 
@@ -265,10 +269,10 @@ class UserControllerApi extends Controller
                 // ->where('tb_user.senha_user', $request->senhaDigitada)
                 ->first();
 
-            if(!$user){
-                $user = User::where('email_user', $request->emailDigitado)                
-                // ->where('senha_user', $request->senhaDigitada)
-                ->first();
+            if (!$user) {
+                $user = User::where('email_user', $request->emailDigitado)
+                    // ->where('senha_user', $request->senhaDigitada)
+                    ->first();
             }
 
             $converterNumero = strval($user->id);
@@ -278,7 +282,7 @@ class UserControllerApi extends Controller
                 'mensagem' => 'Fim do Processo',
                 'code' => 200,
                 'usuario' => $user,
-                'id_instituicao' => $user->id_instituicao ? $converterNumero : '0' 
+                'id_instituicao' => $user->id_instituicao ? $converterNumero : '0'
             ]);
         } catch (Exception $e) {
 
@@ -569,6 +573,7 @@ class UserControllerApi extends Controller
       CONCAT('curtida_', tb_curtida.id) AS id,
     tb_curtida.created_at,
     'curtida' AS tipo,
+    tb_user.id AS idUsuario,
     tb_user.nome_user AS usuario,
     tb_user.arroba_user AS arroba,
     tb_user.img_user AS img_user,
@@ -578,8 +583,8 @@ class UserControllerApi extends Controller
     FROM tb_curtida
     JOIN tb_post ON tb_curtida.id_post = tb_post.id
     JOIN tb_user ON tb_curtida.id_user = tb_user.id
-    
     WHERE tb_post.id_user = $id
+    AND tb_curtida.id_user != $id 
 
     UNION ALL
 
@@ -588,6 +593,7 @@ class UserControllerApi extends Controller
     CONCAT('comentario_', tb_comentario.id) AS id,
     tb_comentario.created_at,
     'comentario' AS tipo,
+    tb_user.id AS idUsuario,
     tb_user.nome_user AS usuario,
     tb_user.arroba_user AS arroba,
     tb_user.img_user AS img_user,
@@ -598,8 +604,33 @@ class UserControllerApi extends Controller
     JOIN tb_post ON tb_comentario.id_post = tb_post.id
     JOIN tb_user ON tb_comentario.id_user = tb_user.id
     WHERE tb_post.id_user = $id
+    AND tb_comentario.id_user != $id  
 
     UNION ALL
+        
+    -- REPOSTS (SHARES)
+ SELECT 
+    CONCAT('repost_', tb_post.id) AS id,
+    tb_post.created_at,
+    'repost' AS tipo,
+    tb_user.id AS idUsuario,
+    tb_user.nome_user AS usuario,
+    tb_user.arroba_user AS arroba,
+    tb_user.img_user AS img_user,
+    original_post.titulo_post AS referencia,  -- Título do post original
+    TIMESTAMPDIFF(SECOND, tb_post.created_at, NOW()) AS tempo_inserido,
+    NULL AS mensagem
+FROM tb_post
+JOIN tb_user ON tb_post.id_user = tb_user.id
+JOIN tb_post AS original_post ON tb_post.repost_id = original_post.id  -- Junta com o post original
+WHERE 
+    tb_post.repost_id IS NOT NULL  -- Só considera reposts
+    AND tb_post.id_user != $id  -- Exclui reposts do próprio usuário
+    AND original_post.id_user = $id  -- Garante que o post original é do usuário
+    UNION ALL
+
+
+
 
     -- NOVOS SEGUIDORES
    SELECT 
@@ -607,6 +638,7 @@ class UserControllerApi extends Controller
 
     tb_seguidores.created_at,
     'seguido' AS tipo,
+    tb_user.id AS idUsuario,
     tb_user.nome_user AS usuario,
     tb_user.arroba_user AS arroba,
     tb_user.img_user AS img_user,
@@ -616,6 +648,7 @@ class UserControllerApi extends Controller
     FROM tb_seguidores
     JOIN tb_user ON tb_seguidores.id_user_seguidor = tb_user.id
     WHERE tb_seguidores.id_user_seguido = $id
+    AND tb_seguidores.id_user_seguidor != $id  
 ) as notificacoes"))
             ->orderBy('created_at', 'desc');
 
@@ -646,143 +679,150 @@ class UserControllerApi extends Controller
 
         return $notificacoesAgrupadas;
     }
-    public function sugerirUsuario($idUser,$limite)
+    public function sugerirUsuario($idUser, $limite)
     {
-      
 
 
-   // Primeiro, obtemos as preferências do usuário
-    $userPreferences = DB::table('tb_user_preferencia')
-        ->where('id_user', $idUser)
-        ->pluck('preferencia')
-        ->toArray();
 
-    // Se não houver preferências, usar array vazio para evitar erro no SQL
-    $preferencesList = !empty($userPreferences) ? $userPreferences : ['Indefinido'];
+        // Primeiro, obtemos as preferências do usuário
+        $userPreferences = DB::table('tb_user_preferencia')
+            ->where('id_user', $idUser)
+            ->pluck('preferencia')
+            ->toArray();
 
-    $recommendedUsers = DB::table('tb_user as u')
-        ->select(
-            'u.id',
-            'u.nome_user',
-            'u.arroba_user',
-            'u.img_user',
-            DB::raw('
+        // Se não houver preferências, usar array vazio para evitar erro no SQL
+        $preferencesList = !empty($userPreferences) ? $userPreferences : ['Indefinido'];
+
+        $recommendedUsers = DB::table('tb_user as u')
+            ->select(
+                'u.id',
+                'u.nome_user',
+                'u.arroba_user',
+                'u.img_user',
+                DB::raw('
                 (SELECT COUNT(*) FROM tb_user_preferencia up 
-                 WHERE up.id_user = u.id AND up.preferencia IN ("'.implode('","', $preferencesList).'")) * 5 AS interest_score'),
-            DB::raw('
+                 WHERE up.id_user = u.id AND up.preferencia IN ("' . implode('","', $preferencesList) . '")) * 5 AS interest_score'),
+                DB::raw('
                 (SELECT COUNT(*) FROM tb_seguidores s1 
                  WHERE s1.id_user_seguidor = u.id 
-                 AND s1.id_user_seguido IN (SELECT id_user_seguido FROM tb_seguidores WHERE id_user_seguidor = '.$idUser.')) * 4 AS following_score'),
-            DB::raw('
+                 AND s1.id_user_seguido IN (SELECT id_user_seguido FROM tb_seguidores WHERE id_user_seguidor = ' . $idUser . ')) * 4 AS following_score'),
+                DB::raw('
                 (SELECT COUNT(*) FROM tb_seguidores s2 
                  WHERE s2.id_user_seguido = u.id 
-                 AND s2.id_user_seguidor IN (SELECT id_user_seguido FROM tb_seguidores WHERE id_user_seguidor = '.$idUser.')) * 4 AS follower_score'),
-            DB::raw('
+                 AND s2.id_user_seguidor IN (SELECT id_user_seguido FROM tb_seguidores WHERE id_user_seguidor = ' . $idUser . ')) * 4 AS follower_score'),
+                DB::raw('
                 ((SELECT COUNT(*) FROM tb_comentario c WHERE c.id_user = u.id AND c.id_post IN 
-                    (SELECT id FROM tb_post WHERE id_user = '.$idUser.')) +
+                    (SELECT id FROM tb_post WHERE id_user = ' . $idUser . ')) +
                  (SELECT COUNT(*) FROM tb_post p WHERE p.repost_id IN 
-                    (SELECT id FROM tb_post WHERE id_user = '.$idUser.') AND p.id_user = u.id)) * 3 AS interaction_score'),
-            DB::raw('
+                    (SELECT id FROM tb_post WHERE id_user = ' . $idUser . ') AND p.id_user = u.id)) * 3 AS interaction_score'),
+                DB::raw('
                 (SELECT COUNT(DISTINCT ph1.id_hashtag) FROM tb_post_hashtag ph1 
                  JOIN tb_post p1 ON ph1.id_post = p1.id 
                  WHERE p1.id_user = u.id 
                  AND ph1.id_hashtag IN 
                     (SELECT ph2.id_hashtag FROM tb_post_hashtag ph2 
                      JOIN tb_post p2 ON ph2.id_post = p2.id 
-                     WHERE p2.id_user = '.$idUser.')) * 2 AS hashtag_score'),
-            DB::raw('
+                     WHERE p2.id_user = ' . $idUser . ')) * 2 AS hashtag_score'),
+                DB::raw('
                 (SELECT COUNT(*) FROM tb_comentario c 
-                 WHERE c.id_user = '.$idUser.' 
+                 WHERE c.id_user = ' . $idUser . ' 
                  AND c.id_user = u.id) * 2 AS comment_like_score'),
-            DB::raw('
+                DB::raw('
                 (SELECT COUNT(*) FROM tb_user_preferencia up 
-                 WHERE up.id_user = u.id AND up.preferencia IN ("'.implode('","', $preferencesList).'")) * 5 +
+                 WHERE up.id_user = u.id AND up.preferencia IN ("' . implode('","', $preferencesList) . '")) * 5 +
                 (SELECT COUNT(*) FROM tb_seguidores s1 
                  WHERE s1.id_user_seguidor = u.id 
-                 AND s1.id_user_seguido IN (SELECT id_user_seguido FROM tb_seguidores WHERE id_user_seguidor = '.$idUser.')) * 4 +
+                 AND s1.id_user_seguido IN (SELECT id_user_seguido FROM tb_seguidores WHERE id_user_seguidor = ' . $idUser . ')) * 4 +
                 (SELECT COUNT(*) FROM tb_seguidores s2 
                  WHERE s2.id_user_seguido = u.id 
-                 AND s2.id_user_seguidor IN (SELECT id_user_seguido FROM tb_seguidores WHERE id_user_seguidor = '.$idUser.')) * 4 +
+                 AND s2.id_user_seguidor IN (SELECT id_user_seguido FROM tb_seguidores WHERE id_user_seguidor = ' . $idUser . ')) * 4 +
                 ((SELECT COUNT(*) FROM tb_comentario c WHERE c.id_user = u.id AND c.id_post IN 
-                    (SELECT id FROM tb_post WHERE id_user = '.$idUser.')) +
+                    (SELECT id FROM tb_post WHERE id_user = ' . $idUser . ')) +
                  (SELECT COUNT(*) FROM tb_post p WHERE p.repost_id IN 
-                    (SELECT id FROM tb_post WHERE id_user = '.$idUser.') AND p.id_user = u.id)) * 3 +
+                    (SELECT id FROM tb_post WHERE id_user = ' . $idUser . ') AND p.id_user = u.id)) * 3 +
                 (SELECT COUNT(DISTINCT ph1.id_hashtag) FROM tb_post_hashtag ph1 
                  JOIN tb_post p1 ON ph1.id_post = p1.id 
                  WHERE p1.id_user = u.id 
                  AND ph1.id_hashtag IN 
                     (SELECT ph2.id_hashtag FROM tb_post_hashtag ph2 
                      JOIN tb_post p2 ON ph2.id_post = p2.id 
-                     WHERE p2.id_user = '.$idUser.')) * 2 +
+                     WHERE p2.id_user = ' . $idUser . ')) * 2 +
                 (SELECT COUNT(*) FROM tb_comentario c 
-                 WHERE c.id_user = '.$idUser.' 
+                 WHERE c.id_user = ' . $idUser . ' 
                  AND c.id_user = u.id) * 2 AS total_score')
-        )
-        ->where('u.id', '!=', $idUser)
-        ->whereNotIn('u.id', function($query) use ($idUser) {
-            $query->select('id_user_bloqueado')
-                  ->from('tb_bloqueado')
-                  ->where('id_user_bloqueando', $idUser)
-                  ->orWhere('id_user_bloqueado', $idUser);
-        })
-          ->whereNotIn('u.id', function($query) use ($idUser) {
-            $query->select('id_user_bloqueando')
-                  ->from('tb_bloqueado')
-                  ->where('id_user_bloqueando', $idUser)
-                  ->orWhere('id_user_bloqueado', $idUser);
-        })
-        ->whereNotIn('u.id', function($query) use ($idUser) {
-            $query->select('id_user')
-                  ->from('tb_nao_interessado_post')
-                  ->where('id_user', $idUser);
-        })
-        
-        ->whereNotIn('u.id', function($query) use ($idUser) {
-            // Exclui usuários que o $idUser já segue
-            $query->select('id_user_seguido')
-                  ->from('tb_seguidores')
-                  ->where('id_user_seguidor', $idUser)
-                  ->where('status_seguidores', 1);
-                        })
-        ->where('u.status_user', 1)
-        ->orderByDesc('total_score')
-        ->limit($limite)
-        ->get();
+            )
+
+            ->where('u.id', '!=', $idUser)
+            ->whereNotIn('u.id', function ($query) use ($idUser) {
+                $query->select('id_user_bloqueado')
+                    ->from('tb_bloqueado')
+                    ->where('id_user_bloqueando', $idUser)
+                    ->orWhere('id_user_bloqueado', $idUser);
+            })
+            ->whereNotIn('u.id', function ($query) use ($idUser) {
+                $query->select('id_user_bloqueando')
+                    ->from('tb_bloqueado')
+                    ->where('id_user_bloqueando', $idUser)
+                    ->orWhere('id_user_bloqueado', $idUser);
+            })
+            ->whereNotIn('u.id', function ($query) use ($idUser) {
+                $query->select('id_user')
+                    ->from('tb_nao_interessado_post')
+                    ->where('id_user', $idUser);
+            })
+
+            ->whereNotIn('u.id', function ($query) use ($idUser) {
+                // Exclui usuários que o $idUser já segue
+                $query->select('id_user_seguido')
+                    ->from('tb_seguidores')
+                    ->where('id_user_seguidor', $idUser)
+                    ->where('status_seguidores', 1);
+            })
+            ->where('u.status_user', 1)
+            ->orderByDesc('total_score')
+            ->limit($limite)
+            ->get();
 
 
-    return $recommendedUsers;
-}
+        return $recommendedUsers;
+    }
 
-public function procurarUsuario($pesquisa,$idUser) // Adicione o parâmetro
-{
-    $usuarios = User::where(function($query) use ($pesquisa) {
-        $query->where('nome_user', 'like', '%' . $pesquisa . '%')
-              ->orWhere('arroba_user', 'like', '%' . $pesquisa . '%');
-    })
-    ->whereNotIn('id', function($query) use ($idUser) {
-        // Exclui usuários que bloquearam o $idUser
-        $query->select('id_user_bloqueando')
-              ->from('tb_bloqueado')
-              ->where('id_user_bloqueado', $idUser);
-    })
-    ->whereNot('id',$idUser)
-    ->get();
-        
-    return response()->json([
-        'sucesso' => true,
-        'mensagem' => 'Usuarios encontrados com sucesso.',
-        'code' => 200,
-        'data' => $usuarios,
-    ]);
-}
-public function debloquearUser ($idPerfil,$idUser){
-        $bloqueado = Bloqueado::where('id_user_bloqueado',$idPerfil)->where('id_user_bloqueando',$idUser)->delete();
+    public function procurarUsuario($pesquisa, $idUser) // Adicione o parâmetro
+    {
+        $usuarios = User::leftJoin('tb_instituicao', 'tb_instituicao.id_user', '=', 'tb_user.id')
+            ->select(
+                'tb_user.*',
+                DB::raw('CASE WHEN tb_instituicao.verificado_instituicao = 1 THEN 1 ELSE 0 END as instituicao')
+            )
+            ->where(function ($query) use ($pesquisa) {
+                $query->where('nome_user', 'like', '%' . $pesquisa . '%')
+                    ->orWhere('arroba_user', 'like', '%' . $pesquisa . '%');
+            })
+            ->whereNotIn('tb_user.id', function ($query) use ($idUser) {
+                $query->select('id_user_bloqueando')
+                    ->from('tb_bloqueado')
+                    ->where('id_user_bloqueado', $idUser);
+            })
+            ->where('tb_user.id', '!=', $idUser)
+            ->where('tb_user.status_user', 1)
+            ->get();
 
-       return response()->json([
-        'sucesso' => true,
-        'mensagem' => 'Usuarios desbloqueado com sucesso.',
-        'code' => 200,
-        
-    ]);
-}
+        return response()->json([
+            'sucesso' => true,
+            'mensagem' => 'Usuarios encontrados com sucesso.',
+            'code' => 200,
+            'data' => $usuarios,
+        ]);
+    }
+    public function debloquearUser($idPerfil, $idUser)
+    {
+        $bloqueado = Bloqueado::where('id_user_bloqueado', $idPerfil)->where('id_user_bloqueando', $idUser)->delete();
+
+        return response()->json([
+            'sucesso' => true,
+            'mensagem' => 'Usuarios desbloqueado com sucesso.',
+            'code' => 200,
+
+        ]);
+    }
 }

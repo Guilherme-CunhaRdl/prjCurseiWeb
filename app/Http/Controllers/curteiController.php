@@ -58,11 +58,27 @@ class curteiController extends Controller
 
     public function storeCurtei(Request $request)
     {
-        \Log::info('Iniciando upload', ['files' => $request->allFiles()]);
+        \Log::info('Dados recebidos:', $request->all());
+        \Log::info('Arquivos recebidos:', $request->allFiles());
         // Validação dos dados
         $validated = $request->validate([
-            'caminho_curtei' => 'required|file|mimes:mp4,mov,avi|max:25600', // 25MB
-            'caminho_curtei_thumb' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // 2MB
+            'caminho_curtei' => [
+                'required',
+                'file',
+                function ($attribute, $value, $fail) {
+                    $allowed = ['video/mp4', 'video/quicktime', 'video/x-msvideo'];
+                    if (!in_array($value->getMimeType(), $allowed)) {
+                        $fail("O vídeo deve ser do tipo: mp4, mov, avi.");
+                    }
+                },
+                'max:25600' // 25MB
+            ],
+            'caminho_curtei_thumb' => [
+                'required',
+                'image',
+                'mimes:jpeg,png,jpg,gif',
+                'max:2048' // 2MB
+            ],
             'legenda_curtei' => 'nullable|string|max:220',
             'id_user' => 'required|integer|exists:tb_user,id' 
         ]);

@@ -22,122 +22,141 @@ class MensagemControllerApi extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function selectChatApi($idUserRecebidor, $tipo)
-    {
-        if ($tipo == 'todas') {
-            $sub = DB::table('tb_mensagem')
-                ->select(DB::raw('MAX(id) as ultima_mensagem_id'))
-                ->groupBy('id_chat');
+    public function selectChatApi($idUser, $tipo, $pesquisa)
+{
+    $idUser = (int) $idUser;
+    
+  // Subquery para última mensagem privada
+$subPrivado = DB::table('tb_mensagem')
+    ->select(DB::raw('MAX(id) as ultima_mensagem_id'))
+    ->groupBy('id_chat');
 
-            $queryBuilder = DB::table('tb_mensagem')
-                ->join('tb_user AS enviador', 'tb_mensagem.id_user_enviador', '=', 'enviador.id')
-                ->join('tb_chat AS c', 'tb_mensagem.id_chat', '=', 'c.id')
-                ->join('tb_user AS user1', 'c.id_user1', '=', 'user1.id')
-                ->join('tb_user AS user2', 'c.id_user2', '=', 'user2.id')
-                ->joinSub($sub, 'sub', function ($join) {
-                    $join->on('tb_mensagem.id', '=', 'sub.ultima_mensagem_id');
-                })
-                ->whereNotExists(function ($query) use ($idUserRecebidor) {
-                    $query->select(DB::raw(1))
-                        ->from('tb_instituicao')
-                        ->whereRaw('tb_instituicao.id_user = IF(user1.id = ?, user2.id, user1.id)', [$idUserRecebidor]);
-                })
-                ->select(
-                    'tb_mensagem.id AS id_mensagem',
-                    'c.id AS id_chat',
-                    'user1.nome_user AS nome_user1',
-                    'user2.nome_user AS nome_user2',
-                    'enviador.nome_user AS nome_enviador',
-                    'tb_mensagem.status_mensagem AS status_mensagem',
-                    'tb_mensagem.id_user_enviador AS enviador',
-                    'tb_mensagem.conteudo_mensagem AS ultima_mensagem',
-                    'tb_mensagem.img_mensagem AS foto_enviada',
-                    DB::raw("IF(user1.id = $idUserRecebidor, user2.nome_user, user1.nome_user) AS nome_enviador"),
-                    DB::raw("IF(user1.id = $idUserRecebidor, user2.img_user, user1.img_user) AS img_enviador"),
-                    DB::raw("IF(user1.id = $idUserRecebidor, user2.arroba_user, user1.arroba_user) AS arroba_enviador"),
-                    DB::raw("IF(user1.id = $idUserRecebidor, user2.id, user1.id) AS id_enviador"),
-                    'tb_mensagem.created_at'
-                )
-                ->where(function ($query) use ($idUserRecebidor) {
-                    $query->where('user1.id', $idUserRecebidor)
-                        ->orWhere('user2.id', $idUserRecebidor);
-                })
-                ->orderByDesc('tb_mensagem.created_at');
+$privadasQuery = DB::table('tb_mensagem')
+    ->join('tb_chat AS c', 'tb_mensagem.id_chat', '=', 'c.id')
+    ->join('tb_user AS user1', 'c.id_user1', '=', 'user1.id')
+    ->join('tb_user AS user2', 'c.id_user2', '=', 'user2.id')
+    ->joinSub($subPrivado, 'sub', function ($join) {
+        $join->on('tb_mensagem.id', '=', 'sub.ultima_mensagem_id');
+    })
+    ->where(function ($query) use ($idUser) {
+        $query->where('user1.id', $idUser)
+              ->orWhere('user2.id', $idUser);
+    })
+    ->whereNotExists(function ($query) use ($idUser) {
+        $query->select(DB::raw(1))
+              ->from('tb_instituicao AS i')
+              ->whereRaw('i.id_user = IF(c.id_user1 = ?, c.id_user2, c.id_user1)', [$idUser]);
+    })
+   ->selectRaw("
+    c.id as id_conversa,
+    IF(user1.id = ?, user2.nome_user, user1.nome_user) AS nome,
+    IF(user1.id = ?, user2.img_user, user1.img_user) AS img,
+    IF(user1.id = ?, user2.arroba_user, user1.arroba_user) AS arroba,
+    IF(user1.id = ?, user2.id, user1.id) AS id_remetente,
+    tb_mensagem.img_mensagem AS img_mensagem,
+    tb_mensagem.conteudo_mensagem AS ultima_mensagem,
+    tb_mensagem.created_at,
+    'privada' AS tipo
+", [$idUser, $idUser, $idUser, $idUser]);
 
+$privadasSql = $privadasQuery->toSql();
+$privadasBindings = $privadasQuery->getBindings();
 
-            $sql = $queryBuilder->toSql();
-            $bindings = $queryBuilder->getBindings();
-            $chats = $queryBuilder->get();
+$subQueryChatsPrivados = DB::table('tb_chat AS c')
+    ->join('tb_user AS user1', 'c.id_user1', '=', 'user1.id')
+    ->join('tb_user AS user2', 'c.id_user2', '=', 'user2.id')
+    ->where(function ($query) use ($idUser) {
+        $query->where('user1.id', $idUser)
+              ->orWhere('user2.id', $idUser);
+    })
+    ->select('c.id');
 
+$instituicoesQuery = DB::table('tb_mensagem')
+    ->join('tb_chat AS c', 'tb_mensagem.id_chat', '=', 'c.id')
+    ->join('tb_user AS user1', 'c.id_user1', '=', 'user1.id')
+    ->join('tb_user AS user2', 'c.id_user2', '=', 'user2.id')
+    ->joinSub($subPrivado, 'sub', function ($join) {
+        $join->on('tb_mensagem.id', '=', 'sub.ultima_mensagem_id');
+    })
+    ->join('tb_instituicao AS instituicao', function ($join) use ($idUser) {
+        $join->on(DB::raw("IF(user1.id = $idUser, user2.id, user1.id)"), '=', 'instituicao.id_user');
+    })
+    ->where(function ($query) use ($idUser) {
+        $query->where('user1.id', $idUser)
+              ->orWhere('user2.id', $idUser);
+    })
+    ->whereExists(function ($query) use ($idUser) {
+        $query->select(DB::raw(1))
+              ->from('tb_instituicao AS i')
+              ->whereRaw('i.id_user = IF(c.id_user1 = ?, c.id_user2, c.id_user1)', [$idUser]);
+    })
+   ->selectRaw("
+    c.id as id_conversa,
+    IF(user1.id = ?, user2.nome_user, user1.nome_user) AS nome,
+    IF(user1.id = ?, user2.img_user, user1.img_user) AS img,
+    IF(user1.id = ?, user2.arroba_user, user1.arroba_user) AS arroba,
+    IF(user1.id = ?, user2.id, user1.id) AS id_remetente,
+    tb_mensagem.img_mensagem AS img_mensagem,
+    tb_mensagem.conteudo_mensagem AS ultima_mensagem,
+    tb_mensagem.created_at,
+    'instituicao' AS tipo
+", [$idUser, $idUser, $idUser, $idUser]);
+    
+$instituicoesSql = $instituicoesQuery->toSql();
+$instituicoesBindings = $instituicoesQuery->getBindings();
 
-            return response()->json([
-                'sucesso' => true,
-                'chats' => $chats,
-                'instituicoes' => $chats->map(function ($item) {
-                    $item->is_instituicao = true;
-                    return $item;
-                }),
-                'query' => $sql,
-                'bindings' => $bindings,
-                'message' => 'Mensagens Retornadas com Sucesso',
-                'code' => 200,
-            ]);
-        } else if ($tipo == 'instituicao') {
+// Consulta canais
+$subCanais = DB::table('tb_mensagem_canal AS mensagemC')
+    ->select(DB::raw('MAX(mensagemC.id) as ultima_mensagem_id'))
+    ->groupBy('mensagemC.id_canal');
 
-            $sub = DB::table('tb_mensagem')
-                ->select(DB::raw('MAX(id) as ultima_mensagem_id'))
-                ->groupBy('id_chat');
+$canaisQuery = DB::table('tb_canal AS canal')
+    ->leftJoin('tb_membros_canal AS membrosC', 'canal.id', '=', 'membrosC.id_canal')
+    ->join('tb_user AS user', 'canal.user_criador_canal', '=', 'user.id')
+    ->join('tb_mensagem_canal AS mensagemC', 'mensagemC.id_canal', '=', 'canal.id')
+    ->joinSub($subCanais, 'sub', function ($join) {
+        $join->on('mensagemC.id', '=', 'sub.ultima_mensagem_id');
+    })
+    ->where(function ($query) use ($idUser) {
+        $query->where('membrosC.id_user', $idUser)
+              ->orWhere('canal.user_criador_canal', $idUser);
+    })
+->selectRaw("
+    canal.id as id_conversa,
+    canal.nome_canal as nome,
+    canal.imagem_canal AS img,
+    user.arroba_user as arroba,
+    mensagemC.id_user_enviador AS id_remetente,
+    mensagemC.img_mensagem_canal AS img_mensagem, 
+    mensagemC.conteudo_mensagem_canal AS ultima_mensagem,
+    mensagemC.created_at,
+    'canal' AS tipo
+");
 
-            $queryBuilder = DB::table('tb_mensagem')
-                ->join('tb_user AS enviador', 'tb_mensagem.id_user_enviador', '=', 'enviador.id')
-                ->join('tb_chat AS c', 'tb_mensagem.id_chat', '=', 'c.id')
-                ->join('tb_user AS user1', 'c.id_user1', '=', 'user1.id')
-                ->join('tb_user AS user2', 'c.id_user2', '=', 'user2.id')
-                ->join('tb_instituicao AS instituicao', 'enviador.id', '=', 'instituicao.id_user') // Garante que o enviador seja uma instituição
-                ->joinSub($sub, 'sub', function ($join) {
-                    $join->on('tb_mensagem.id', '=', 'sub.ultima_mensagem_id');
-                })
-                ->where(function ($query) use ($idUserRecebidor) {
-                    $query->where('user1.id', $idUserRecebidor)
-                        ->orWhere('user2.id', $idUserRecebidor);
-                })
-                ->whereIn(DB::raw("IF(user1.id = $idUserRecebidor, user2.id, user1.id)"), function ($q) {
-                    $q->select('id_user')->from('tb_instituicao');
-                })
-                ->select(
-                    'tb_mensagem.id AS id_mensagem_instituicao',
-                    'c.id AS id_chat',
-                    'user1.nome_user AS nome_user1',
-                    'user2.nome_user AS nome_user2',
-                    'enviador.nome_user AS nome_enviador',
-                    'tb_mensagem.status_mensagem AS status_mensagem',
-                    'tb_mensagem.id_user_enviador AS enviador',
-                    'tb_mensagem.conteudo_mensagem AS ultima_mensagem',
-                    'tb_mensagem.img_mensagem AS foto_enviada',
-                    DB::raw("IF(user1.id = $idUserRecebidor, user2.nome_user, user1.nome_user) AS nome_enviador"),
-                    DB::raw("IF(user1.id = $idUserRecebidor, user2.img_user, user1.img_user) AS img_enviador"),
-                    DB::raw("IF(user1.id = $idUserRecebidor, user2.arroba_user, user1.arroba_user) AS arroba_enviador"),
-                    DB::raw("IF(user1.id = $idUserRecebidor, user2.id, user1.id) AS id_enviador"),
-                    'tb_mensagem.created_at'
-                )
-                ->orderByDesc('tb_mensagem.created_at');
+$canaisSql = $canaisQuery->toSql();
+$canaisBindings = $canaisQuery->getBindings();
 
+$queryUnion = "
+    ($privadasSql)
+    UNION ALL
+    ($instituicoesSql)
+    UNION ALL
+    ($canaisSql)
+    ORDER BY created_at DESC
+";
 
-            $sql = $queryBuilder->toSql();
-            $bindings = $queryBuilder->getBindings();
-            $chats = $queryBuilder->get();
+$allBindings = array_merge($privadasBindings, $instituicoesBindings, $canaisBindings);
 
+$conversas = DB::select($queryUnion, $allBindings);
 
-            return response()->json([
-                'sucesso' => true,
-                'instituicoes' => $chats,
-                'query' => $sql,
-                'bindings' => $bindings,
-                'message' => 'Mensagens Retornadas com Sucesso',
-                'code' => 200,
-            ]);
-        }
-    }
+return response()->json([
+    'sucesso' => true,
+    'mensagem' => 'Conversas retornadas com sucesso.',
+    'conversas' => $conversas,
+    'code' => 200,
+]);
+}
+
 
     public function selectMensagensApi($idChat)
     {
@@ -420,36 +439,38 @@ class MensagemControllerApi extends Controller
     {
 
 
-        $seguidor = DB::table('tb_seguidores AS seg')
-            ->join('tb_user AS seguidor', 'seg.id_user_seguidor', '=', 'seguidor.id')
-            ->join('tb_user AS seguido', 'seg.id_user_seguido', '=', 'seguido.id')
-            ->leftJoin('tb_chat AS c', function ($join) use ($idUser) {
-                $join->on(function ($q) use ($idUser) {
-                    $q->on('c.id_user1', '=', 'seg.id_user_seguidor')
-                        ->where('c.id_user2', '=', $idUser);
-                })->orOn(function ($q) use ($idUser) {
-                    $q->on('c.id_user2', '=', 'seg.id_user_seguidor')
-                        ->where('c.id_user1', '=', $idUser);
-                });
-            })
-            ->where('seg.id_user_seguido', $idUser)
-            ->where('seguidor.id', $idSeguidor)
-            ->select(
-                'seguidor.id AS id_seguidor',
-                'seguidor.nome_user AS nome_seguidor',
-                'seguidor.img_user AS img_seguidor',
-                'seguidor.arroba_user AS arroba_seguidor',
-                'c.id AS id_chat',
-                'seguido.id AS id_seguido',
+        $usuario = DB::table('tb_user AS seguidor')
+    ->leftJoin('tb_seguidores AS seg', function ($join) use ($idUser) {
+        $join->on('seg.id_user_seguidor', '=', 'seguidor.id')
+            ->where('seg.id_user_seguido', '=', $idUser);
+    })
+    ->leftJoin('tb_user AS seguido', 'seg.id_user_seguido', '=', 'seguido.id')
+    ->leftJoin('tb_chat AS c', function ($join) use ($idUser) {
+        $join->on(function ($q) use ($idUser) {
+            $q->on('c.id_user1', '=', 'seguidor.id')
+              ->where('c.id_user2', '=', $idUser);
+        })->orOn(function ($q) use ($idUser) {
+            $q->on('c.id_user2', '=', 'seguidor.id')
+              ->where('c.id_user1', '=', $idUser);
+        });
+    })
+    ->where('seguidor.id', $idSeguidor) 
+    ->select(
+        'seguidor.id AS id_seguidor',
+        'seguidor.nome_user AS nome_seguidor',
+        'seguidor.img_user AS img_seguidor',
+        'seguidor.arroba_user AS arroba_seguidor',
+        'c.id AS id_chat',
+        'seguido.id AS id_seguido'
+    )
+    ->first();
 
-            )
-            ->first();
 
 
         return response()->json([
             'sucesso' => true,
-            'seguidor' => $seguidor,
-            'message' => 'Mensagens Retornadas com Sucesso',
+            'seguidor' => $usuario,
+            'message' => 'Seguidores Retornados com Sucesso',
             'code' => 200,
         ]);
     }

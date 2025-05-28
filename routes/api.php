@@ -47,13 +47,14 @@ Route::get('/cursei/user', [UserControllerApi::class, 'indexApi'])->name('user.i
 Route::post('/cursei/user', [UserControllerApi::class, 'storeApi'])->name('user.store');
 Route::delete('/cursei/user/{id}', [UserControllerApi::class, 'destroyApi'])->name('user.destroy');
 Route::put('/cursei/user/{id}', [UserControllerApi::class, 'updateApi'])->name('user.update');
-Route::get('/cursei/user/{id}', [UserControllerApi::class, 'showApi'])->name('user.show');
+Route::get('/cursei/user/{idPerfil}/{idUser}', [UserControllerApi::class, 'showApi'])->name('user.show');
 Route::get('/cursei/user/verificarSeSegue/{idUser}/{idPerfil}', [UserControllerApi::class, 'verificarSeSegue'])->name('user.verificarSeSegue');
 Route::get('/cursei/user/seguidoresSeguindo/{id}/{acao}', [UserControllerApi::class, 'BuscarSeguidoresSeguindo'])->name('user.BuscarSeguidoresSeguindo');
 Route::get('/cursei/user/deseguirOuTirarSeguidor/{idUser}/{idPerfil}/{acao}', [UserControllerApi::class, 'deseguirOuTirarSeguidor'])->name('user.deseguirOuTirarSeguidor');
 Route::get('/cursei/user/notificacao/{id}/{acao}', [UserControllerApi::class, 'notificacao'])->name('user.notificacao');
 Route::get('/cursei/user/sugerirUsuario/{idUser}/{limite}', [UserControllerApi::class, 'sugerirUsuario'])->name('user.sugerirUsuario');
-Route::get('/cursei/user/procurarUsuario/{pesquisa}', [UserControllerApi::class, 'procurarUsuario'])->name('user.procurarUsuario');
+Route::get('/cursei/user/procurarUsuario/{pesquisa}/{idUser}', [UserControllerApi::class, 'procurarUsuario'])->name('user.procurarUsuario');
+Route::get('/cursei/user/desbloquear/{idPerfil}/{idUser}', [UserControllerApi::class, 'debloquearUser'])->name('user.debloquearUser');
 
 Route::post('/cursei/user/update-perfil/{id}', [UserControllerApi::class, 'updatePerfilApi']);
 
@@ -62,16 +63,14 @@ Route::post('/cursei/user/logar/', [UserControllerApi::class, 'selectUserLogin']
 //rotas do chat
 Route::get('/cursei/chat/mensagens/{idChat}', [MensagemControllerApi::class, 'selectMensagensApi'])->name('chat.todosChats');
 Route::get('/cursei/chat/mensagensCanal/{idCanal}', [MensagemControllerApi::class, 'selectMensagensCanalApi'])->name('chat.todosChats');
-Route::get('/cursei/chat/recebidor/{idUserRecebidor}/{filtro}', [MensagemControllerApi::class, 'selectChatApi'])->name('chat.todosChats');
+Route::get('/cursei/chat/recebidor/{idUserRecebidor}/{tipo}/{pesquisa}', [MensagemControllerApi::class, 'selectChatApi'])->name('chat.todosChats');
 Route::get('/cursei/chat/adicionarChat/{idUserLogado}', [MensagemControllerApi::class, 'selectSeguidoresSugestoes'])->name('chat.telaSeguidores');
 Route::get('/cursei/chat/adicionarChat/conexoes/{idUserLogado}', [MensagemControllerApi::class, 'selectSeguidoresConexoes'])->name('chat.cconexoes');
 Route::get('/cursei/chat/adicionarChat/sugestoes/{idUserLogado}', [MensagemControllerApi::class, 'selectAddChatSugestoes'])->name('chats.sugestoes');
 Route::post('/cursei/chat/adicionarChat/', [MensagemControllerApi::class, 'criarChat'])->name('chat.criarChat');
 Route::post('/cursei/chat/enviarMensagem/{tipoMensagem}', [MensagemControllerApi::class, 'enviarMensagem'])->name('chat.enviarMensagem');
 Route::get('/cursei/chat/adicionarChat/{idUserLogado}/{idSeguidor}', [MensagemControllerApi::class, 'selectSeguidor'])->name('chat.seguidor');
-Route::get('/cursei/chat/pesquisa/{q}/{idUserLogado}', [MensagemControllerApi::class, 'pesquisarChats'])->name('chat.pesquisarChats');
 Route::post('/cursei/chat/criarCanal', [MensagemControllerApi::class, 'criarCanal'])->name('chat.criarCanal');
-Route::get('/cursei/chat/selecionarCanal/pegarTodos/{id}', [MensagemControllerApi::class, 'selecionarCanais'])->name('chat.selecionarCanais');
 
 Route::post('cursei/user/{userId}', [UserControllerApi::class, 'alterarUser']); 
 Route::post('cursei/user/autenticacao/{userId}', [UserControllerApi::class, 'atualizarDoisFatores']);

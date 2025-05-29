@@ -805,6 +805,7 @@ WHERE
             })
             ->where('tb_user.id', '!=', $idUser)
             ->where('tb_user.status_user', 1)
+            ->whereNull('tb_instituicao.id_user') // Adicione esta linha para filtrar instituições
             ->get();
 
         return response()->json([

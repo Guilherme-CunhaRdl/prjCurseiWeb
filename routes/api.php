@@ -77,8 +77,10 @@ Route::post('cursei/user/autenticacao/{userId}', [UserControllerApi::class, 'atu
 
 
 //ROTAS DO CURTEI
-Route::post('/curtei/upload', [CurteiController::class, 'storeCurtei']);
-Route::get('/curtei/videos', [CurteiController::class, 'mostrarVideos']);
+Route::group(['middleware' => ['cors']], function() {
+    Route::post('/curtei/upload', [CurteiController::class, 'storeCurtei']);
+    Route::get('/curtei/videos', [CurteiController::class, 'mostrarVideos']);
+});
  
 
 //rotas para o explorar

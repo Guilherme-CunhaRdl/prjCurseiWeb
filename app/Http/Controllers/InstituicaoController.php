@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Instituicao;
 use App\Models\Post;
 use App\Models\Seguidores;
 use App\Models\User;
@@ -26,11 +27,11 @@ class InstituicaoController extends Controller
      */
     public function index()
     {
-       
+
         $instituicaoId = session('instituicao_id'); // Recupera o ID da instituição logada
 
 
-        $instituicao = User::where('id', $instituicaoId)->first(); 
+        $instituicao = User::where('id', $instituicaoId)->first();
 
         //criei um array pra guardar cada cont e seu respectivo mes
         $seguidoresPorMes = [];
@@ -51,33 +52,33 @@ class InstituicaoController extends Controller
             12 => 'Dezembro'
         ];
         //percorrendo o array de nomes e guardando os conts
-        foreach($nomeMeses as $numero => $nome){
-            $seguidoresPorMes[$nome] = Seguidores::whereMonth('created_at' , $numero)->count();
+        foreach ($nomeMeses as $numero => $nome) {
+            $seguidoresPorMes[$nome] = Seguidores::whereMonth('created_at', $numero)->count();
         }
         //criando um array de curtidas pra guardas seus meses e seus respectivos valores
         $curtidasPorMes = [];
 
-        foreach($nomeMeses as $numero => $nome){
+        foreach ($nomeMeses as $numero => $nome) {
             $curtidasPorMes[$nome] = DB::table('tb_curtida')
-            ->join('tb_post', 'tb_curtida.id_post' , '=', 'tb_post.id')
-            ->join('tb_user', 'tb_post.id_user', '=','tb_user.id')
-            ->where('tb_user.id', $instituicaoId)
-            ->whereMonth('tb_curtida.created_at', $numero)
-            ->count('tb_post.id');
+                ->join('tb_post', 'tb_curtida.id_post', '=', 'tb_post.id')
+                ->join('tb_user', 'tb_post.id_user', '=', 'tb_user.id')
+                ->where('tb_user.id', $instituicaoId)
+                ->whereMonth('tb_curtida.created_at', $numero)
+                ->count('tb_post.id');
         }
         //criando datas de inicio e de fim(data fim é 5 meses atrás)
         $dataFim = Carbon::now();
         $dataInicio = Carbon::now()->subMonths(5)->startOfMonth();
 
-       
+
 
         //criando um array pra guardar os 6 meses
         $ultimos6Meses = [];
 
-        for($i = 5; $i >= 0; $i--){
+        for ($i = 5; $i >= 0; $i--) {
             $mes = Carbon::now()->subMonths($i);
             $nomeMes = $mes->isoFormat('MMMM');
-            $ultimos6Meses[] = ucfirst($nomeMes); 
+            $ultimos6Meses[] = ucfirst($nomeMes);
         }
 
         //aqui to só fazendo um bagui pra traduzir
@@ -96,49 +97,50 @@ class InstituicaoController extends Controller
             'December' => 'Dezembro'
         ];
         //fazendo um select dos ultimos 6 meses em uma query só
-            $seguidoresDosUltimos6Meses = DB::table('tb_seguidores')
+        $seguidoresDosUltimos6Meses = DB::table('tb_seguidores')
             ->selectRaw('MONTHNAME(created_at) as mes, Count(*) as total')
             ->whereBetween('created_at', [$dataInicio, $dataFim])
             ->groupBy(DB::raw('MONTHNAME(created_at)'))
             ->orderByRaw('MONTH(created_at)')
             ->pluck('total', 'mes');
 
-            //aqui to criando uma tradução pra os ultimos 6 meses
-            $seguidoresTraduzidos = [];
-            foreach ($seguidoresDosUltimos6Meses as $mesIngles => $total) {
-                $mesPt = $traducaoMeses[$mesIngles] ?? $mesIngles;
-                $seguidoresTraduzidos[$mesPt] = $total;
-            }
-        
+        //aqui to criando uma tradução pra os ultimos 6 meses
+        $seguidoresTraduzidos = [];
+        foreach ($seguidoresDosUltimos6Meses as $mesIngles => $total) {
+            $mesPt = $traducaoMeses[$mesIngles] ?? $mesIngles;
+            $seguidoresTraduzidos[$mesPt] = $total;
+        }
+
 
         //selecionando o ultimo post editado    
         $ultimoPostEditado = DB::table('tb_post')
-        ->join('tb_user', 'tb_post.id_user', '=', 'tb_user.id')
-        ->where('tb_user.id', $instituicaoId)
-        ->orderBy('tb_post.updated_at', 'desc')
-        ->limit(1)
-        ->select('tb_post.*')
-        ->get();
+            ->join('tb_user', 'tb_post.id_user', '=', 'tb_user.id')
+            ->where('tb_user.id', $instituicaoId)
+            ->orderBy('tb_post.updated_at', 'desc')
+            ->limit(1)
+            ->select('tb_post.*')
+            ->get();
 
         //selecionando planejados
         $planejados = DB::table('tb_planejamento')
-        ->join('tb_post', 'tb_planejamento.id_post' , '=', 'tb_post.id')
-        ->join('tb_user', 'tb_post.id_user', '=', 'tb_user.id')
-        ->where('tb_user.id', $instituicaoId)
-        ->orderBy('tb_planejamento.created_at', 'desc')
-        ->limit(2)
-        ->select('tb_planejamento.nome_planejamento', 'tb_planejamento.data_inicio_planejamento', 'tb_planejamento.data_fim_planejamento', 'tb_planejamento.status_planejamento','tb_post.descricao_post', 'tb_post.conteudo_post')
-        ->get();
+            ->join('tb_post', 'tb_planejamento.id_post', '=', 'tb_post.id')
+            ->join('tb_user', 'tb_post.id_user', '=', 'tb_user.id')
+            ->where('tb_user.id', $instituicaoId)
+            ->orderBy('tb_planejamento.created_at', 'desc')
+            ->limit(2)
+            ->select('tb_planejamento.nome_planejamento', 'tb_planejamento.data_inicio_planejamento', 'tb_planejamento.data_fim_planejamento', 'tb_planejamento.status_planejamento', 'tb_post.descricao_post', 'tb_post.conteudo_post')
+            ->get();
 
         //retornando tudo
-        return view('instituicao.dashboard.index', ['listaSeguidores' => $seguidoresPorMes,
-                                                    'listaCurtidas' => $curtidasPorMes,
-                                                    'seguidores6Meses' => $seguidoresTraduzidos,
-                                                    'nomeUltimos6Meses' => $ultimos6Meses,
-                                                    'ultimoPost' => $ultimoPostEditado,
-                                                    'planejados' => $planejados,
-                                                    'instituicao' => $instituicao
-                                                ]);
+        return view('instituicao.dashboard.index', [
+            'listaSeguidores' => $seguidoresPorMes,
+            'listaCurtidas' => $curtidasPorMes,
+            'seguidores6Meses' => $seguidoresTraduzidos,
+            'nomeUltimos6Meses' => $ultimos6Meses,
+            'ultimoPost' => $ultimoPostEditado,
+            'planejados' => $planejados,
+            'instituicao' => $instituicao
+        ]);
     }
 
     public function loginInstituicao()
@@ -152,12 +154,12 @@ class InstituicaoController extends Controller
         $instituicaoId = session('instituicao_id'); // Recupera o ID da instituição logada
 
 
-        $instituicao = User::where('id', $instituicaoId)->first(); 
+        $instituicao = User::where('id', $instituicaoId)->first();
         // Verifica se a instituição está logada
         // Buscar os posts mais curtidos
         $postsMaisCurtidos = DB::table('tb_post')
             ->join('tb_curtida', 'tb_post.id', '=', 'tb_curtida.id_post')
-            ->select('tb_post.titulo_post','tb_post.conteudo_post', DB::raw('COUNT(tb_curtida.id) as total_curtidas'))
+            ->select('tb_post.titulo_post', 'tb_post.conteudo_post', DB::raw('COUNT(tb_curtida.id) as total_curtidas'))
             ->where('tb_post.id_user', $instituicaoId) // Substitui o ID fixo
             ->groupBy('tb_post.id', 'tb_post.titulo_post', 'tb_post.conteudo_post')
             ->orderBy('total_curtidas', 'desc')
@@ -174,18 +176,29 @@ class InstituicaoController extends Controller
 
         $postComMaisCurtidas = DB::table('tb_post')
             ->join('tb_curtida', 'tb_post.id', '=', 'tb_curtida.id_post')
-            ->select('tb_post.titulo_post', DB::raw('COUNT(tb_curtida.id) as total_curtidas'))
+            ->select('tb_post.titulo_post', 'tb_post.conteudo_post', 'tb_post.descricao_post', DB::raw('COUNT(tb_curtida.id) as total_curtidas'))
             ->where('tb_post.id_user', $instituicaoId) // Substitui o ID fixo
-            ->groupBy('tb_post.id', 'tb_post.titulo_post')
+            ->groupBy('tb_post.id', 'tb_post.titulo_post', 'tb_post.conteudo_post', 'tb_post.descricao_post')
             ->orderBy('total_curtidas', 'desc')
             ->limit(1)
             ->get();
+
+        $ultimoSeguidorCurtiu = DB::table('tb_post')
+            ->join('tb_curtida', 'tb_post.id', '=', 'tb_curtida.id_post')
+            ->join('tb_user', 'tb_curtida.id_user', '=', 'tb_user.id')
+            ->select('tb_user.img_user AS imgUser', 'tb_user.nome_user AS nameUser')
+            ->where('tb_post.id_user', $instituicaoId)
+            ->limit(1)
+            ->orderByDesc('tb_curtida.id')
+            ->get();
+
         // Retornar a view com os dados
         return view('instituicao.analise-conteudo.index', [
             'instituicao' => $instituicao,
             'postsMaisCurtidos' => $postsMaisCurtidos,
             'ultimoSeguidor' => $ultimoSeguidor,
-            'postComMaisCurtidas' => $postComMaisCurtidas
+            'postComMaisCurtidas' => $postComMaisCurtidas,
+            'ultimoCurtidaUser' => $ultimoSeguidorCurtiu
         ]);
     }
 
@@ -195,7 +208,7 @@ class InstituicaoController extends Controller
             'email' => 'required|email',
             'senha' => 'required'
         ]);
-    
+
         $instituicao = DB::table('tb_user')
             ->join('tb_instituicao', 'tb_user.id', '=', 'tb_instituicao.id_user')
             ->where('tb_user.email_user', $request->email)
@@ -206,146 +219,176 @@ class InstituicaoController extends Controller
             // Se a senha estiver correta
             // Autenticar o usuário
             session(['instituicao_id' => $instituicao->id_user]);
-    
+
             // Redirecionar para a página inicial da instituição
             return redirect()->route('dashboard.index')
                 ->with('success', 'Login realizado com sucesso!');
         } else {
             return redirect()->route('login')->withErrors('Email ou senha inválidos.');
         }
-
     }
 
     public function logoutInstituicao()
     {
         session()->forget('instituicao_id'); // Remove o ID
         session()->invalidate();             // Invalida a sessão atual
-        session()->regenerateToken();  
+        session()->regenerateToken();
         return redirect()->route('login');
     }
 
-    public function bibliotecaMidiaIndex(){
+    public function bibliotecaMidiaIndex()
+    {
 
 
         $instituicaoId = session('instituicao_id'); // Recupera o ID da instituição logada
 
 
-        $instituicao = User::where('id', $instituicaoId)->first(); 
+        $instituicao = User::where('id', $instituicaoId)->first();
 
         $posts = DB::table('tb_post')
-    ->join('tb_user', 'tb_post.id_user', '=', 'tb_user.id')
-    ->leftJoin('tb_curtida', 'tb_curtida.id_post', '=', 'tb_post.id')
-    ->select(
-        'tb_post.id as post_id',
-        'tb_post.titulo_post',
-        'tb_post.descricao_post',
-        'tb_post.conteudo_post',
-        'tb_post.status_post',
-        'tb_post.created_at',
-        DB::raw('COUNT(tb_curtida.id) as total_curtidas')
-    )
-    ->where('tb_user.id', $instituicaoId)
-    ->groupBy(
-        'tb_post.id',
-        'tb_post.titulo_post',
-        'tb_post.descricao_post',
-        'tb_post.conteudo_post',
-        'tb_post.status_post',
-        'tb_post.created_at'
-    )
-    ->get();
+            ->join('tb_user', 'tb_post.id_user', '=', 'tb_user.id')
+            ->leftJoin(DB::raw('(SELECT id_post, COUNT(*) as total_comentarios FROM tb_comentario GROUP BY id_post) as comentarios'), 'comentarios.id_post', '=', 'tb_post.id')
+            ->leftJoin(DB::raw('(SELECT id_post, COUNT(*) as total_curtidas FROM tb_curtida GROUP BY id_post) as curtidas'), 'curtidas.id_post', '=', 'tb_post.id')
+            ->select(
+                'tb_post.id as post_id',
+                'tb_post.titulo_post',
+                'tb_post.descricao_post',
+                'tb_post.conteudo_post',
+                'tb_post.status_post',
+                'tb_post.created_at',
+                DB::raw('COALESCE(curtidas.total_curtidas, 0) as total_curtidas'),
+                DB::raw('COALESCE(comentarios.total_comentarios, 0) as total_comentarios')
+            )
+            ->where('tb_user.id', $instituicaoId)
+            ->get();
 
 
         return view('instituicao.biblioteca-midias.index', ['posts' => $posts,  'instituicao' => $instituicao]);
     }
 
-    public function personalizacaoIndex(){
+    public function personalizacaoIndex()
+    {
 
 
         $instituicaoId = session('instituicao_id'); // Recupera o ID da instituição logada
 
 
-        $instituicao = User::where('id', $instituicaoId)->first(); 
-        
+        $instituicao = User::where('id', $instituicaoId)->first();
+
         $posts = DB::table('tb_post')
-        ->join('tb_user', 'tb_post.id_user', '=', 'tb_user.id')
-        ->leftJoin('tb_curtida', 'tb_curtida.id_post', '=', 'tb_post.id')
-        ->select(
-            'tb_post.id as post_id',
-            'tb_user.img_user',
-            'tb_user.arroba_user',
-            'tb_user.nome_user',
-            'tb_post.titulo_post',
-            'tb_post.descricao_post',
-            'tb_post.conteudo_post',
-            'tb_post.status_post',
-            'tb_post.created_at',
-        )
-        ->where('tb_user.id', $instituicaoId)
-        ->groupBy(
-            'tb_post.id',
-            'tb_post.titulo_post',
-            'tb_user.img_user',
-            'tb_user.arroba_user',
-            'tb_user.nome_user',
-            'tb_post.descricao_post',
-            'tb_post.conteudo_post',
-            'tb_post.status_post',
-            'tb_post.created_at'
-        )
-        ->get();
+            ->join('tb_user', 'tb_post.id_user', '=', 'tb_user.id')
+            ->leftJoin('tb_curtida', 'tb_curtida.id_post', '=', 'tb_post.id')
+            ->select(
+                'tb_post.id as post_id',
+                'tb_user.img_user',
+                'tb_user.arroba_user',
+                'tb_user.nome_user',
+                'tb_post.titulo_post',
+                'tb_post.descricao_post',
+                'tb_post.conteudo_post',
+                'tb_post.status_post',
+                'tb_post.created_at',
+            )
+            ->where('tb_user.id', $instituicaoId)
+            ->groupBy(
+                'tb_post.id',
+                'tb_post.titulo_post',
+                'tb_user.img_user',
+                'tb_user.arroba_user',
+                'tb_user.nome_user',
+                'tb_post.descricao_post',
+                'tb_post.conteudo_post',
+                'tb_post.status_post',
+                'tb_post.created_at'
+            )
+            ->get();
 
 
         return view('instituicao.personalizacao-pagina.index', ['instituicao' => $instituicao, 'posts' => $posts]);
-
     }
 
-    public function filtrar(Request $request){
+    public function filtrar(Request $request)
+    {
 
         $instituicaoId = session('instituicao_id'); // Recupera o ID da instituição logada
         $instituicao = User::where('id', $instituicaoId)->first();
-        
+
         $posts = DB::table('tb_post')
-        ->join('tb_user', 'tb_post.id_user', '=', 'tb_user.id')
-        ->leftJoin('tb_curtida', 'tb_curtida.id_post', '=', 'tb_post.id')
-        ->select(
-            'tb_post.id as post_id',
-            'tb_post.titulo_post',
-            'tb_post.descricao_post',
-            'tb_post.conteudo_post',
-            'tb_post.status_post',
-            'tb_post.created_at',
-            'tb_post.conteudo_post',
-            DB::raw('COUNT(tb_curtida.id) as total_curtidas')
-        )
-        ->where('tb_user.id', $instituicaoId) 
-        ->when($request->filled('visualizacao'), function ($query) use ($request) {
-            
-            return $query->where('tb_post.visualizacao', $request->visualizacao);
-        })
-        ->when($request->filled('mes'), function ($query) use ($request) {
-            return $query->whereMonth('tb_post.created_at', $request->mes);
-        })
-        ->when($request->filled('restricao'), function ($query) use ($request) {
-            return $query->where('tb_post.status_post', $request->restricao);
-        })
-        ->groupBy(
-            'tb_post.id',
-            'tb_post.titulo_post',
-            'tb_post.descricao_post',
-            'tb_post.conteudo_post',
-            'tb_post.status_post',
-            'tb_post.created_at'
-        )
-        ->get();
+            ->join('tb_user', 'tb_post.id_user', '=', 'tb_user.id')
+            ->leftJoin('tb_curtida', 'tb_curtida.id_post', '=', 'tb_post.id')
+            ->leftJoin(DB::raw('(SELECT id_post, COUNT(*) as total_comentarios FROM tb_comentario GROUP BY id_post) as comentarios'), 'comentarios.id_post', '=', 'tb_post.id')
+            ->leftJoin(DB::raw('(SELECT id_post, COUNT(*) as total_curtidas FROM tb_curtida GROUP BY id_post) as curtidas'), 'curtidas.id_post', '=', 'tb_post.id')
+            ->select(
+                'tb_post.id as post_id',
+                'tb_post.titulo_post',
+                'tb_post.descricao_post',
+                'tb_post.conteudo_post',
+                'tb_post.status_post',
+                'tb_post.created_at',
+                DB::raw('COALESCE(curtidas.total_curtidas, 0) as total_curtidas'),
+                DB::raw('COALESCE(comentarios.total_comentarios, 0) as total_comentarios')
+            )
+            ->where('tb_user.id', $instituicaoId)
+            ->when($request->filled('curtidas'), function ($query) use ($request) {
+                return $query->orderBy('total_curtidas', $request->curtidas === 'menor' ? 'asc' : 'desc');
+            })
+            ->when($request->filled('mes'), function ($query) use ($request) {
+                return $query->whereMonth('tb_post.created_at', $request->mes);
+            })
+            ->when($request->filled('restricao'), function ($query) use ($request) {
+                return $query->where('tb_post.status_post', $request->restricao);
+            })
+            ->groupBy(
+                'tb_post.id',
+                'tb_post.titulo_post',
+                'tb_post.descricao_post',
+                'tb_post.conteudo_post',
+                'tb_post.status_post',
+                'tb_post.created_at',
+                'total_curtidas',
+                'total_comentarios'
+            )
+            ->get();
 
 
 
         return view('instituicao.biblioteca-midias.index', ['posts' => $posts, 'instituicao' => $instituicao]);
     }
 
-    
-   
+    public function criarPost(Request $request){
+        $instituicaoId = session('instituicao_id'); // Recupera o ID da instituição logada  
+
+
+
+        $request->validate([
+            'descricaoPost' => 'max:500',
+        ]);
+
+        $imgPost = null;
+
+        if ($request->hasFile('imgPost') && $request->file('imgPost')->isValid()) {
+            $extensao = $request->file('imgPost')->getClientOriginalExtension();
+            $imgPost = time() . '_' . uniqid() . '.' . $extensao;
+            $request->file('imgPost')->move(public_path('img/user/imgPosts/'), $imgPost);
+        }
+
+        try {
+            $post = Post::create([
+                'conteudo_post' => $imgPost,
+                'descricao_post' => $request->descricaoPost,
+                'area_post' => 'indefinido',
+                'id_user' => $instituicaoId,
+                'status_post' => 1,
+                'created_at' => now()
+            ]);
+            return redirect()->back()->with('success', 'Post criado com sucesso!');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('erro', 'erro ao criar post');
+        }
+        
+
+    }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -397,24 +440,25 @@ class InstituicaoController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function updatePersonalizacao(Request $request)
-    {   
+    {
         $instituicaoId = session('instituicao_id'); // Recupera o ID da instituição logada
         $verificarInstituicao = User::where('id', $instituicaoId)->get();
 
-        foreach($verificarInstituicao as $item){
+        foreach ($verificarInstituicao as $item) {
             $nomeImagem = $item->img_user;
             $nomeBanner = $item->banner_user;
-            if($request->hasFile('imgPerfil') && $request->file('imgPerfil')->isValid()){
-                if($item->img_user && Storage::exists($item->img_user)){
+            if ($request->hasFile('imgPerfil') && $request->file('imgPerfil')->isValid()) {
+                if ($item->img_user && Storage::exists($item->img_user)) {
                     Storage::delete($item->img_user);
                 }
                 $extensao = $request->imgPerfil->extension();
-    
-                $nomeImagem =   md5($request->imgPerfil->getClientOriginalName() . strtotime('now'). "." . $extensao);
-    
+
+                $nomeImagem =   md5($request->imgPerfil->getClientOriginalName() . strtotime('now') . "." . $extensao);
+
                 $request->imgPerfil->move(public_path('img/user/fotoPerfil/'), $nomeImagem);
-            } if($request->hasFile('imgBanner') && $request->file('imgBanner')->isValid()){
-                if($item->img_banner && Storage::exists($item->banner_user)){
+            }
+            if ($request->hasFile('imgBanner') && $request->file('imgBanner')->isValid()) {
+                if ($item->img_banner && Storage::exists($item->banner_user)) {
                     Storage::delete($item->banner_user);
                 }
 
@@ -424,36 +468,35 @@ class InstituicaoController extends Controller
 
                 $request->imgBanner->move(public_path('img/user/bannerPerfil/'), $nomeBanner);
             }
-           
         }
-       
+
         $posts = DB::table('tb_post')
-        ->join('tb_user', 'tb_post.id_user', '=', 'tb_user.id')
-        ->leftJoin('tb_curtida', 'tb_curtida.id_post', '=', 'tb_post.id')
-        ->select(
-            'tb_post.id as post_id',
-            'tb_user.img_user',
-            'tb_user.arroba_user',
-            'tb_user.nome_user',
-            'tb_post.titulo_post',
-            'tb_post.descricao_post',
-            'tb_post.conteudo_post',
-            'tb_post.status_post',
-            'tb_post.created_at',
-        )
-        ->where('tb_user.id', $instituicaoId)
-        ->groupBy(
-            'tb_post.id',
-            'tb_post.titulo_post',
-            'tb_user.img_user',
-            'tb_user.arroba_user',
-            'tb_user.nome_user',
-            'tb_post.descricao_post',
-            'tb_post.conteudo_post',
-            'tb_post.status_post',
-            'tb_post.created_at'
-        )
-        ->get();
+            ->join('tb_user', 'tb_post.id_user', '=', 'tb_user.id')
+            ->leftJoin('tb_curtida', 'tb_curtida.id_post', '=', 'tb_post.id')
+            ->select(
+                'tb_post.id as post_id',
+                'tb_user.img_user',
+                'tb_user.arroba_user',
+                'tb_user.nome_user',
+                'tb_post.titulo_post',
+                'tb_post.descricao_post',
+                'tb_post.conteudo_post',
+                'tb_post.status_post',
+                'tb_post.created_at',
+            )
+            ->where('tb_user.id', $instituicaoId)
+            ->groupBy(
+                'tb_post.id',
+                'tb_post.titulo_post',
+                'tb_user.img_user',
+                'tb_user.arroba_user',
+                'tb_user.nome_user',
+                'tb_post.descricao_post',
+                'tb_post.conteudo_post',
+                'tb_post.status_post',
+                'tb_post.created_at'
+            )
+            ->get();
 
         $alterInstituicao = User::where('id', $instituicaoId)->update([
             'nome_user' => $request->nomeInstituicao,
@@ -463,7 +506,7 @@ class InstituicaoController extends Controller
             'banner_user' => $nomeBanner,
             'updated_at' => now()
         ]);
-       
+
         $instituicao = User::where('id', $instituicaoId)->first();
         return view('instituicao.personalizacao-pagina.index', ['instituicao' => $instituicao, 'posts' => $posts]);
     }

@@ -49,19 +49,6 @@
     height: 50vh;
 }
 
-.div-titulo{
-  height: 10vh; 
-  width:50vh; 
-  margin-top: 20vh;
-  margin-bottom: 1vh;
-}
-
-.div-titulo h1{
-    color: var(--branco);
-}
-.div-titulo p{
-    color: var(--branco);
-}
 
 .divs-conteudo{
     gap: 5vh;
@@ -104,7 +91,6 @@
     box-shadow: 0 0 2px rgba(0, 0, 0, 0.726);
     border-radius: 20px;
     padding:  4px 40px 4px 20px !important;
-    
     padding-inline: 40px;
     background-color: var(--branco);
     display: flex;
@@ -119,21 +105,9 @@
     
 }
 
-.select-wrapper::after{
-    content: url(../img/img-componentes/chevron-left.svg);
-  position: absolute;
-  top: 48%;
-  right: 10%;
-  transform: translateY(-50%) rotate(-90deg);
-  pointer-events: none;
-  font-size: 12px;
-  transition: transform 0.3s ease-in-out;
 
-}
 
-.select-wrapper:has(select:focus)::after{
-    transform: translateY(-50%) rotate(0deg);
-}
+
 
 .div-grafico{
     width: 100%;
@@ -166,8 +140,6 @@
 
 }
 #graficoCurtidas {
-    max-width: 900px; /* Largura máxima */
-    max-height: 400px; /* Altura máxima */
     width: 100%; /* Responsivo */
     height: auto; /* Ajusta proporcionalmente */
 }

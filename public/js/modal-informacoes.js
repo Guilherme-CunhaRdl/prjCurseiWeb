@@ -16,8 +16,6 @@ function fecharModalInformacoes(alvo){
     }else if(alvo.target === document.getElementById('botao-fechar-informacoes')){
         containerModalInformacoes.classList.remove('modal-ativo')
         containerModalInformacoes.classList.add('modal-oculto')
-        containerModalInformacoes.style.display = 'none'
-
     }
     
     console.log(containerModalInformacoes)

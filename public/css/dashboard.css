@@ -98,9 +98,6 @@
 
 }
 
-.select-wrapper:has(select:focus)::after{
-    transform: translateY(-50%) rotate(0deg);
-}
 
 
 
@@ -113,17 +110,18 @@
 
 .box-ultimo-editado{
     grid-column: 2 /  3;
-    grid-row: 1 /  2;
+    grid-row: 1 /  1;
     background-color: var(--branco);
     border-radius: 10px;
     padding: 20px;
     box-shadow: 0 0 4px rgba(0, 0, 0, 0.726);
+    height: 400px;
     
 }
 
 .box-img-ultimo-editado{
-    width: 250px;
-    height: 250px;
+    width: 300px;
+    height: 300px;
     background-color: var(--cinza);
     border-radius: 25px;
 }

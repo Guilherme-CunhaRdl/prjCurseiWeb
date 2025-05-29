@@ -16,6 +16,7 @@
         <link rel="stylesheet" href="{{ url('css/dashboard.css') }}">
         <link rel="stylesheet" href="{{ url('css/modal-temas.css') }}">
         <link rel="stylesheet" href="{{ url('css/modal-informacoes.css') }}">
+        <link rel="icon" href="{{ asset( 'img/Icone_Logo_Cursei_Preta.png') }}" type="image/x-icon" />
 
         <script type="text/javascript" src="../js/alterar-tema.js" defer></script>
     </head>
@@ -66,21 +67,21 @@
                                 </div>
                                 @foreach ($ultimoPost as $item)
 
-                                <div class="d-flex flex-row w-100 h-100 d-none align-items-center d-xxl-flex">
+                                <div class="d-flex flex-row  w-100 h-100 d-none align-items-center d-xxl-flex">
                                     <div class="box-img-ultimo-editado">
-                                        <img class=" img-fluid" src="{{ url('img/user/imgPosts/' . $item->conteudo_post) }}" alt="">
+                                        <img class="img-fluid" src="{{ url('img/user/imgPosts/' . $item->conteudo_post) }}" alt="">
                                     </div>
-                                    <div class="d-flex justify-content-center flex-column ms-3">
+                                    <div class="d-flex text-center  flex-column ms-3" style="width: 300px;">
                                         <h3>{{ $item->titulo_post }}</h3>
                                         <p style="color: #868686;"> {{ $item->descricao_post }} </p>
                                     </div>
                                 </div>
 
-                                <div class="d-flex flex-column  align-items-center text-center w-100 h-100 d-flex d-xxl-none">
+                                <div class="d-flex flex-column  align-items-center text-center w-100 h-100 d-flex d-xxl-none" style="width: 300px;">
                                     <div class="box-img-ultimo-editado mt-4">
                                         <img class="img-fluid" src="{{ url('img/user/imgPosts/' . $item->conteudo_post) }}" alt="">
                                     </div>
-                                    <div class="d-flex justify-content-center py-2 flex-column ms-3">
+                                    <div class="d-flex text-center py-2 flex-column ms-3">
                                         <h3>{{ $item->titulo_post }}</h3>
                                         <p style="color: #868686;">{{ $item->descricao_post }} </p>
                                     </div>
@@ -103,9 +104,9 @@
 
                                         <div class="col-12 d-flex flex-row h-100  ">
                                             <div class="box-img-planejados col-3">
-                                                <img class="img-fluid" src="{{url('img/user/imgPosts/' . $item->conteudo_post)}}" alt="">
+                                                <img class="img-fluid" src="{{ url('img/user/imgPosts/' . $item->conteudo_post) }}">
                                             </div>
-                                            <div class="col-8 ms-3 d-flex flex-column text-start justify-content-center">
+                                            <div class="col-8 ms-3 d-flex flex-column text-start justify-content-center"    >
                                                 <div class="d-flex align-items-end  justify-content-between col-12 h-50">
                                                     <h3>{{ $item->nome_planejamento }}</h2>
                                                         <i class="bi bi-arrow-left-circle" style="font-size: 30px;"></i>

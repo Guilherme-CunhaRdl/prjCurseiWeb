@@ -16,6 +16,8 @@
     <link rel="stylesheet" href="{{ url('css/biblioteca-midias.css') }}" />
     <link rel="stylesheet" href="{{ url('css/modal-temas.css') }}">
     <link rel="stylesheet" href="{{ url('css/modal-informacoes.css') }}">
+    <link rel="stylesheet" href="{{ url('css/modalCriacaoPost.css') }}">
+    <link rel="icon" href="{{ asset( 'img/Icone_Logo_Cursei_Preta.png') }}" type="image/x-icon" />
 
     <script type="text/javascript" src="../js/alterar-tema.js" defer></script>
 </head>
@@ -41,13 +43,16 @@
                 <div class="header-info d-lg-flex d-none">
                     <h3>Conteudo da Página</h3>
                     <div class="categorias col-12 col-xl-10 ">
+                        
+                        <button class="botaoCriarPost" onclick="abrirModalCriarPost()">Criar uma publicação +</button>
+
                         <form action="{{ route('biblioteca.filtrar') }}" method="get">
 
                         <div class="select-wrapper">
-                            <select name="visualizacao" id="" class="select-biblioteca" onchange="this.form.submit()">
-                                <option value="" selected disabled>Visualizações</option>
-                                <option value="desc">Menos Visualizações</option>
-                                <option value="asc">Mais Visualizações</option>
+                            <select name="curtidas" id="" class="select-biblioteca" onchange="this.form.submit()">
+                                <option value="" selected disabled>Curtidas</option>
+                                <option value="maior" {{ request('curtidas') == 'maior' ? 'selected' : '' }}>Mais Curtidos</option>
+                                <option value="menor" {{ request('curtidas') == 'menor' ? 'selected' : '' }}>Menos Curtidos</option>
                             </select>
                         </div>
                         <div class="select-wrapper">
@@ -90,7 +95,7 @@
                             <span>Data</span>
                         </div>
                         <div class="col-2 d-flex justify-content-center align-items-center">
-                            <span>Visualizações</span>
+                            <span>Comentarios</span>
                         </div>
                         <div class="col-2 d-flex justify-content-center align-items-center">
                             <span>Curtidas</span>
@@ -109,22 +114,22 @@
 
                             <div class="col-5 ms-3 mt-1" style="word-break: break-all">
                                 <h5>{{ $item->titulo_post }}</h5>
-                                <p style="color: var(--cinza)">
+                                <p class="info-post-txt">
                                    {{$item->descricao_post}}
                                 </p>
                             </div>
                         </div>
                         <div class="col-2 mt-1 d-flex justify-content-center">
-                            <span>{{ $item->status_post === 0 ? 'Inativo' : 'Ativo' }}</span>
+                            <span class="info-post-txt" >{{ $item->status_post === 0 ? 'Inativo' : 'Ativo' }}</span>
                         </div>
                         <div class="col-2 mt-1 d-flex justify-content-center">
-                            <span>{{$item->created_at}}</span>
+                            <span class="info-post-txt" >{{$item->created_at}}</span>
                         </div>
                         <div class="col-2 mt-1 d-flex justify-content-center">
-                            <span>0</span>
+                            <span class="info-post-txt" >{{ $item->total_comentarios }}</span>
                         </div>
                         <div class="col-2 mt-1 d-flex justify-content-center">
-                            <span>{{ $item->total_curtidas }}</span>
+                            <span class="info-post-txt" >{{ $item->total_curtidas }}</span>
                         </div>
                     </div>
                     @endforeach
@@ -193,6 +198,7 @@
 
     @include('componentes.instituicao.modal-temas')
     @include('componentes.instituicao.modal-informacoes')
+    @include('componentes.instituicao.modal-criacao-post')
 
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"
@@ -206,7 +212,8 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="{{ url('js/modal-tema.js') }}"></script>
     <script src="{{ url('js/modal-informacoes.js') }}"></script>
-
+    <script src="{{ url('js/modal-post.js') }}"></script>
+    <script src="{{ url('js/atualizar-img-post.js') }}"></script>
 </body>
 
 </html> 

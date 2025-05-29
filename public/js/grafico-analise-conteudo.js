@@ -19,6 +19,7 @@ new Chart(ctx, {
     },
     options: {
         responsive: true,
+            maintainAspectRatio: false, // ESSENCIAL para respeitar a altura do containe
         plugins: {
             legend: {
                 display: true,

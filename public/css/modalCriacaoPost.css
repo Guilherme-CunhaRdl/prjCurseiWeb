@@ -1,0 +1,103 @@
+@import url(style.css);
+@import url(temas.css);
+.modal-ativo{
+    display: flex;
+}
+
+.modal-oculto{
+    display: none;
+}
+
+.container-modal-post{
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.432);
+    z-index: 999;
+    position: fixed;
+    top: 0;
+    padding-top: 50px;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.box-modal-post{
+    width: 700px;
+    max-height: 700px;
+    background-color: var(--branco);
+    border-radius: 20px;
+    border: var(--cor-tema) 2px solid;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+
+.conteudo-modal-post::-webkit-scrollbar {
+    display: none;                /* Chrome, Safari */
+}
+.boxImgUsuario{
+
+    height: 80px;
+    width: 80px;
+    border-radius: 50%;
+
+}
+
+.boxImgUsuario img{
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+#botaoFecharModalCriacao{
+    background-color: transparent;
+    border: none;
+    font-size: 2rem;
+}
+.inserirInfoPost{
+    border: none;
+    resize: none;
+    width: 100%;
+    font-size: 1.3rem;
+
+}
+
+.inserirInfoPost::placeholder{
+    color: var(--cinza);
+}
+.inserirInfoPost:focus{
+outline: none;    
+}
+.divInput{
+    height: auto;
+    width: 100%;
+}
+.iconesPost{
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    width: 100%;
+    gap: 20px;
+}
+.iconesPost i{
+    font-size: 1.5rem;
+    color: #919191;
+
+}
+.footer-modal-post{
+    display: flex;
+    justify-content: end;
+}
+.botaoPublicarPost{
+    background-color: var(--cor-tema);
+    border: none;
+    width: 100px;
+    height: 60px;
+    color: var(--branco);
+    font-weight: 600;
+    display: flex;
+    border-radius: 20px;
+    justify-content: center;
+    align-items: center;
+}

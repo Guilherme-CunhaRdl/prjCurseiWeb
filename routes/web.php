@@ -68,8 +68,7 @@ Route::post('/fazerLogin', [InstituicaoController::class, 'fazerLoginInstituicao
 Route::get('/logoffInstituicao', [InstituicaoController::class, 'logoutInstituicao'])->name('logout');
 Route::post('/personalizacaoPagina', [InstituicaoController::class, 'updatePersonalizacao'])->name('personalizacao.update');
 Route::get('/bibliotecaMidia/filtrar', [InstituicaoController::class, 'filtrar'])->name('biblioteca.filtrar');
-
-
+Route::post('/bibliotecaMidia/criarPost', [InstituicaoController::class, 'criarPost'])->name('biblioteca.criarPost');
 });
 
 // fim da area instituicao ---------------------------------------------------------------------------------------------------------

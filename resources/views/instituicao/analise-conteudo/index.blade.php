@@ -16,95 +16,121 @@
     <link rel="stylesheet" href="../css/login.css">
     <link rel="stylesheet" href="{{ url('css/modal-temas.css') }}">
     <link rel="stylesheet" href="{{ url('css/modal-informacoes.css') }}">
+    <link rel="stylesheet" href="{{ url('css/analise-conteudo.css') }}">
+    <link rel="icon" href="{{ asset( 'img/Icone_Logo_Cursei_Preta.png') }}" type="image/x-icon" />
 
-    <script type="text/javascript" src="../js/alterar-tema.js" defer></script>
+    <script type="text/javascript" src="{{ url('js/alterar-tema.js') }}" defer></script>
 
 </head>
 
 <body>
 
-    <main class="container-fluid p-0  containerAnalise ">
-
-        @include('componentes.instituicao.navbar')
+    <main class="container-fluid p-0">
 
 
-        <div class="container" style="padding-top: 105px;">
+            <div class="tema-padrao" id="fundo"></div>
+                @include('componentes.instituicao.navbar')
 
+        
 
+            <div class="col-12 d-flex justify-content-center">
             <!-- fazer o card de conteudo postado e todo o restante -->
-            <div class="d-flex align-items-center div-titulo">
-                <div>
+            <div class="div-titulo ">
                     <h1>Seus conteúdos</h1>
                     <p>Informações mais especifícas dos conteúdos postados</p>
-                </div>
             </div>
-            <div class="d-flex justify-content-between divs-conteudo left-0">
-                <div class="bg-white   text-black p-3 divConteudoPostado justify-content-center align-items-center">
-                    <div class="  d-flex flex-row justify-content-between m-3 align-items-center">
+            </div>
+
+            <div class=" container-fluid  mt-5 d-flex justify-content-around align-items-center">
+                <div class="info-engajamento">
+                <div class="container-conteudos-postados mb-5" >
+                    <div class=" h-100 mb-5 col-12 col-xl-11">
+                        <div class="header-info-instituicao flex-row d-flex justify-content-between">
                         <h3>Conteúdo postado</h3>
                         <div class="select-wrapper ">
-                            <select name="" id="select-grafico" class="select-grafico">
+                            <select name="" id="select-grafico" class="select-biblioteca">
                                 <option value="mes">Mês</option>
                                 <option value="ultimos6">Ultimos 6 Meses</option>
                             </select>
                         </div>
                     </div>
-                    <div class="div-grafico ">
-                        <canvas id="graficoCurtidas" class="myShart"></canvas>
+                    
+                    <div class="w-100" style="height: 600px;">
+                        <canvas id="graficoCurtidas" class="myShart h-100 w-100"></canvas>
+                    </div>
                     </div>
                 </div>
-
-                <div class=" text-black bg-white p-4 divEspectadores">
-                    <div class="h-50  overflow-hidden">
-                        <div class=" flex-row">
+                
+                <div class="container-conteudos-postados mb-5 " style="width: 700px;">
+                    <div class="h-50 col-12">
+                        <div class="flex-row">
                             <div class="d-flex justify-content-between align-items-center">
-                                <h3>Espectadores recorrentes</h3>
-                                <i class="bi bi-arrow-right-circle" style="font-size: 30px;"></i>
+                                <h3>Post Mais Curtido</h3>
                             </div>
-                            <p>Ultimos 30 dias</p>
                         </div>
+                        @foreach ($postComMaisCurtidas as $post)
                         <div>
-                            <h6 class=""> 20.000.000 vindo de: </h6>
+                            <h6 class=""> Todal de Curtidas: <span style="color: var(--cor-tema); ">{{$post->total_curtidas}}</span> </h6>
                         </div>
-                        @foreach ($postsMaisCurtidos as $post)
-                        <div class="p-2 row h-50 d-flex align-items-center conteudoEspectadoresRecorrentes">
-                            <div class="divImgEspectadores">
+                        
+                        <div class="row h-50 d-flex align-items-center">
+                            <div class="box-img-ultimo-curtido">
                                 <img src="{{ url('img/user/imgPosts/' . $post->conteudo_post) }}"
-                                    class="imgEspectadoresRecorrentes" alt="">
+                                    class="img-ultimo-curtido" alt="">
                             </div>
                             <div class="col">
-                                <h5>{{ $post->titulo_post }}</h5>
-                                <p> Engajamento: {{$post->total_curtidas}}</p>
+                                <h2>{{ $post->titulo_post }}</h2>
+                                <p style="color: #868686">{{ $post->descricao_post }}</p>
+                                <p> </p>
                             </div>
                         </div>
                         @endforeach
 
                     </div>
-                    <div class="h-50 mt-2 overflow-hidden">
-                    <div class="d-flex justify-content-between align-items-center">
-                                <h3>Seguidores novos</h3>
-                                <i class="bi bi-arrow-right-circle" style="font-size: 30px;"></i>
+                    <div class="h-50 mt-5 col-12">
+                    <div class="d-flex justify-content-between  align-items-center">
+                                <h3>Seguidores</h3>
                             </div>
                         <p>Ultimos 30 dias</p>
+                        <div class="d-flex flex-row col-12">
                         @foreach ($ultimoSeguidor as $seguidor)
-                        <div class=" row h-50 d-flex align-items-center conteudoEspectadoresRecorrentes">
-                            <div class="divImgEspectadores ">
-                                <img src="{{ url('img/user/fotoPerfil/' . $seguidor->imgUser) }}"
+                       <div class="d-flex row h-50 col-6  justify-content-center  align-items-center ">
+                            <div class="  d-flex justify-content-center">
+                                <div class="box-img-ultimo-seguidor">
+                                <img class="img-ultimo-seguidor" src="{{ url('img/user/fotoPerfil/' . $seguidor->imgUser) }}"
                                  alt="">
+                                 </div>
                             </div>
-                            <div class="col">
+                            <div class="col text-center">
                                 <h5>{{ $seguidor->nameUser }}</h5>
                                 <p>Ultimo seguidor</p>
                             </div>
                         </div>
+                        
+                                                @endforeach
+                        @foreach ($ultimoCurtidaUser as $item)
+
+                        <div class="d-flex row h-50 col-6  justify-content-center  align-items-center ">
+                           <div class=" d-flex justify-content-center">
+                                <div class="box-img-ultimo-seguidor">
+                                <img class="img-ultimo-seguidor" src="{{ url('img/user/fotoPerfil/' . $item->imgUser) }}"
+                                 alt="">
+                                 </div>
+                            </div>
+                            <div class="col text-center">
+                                <h5>{{ $item->nameUser }}</h5>
+                                <p>Ultima Curtida</p>
+                            </div>
+                        </div>
                         @endforeach
+                        </div>
 
                     </div>
-
                 </div>
+
+            </div>
             </div>
 
-        </div>
 
     </main>
     @include('componentes.instituicao.modal-temas')

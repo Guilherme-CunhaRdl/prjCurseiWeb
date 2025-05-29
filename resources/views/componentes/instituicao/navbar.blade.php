@@ -1,4 +1,4 @@
-<nav class="nav-bar  ">
+<nav class="nav-bar">
     <div class="d-flex  justify-content-center align-items-center col-2">
         <span class="logo-nav">CURSEI</span>
     </div>

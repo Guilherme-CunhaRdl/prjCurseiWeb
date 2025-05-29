@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="{{ url('css/personalizacao-instituicao.css') }}">
     <link rel="stylesheet" href="{{ url('css/modal-temas.css') }}">
     <link rel="stylesheet" href="{{ url('css/modal-informacoes.css') }}">
+    <link rel="icon" href="{{ asset( 'img/Icone_Logo_Cursei_Preta.png') }}" type="image/x-icon" />
 
     <script type="text/javascript" src="../js/alterar-tema.js" defer></script>
 </head>
@@ -92,7 +93,7 @@
 
                         <div class=" col-12 d-flex flex-row my-3" style="height: 50px;">
                             <div class="col-3 d-flex align-items-center">
-                                <span class="span-alterar">Dados de Contato</span>
+                                <span class="span-alterar">Usuario</span>
                             </div>
                             <div class="col-9 ">
                                 <input class="input-alterar" name="arrobaInstituicao" value="{{ $instituicao->arroba_user }}" type="text" id="input-contato">
@@ -117,7 +118,7 @@
                     <div class="col-12 ">
                         <div class="box-preview-perfil" style="box-sizing: border-box; overflow-y:auto;">
                             <div class="col-12 position-relative">
-                                <img class="banner-preview bannerPreview" src="{{url('img/user/bannerPerfil/' . $instituicao->banner_user)}}" alt="">
+                                    <img class="banner-preview bannerPreview" src="{{url('img/user/bannerPerfil/' . $instituicao->banner_user)}}" alt="">
                                 <div class="div-img-preview-perfil">
                                     <img class="img-preview-perfil carregarImgPerfil" src="{{ url('img/user/fotoPerfil/'. $instituicao->img_user) }}" alt="">
                                 </div>
@@ -128,8 +129,10 @@
 
                             <div class="col-12 mt-3 ms-5">
                                 <div class="d-flex flex-column">
-                                    <span class="nome-usuario-preview" id="nome-user-preview">BK</span>
-                                    <span class="arroba-usuario-preview" id="arroba-user-preview">@BKOFC</span>
+                                    <span class="nome-usuario-preview" id="nome-user-preview"></span>
+                                    <div class="flex-row ">
+                                    <span class="arroba-usuario-preview">@</span><span class="arroba-usuario-preview" id="arroba-user-preview"></span>
+                                    </div>
                                 </div>
                                 <div class="col-8">
                                     <p id="bio-user-preview">Mane fé filho, é suco de goiaba... da fruta fi, mané fé Mane fé filho, é suco de
@@ -188,7 +191,7 @@
 
     @include('componentes.instituicao.modal-temas')
     @include('componentes.instituicao.modal-informacoes')
-
+    @include('componentes.instituicao.modal-criacao-post')
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"
         integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p"
         crossorigin="anonymous"></script>

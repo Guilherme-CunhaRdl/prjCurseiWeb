@@ -1,7 +1,12 @@
 <div class="container-fluid container-modal-informacoes modal-oculto" id="containerModalInformacoes" onclick="fecharModalInformacoes(event)">
     <div class="box-modal-informacoes" id="boxModalInformacoes">
         <div class="col-12 header-modal-informacoes">
+            <div class="d-flex flex-row justify-content-between align-items-center">
             <h1>Informações da Instituição</h1>
+            <button onclick="fecharModalInformacoes(event)" style="background-color: transparent; border: none;" id="botao-fechar-informacoes">
+            <i class="bi bi-x" style="font-size: 2rem; pointer-events: none;"></i>
+            </button>
+            </div>
             <hr class="mt-0">
         </div>
             
@@ -48,8 +53,6 @@
             </div>
         </div>
 
-        <div class="footer-modal-informacoes">
-            <button onclick="fecharModalInformacoes(event)" id="botao-fechar-informacoes">Fechar Modal</button>
-        </div>
+        
     </div>
 </div>

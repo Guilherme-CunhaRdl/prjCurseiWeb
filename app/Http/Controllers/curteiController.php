@@ -11,6 +11,8 @@ class curteiController extends Controller
     /**
      * Display a listing of the resource.
      */
+
+     
     public function index()
     {
         $totalCurtei = Curtei::count();
@@ -58,6 +60,14 @@ class curteiController extends Controller
 
     public function storeCurtei(Request $request)
     {
+
+        header('Access-Control-Allow-Origin: *');
+        header('Access-Control-Allow-Methods: POST, OPTIONS');
+        header('Access-Control-Allow-Headers: Content-Type');
+        
+        if ($request->isMethod('OPTIONS')) {
+            return response()->json('OK', 200);
+        }
         \Log::info('Dados recebidos:', $request->all());
         \Log::info('Arquivos recebidos:', $request->allFiles());
         // Validação dos dados

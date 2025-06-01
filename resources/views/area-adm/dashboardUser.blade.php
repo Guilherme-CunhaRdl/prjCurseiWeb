@@ -113,9 +113,9 @@
                 <div class="painelInformacoes">
                     <div class="botoesInfo">
                         <h3><i class="bi bi-info-circle"></i> Informações</h3>
-                        <button onclick="abrirModalAlter()" class="botaoEdicao">
+                        <!--<button onclick="abrirModalAlter()" class="botaoEdicao">
                             <i class="bi bi-pencil-square"></i>
-                        </button>
+                        </button>-->
                     </div>
                 
                     <p><strong>ID:</strong> {{ $usuario->id }}</p>

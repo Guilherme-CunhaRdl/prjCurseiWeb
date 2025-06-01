@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Post;
 use App\Models\Curtida;
+use App\Models\Hashtag;
+use App\Models\Repostar;
 use Illuminate\Support\Facades\DB;
 
 class postController extends Controller
@@ -46,6 +48,12 @@ class postController extends Controller
         $porcentagemDia = porcentagem($postsDia,$totalPosts);
         $posts = Post::with(['usuario', 'curtidas'])->withCount('curtidas')->orderByDesc('curtidas_count')->limit(3)->get();
         
+        $topHashtags = Hashtag::withCount('posts')
+    ->orderByDesc('posts_count')
+    ->take(5)
+    ->get();
+
+    $totalReposts = Repostar::count();
         return view('area-adm.posts')
             ->with('totalCurtidas', $totalCurtidas)
             ->with('totalPosts', $totalPosts)
@@ -59,6 +67,8 @@ class postController extends Controller
             ->with('porcentagemNoite', $porcentagemNoite)
             ->with('porcentagemDia', $porcentagemDia)
             ->with('topPosts', $posts)
+            ->with('topHashtags', $topHashtags)
+            ->with('totalReposts', $totalReposts)
         ;
     }
 

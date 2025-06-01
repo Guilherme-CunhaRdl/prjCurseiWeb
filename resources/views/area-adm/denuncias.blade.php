@@ -55,7 +55,7 @@
                         </div>
                        
                         <div class="acoes">
-                            <a href="#"><i class='bx bx-info-circle' onclick="abrirModalDenuncia('{{$denuncia->autor->nome_user }}','{{ $denuncia-> motivo_denuncia }}','{{$denuncia->denunciado-> nome_user    }}','{{ $denuncia-> created_at->format('d/m/Y H:i:s')}}','e')"></i></a>
+                            <a href="#"><i class='bx bx-info-circle' onclick="abrirModalDenuncia('{{$denuncia->autor->nome_user }}','{{ $denuncia-> motivo_denuncia }}','{{$denuncia->denunciado-> nome_user    }}','{{ $denuncia->created_at ? $denuncia->created_at->format('d/m/Y H:i:s') : 'Data não disponível' }}','e')"></i></a>
                         </div>
                     </div>
                     @endforeach

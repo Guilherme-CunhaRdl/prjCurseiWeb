@@ -2,30 +2,24 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Comentario extends Model
+class Repostar extends Model
 {
-    use HasFactory;
-
-    protected $table = 'tb_comentario';
+    protected $table = 'tb_repostar';
 
     protected $fillable = [
-        'id',
-        'comentario',
-        'status_comentario',
+        'desc_repostar',
         'id_user',
         'id_post',
-        'id_curtei',
-        'created_at',
-        'updated_at',
     ];
 
-    public function usuario()
+    
+    public function user()
     {
         return $this->belongsTo(User::class, 'id_user');
     }
+
 
     public function post()
     {

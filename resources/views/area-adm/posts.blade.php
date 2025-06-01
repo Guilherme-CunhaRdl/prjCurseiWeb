@@ -44,11 +44,11 @@
                         </div>
                         <div>
                             <div class="icone">
-                                <i class='bx bx-download'></i>
+                            <i class='bx  bx-repeat'  ></i> 
                             </div>
                             <div class="infos">
-                                <p>0</p>
-                                <p>Downloads</p>
+                                <p>{{ $totalReposts }}</p>
+                                <p>Reposts</p>
                             </div>
                         </div>
                     </div>
@@ -128,10 +128,12 @@
                         <p>Top Hashtags</p>
                     </div>
                     <div class="lista-de-hashtags">
+                    @foreach($topHashtags as $hashtag)
                         <div class="hashtag">
-                            <p class="nomehashtag">#Curso</p>
-                            <p>2.4k</p>
+                            <p class="nomehashtag">{{ $hashtag->nomeHashtag }}</p>
+                            <p>{{ $hashtag->posts_count }}</p>
                         </div>
+                        @endforeach
 
                     </div>
                 </div>

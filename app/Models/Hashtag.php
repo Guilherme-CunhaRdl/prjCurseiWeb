@@ -16,4 +16,11 @@ class Hashtag extends Model
         'nomeHashtag',
         'created_at',
         'updated_at',
-    ]; }
+    ]; 
+
+    public function posts()
+    {
+        return $this->belongsToMany(Post::class, 'tb_post_hashtag', 'id_hashtag', 'id_post');
+    }
+
+}

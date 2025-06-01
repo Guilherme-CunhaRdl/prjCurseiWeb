@@ -103,7 +103,7 @@
 
     <div class="infoCard">
         <div>
-            <span>10.5k</span>
+            <span>{{ $post->comentario_count }}</span>
             Comentarios
         </div>
         <div>

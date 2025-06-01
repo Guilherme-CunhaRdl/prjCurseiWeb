@@ -30,6 +30,11 @@ class Post extends Model
     }
     public function comentario()
     {
-        return $this->belongsTo(Comentario::class, 'tb_comentario'); // 'id_user' é a chave estrangeira no modelo Post
+        return $this->hasMany(Comentario::class, 'id_post'); // 'id_user' é a chave estrangeira no modelo Post
+    }
+
+    public function hashtags()
+    {
+        return $this->belongsToMany(Hashtag::class, 'tb_post_hashtag', 'id_post', 'id_hashtag');
     }
 }

@@ -72,6 +72,53 @@ class postController extends Controller
         ;
     }
 
+
+    public function filter(Request $request)
+    {
+        try {
+
+          \DB::enableQueryLog();
+            $query = Post::with(['usuario', 'comentario'])
+                        ->withCount(['comentario', 'curtidas']);
+    
+          
+            if ($request->search) {
+                $query->whereHas('usuario', function($q) use ($request) {
+                    $q->where('nome_user', 'like', '%'.$request->search.'%')
+                      ->orWhere('arroba_user', 'like', '%'.$request->search.'%');
+                });
+            }
+    
+            if ($request->status === 'ativos') {
+                $query->where('status_post', true);
+            } elseif ($request->status === 'desativados') {
+                $query->where('status_post', false);
+            }
+    
+        
+            switch($request->sort) {
+                case 'views': $query->orderBy('views', 'desc'); break;
+                case 'likes': $query->orderBy('curtidas_count', 'desc'); break;
+                case 'recentes': $query->orderBy('created_at', 'desc'); break;
+                case 'antigos': $query->orderBy('created_at', 'asc'); break;
+                default: $query->orderBy('created_at', 'desc');
+            }
+    
+            $posts = $query->get();
+    
+            return response()->json([
+                'success' => true,
+                'posts' => $posts
+            ]);
+    
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
     /**
      * Show the form for creating a new resource.
      */

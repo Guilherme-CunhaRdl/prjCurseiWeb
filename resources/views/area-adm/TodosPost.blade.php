@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Todos Os Post da Instituicoes</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
@@ -23,39 +24,23 @@
             </div>
 
             <div class="SelecInputs">
-                <div class="pesqInput">
-                    <input type="text" placeholder="Digite o nome do usuario">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                </div>
+            <div class="pesqInput">
+        <input id="searchUser" type="text" placeholder="Digite o nome do usuario">
+        <i class="fa-solid fa-magnifying-glass"></i>
+    </div>
 
 
-                <select class="form-select selectInst">
-                    <option value="all">
-                        Todos os Posts
-                    </option>
-                    <option value="all">
-                        Posts ativos
-                    </option>
-                    <option value="all">
-                      Posts Desativados
-                    </option>
-                </select>
+                <select id="filterStatus" class="form-select selectInst">
+        <option value="all">Todos os Posts</option>
+        <option value="ativos">Posts ativos</option>
+        <option value="desativados">Posts Desativados</option>
+    </select>
 
-
-                 <select name="Organizar" class="form-select selectInst">
-                    <option value="all">
-                        Mais Vistos
-                    </option>
-                    <option value="all">
-                        Mais Curtidos
-                    </option>
-                    <option value="all">
-                        Mais recentes
-                    </option>
-                    <option value="all">
-                        Mais antigos
-                    </option>
-                    </select>
+                <select id="sortPosts" name="Organizar" class="form-select selectInst">
+        <option value="likes">Mais Curtidos</option>
+        <option value="recentes">Mais recentes</option>
+        <option value="antigos">Mais antigos</option>
+    </select>
 
                    
 
@@ -85,7 +70,7 @@
             @else
                 <div class="no-image-placeholder">
 
-                           <!---ISSO AQUI EU QUERO VER QUAL A MELHOR FORMA PQ OU DEIXA ISSO OU DEIXA SEM NADA
+                           <!---ISSO AQUI EU QUERO VER QUAL A MELHOR FORMA PQ OU DEIXA ISSO OU DEIXA SEM NADA-->
             <div class="no-image-placeholder">
                 <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
@@ -94,7 +79,7 @@
                 </svg>
                 <span>Sem imagem</span>
             </div>
--->
+
                  
                 </div>
             @endif
@@ -122,6 +107,6 @@
 
     </main>
 
-   
+    <script src="{{asset('js/filtrosAdm.js')}}"></script>
 </body>
 </html>

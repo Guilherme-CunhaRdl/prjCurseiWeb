@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\InstituicaoController;
+use App\Http\Controllers\PostController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -26,6 +27,7 @@ route::prefix('curseiAdm')->group(function(){
     route::get('/configuracoes','\App\Http\Controllers\AdminController@edit')->middleware('auth:adm');
     Route::get('/instituicao','App\http\Controllers\AdminController@instituicoesAdm')->name('instituicao');
     Route::get('/tdPostInst','App\http\Controllers\AdminController@selectAllPostAdm');
+    Route::post('/tdPostInst/filter', [PostController::class, 'filter'])->name('posts.filter');
     Route::get('/tdRellsInst','App\http\Controllers\AdminController@selectAllRellsAdm');
     Route::get('/dashUsuarioAdm/{id}','App\http\Controllers\AdminController@DashDoUserAdm');
     Route::get('/dashInstituicaoAdm/{id}','App\http\Controllers\AdminController@DashDaInstAdm');

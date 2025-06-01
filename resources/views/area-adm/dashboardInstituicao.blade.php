@@ -73,7 +73,7 @@
               <i class="bi bi-camera-video"></i>
               <div class="textoEstati">
                 <span>{{ $quantidadeCurtei }}</span>
-                <p>Reels</p>
+                <p>Curteis</p>
               </div>
             </div>
 
@@ -85,19 +85,13 @@
               </div>
             </div>
 
-            <div class="itemDoUser">
-              <i class="bi bi-bookmark"></i>
-              <div class="textoEstati">
-                <span>0</span>
-                <p>Favoritados</p>
-              </div>
-            </div>
+
 
             <div class="itemDoUser">
-              <i class="bi bi-download"></i>
+            <i class='bx  bx-repeat'  ></i> 
               <div class="textoEstati">
-                <span>0</span>
-                <p>Downloads</p>
+                <span>{{ $quantidadeReposts }}</span>
+                <p>Reposts</p>
               </div>
             </div>
           </div>

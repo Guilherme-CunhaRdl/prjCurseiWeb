@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Adm;
 use App\Models\Instituicao;
+use App\Models\Repostar;
 use App\Models\Post;
 use App\Models\User;
 use App\Models\Curtida;
@@ -274,7 +275,7 @@ class AdminController extends Controller
         $numeroSeguidores = Seguidores::where('id_user_seguido', $userId)->count();
         $numeroSeguindo = Seguidores::where('id_user_seguidor', $userId)->count();
         $quantidadeCurtei = Curtei::where('id_user', $userId)->count();
-
+        $quantidadeReposts = Repostar::where('id_user', $userId)->count();
 
         return view('area-adm.dashboardInstituicao', compact(
             'usuario',
@@ -283,7 +284,8 @@ class AdminController extends Controller
             'numeroCurtidas',
             'numeroSeguidores',
             'numeroSeguindo',
-            'quantidadeCurtei'
+            'quantidadeCurtei',
+             'quantidadeReposts'
         ));
     }
 

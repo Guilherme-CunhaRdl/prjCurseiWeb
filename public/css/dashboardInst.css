@@ -95,7 +95,7 @@ html, body {
 
 .estatisticas, .estatisticasUser {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-template-columns: repeat(6, 6fr);
     gap: 1rem;
     margin-bottom: 1.5rem;
 }
@@ -195,12 +195,23 @@ html, body {
 }
 
 
+
 .grafico-box {
     background: var(--branco);
     border-radius: 12px;
     padding: 1.5rem;
     box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    width: 100%;
+    box-sizing: border-box;
 }
+
+.grafico-box canvas {
+    width: 100% !important;
+    height: auto !important;
+    max-height: 300px;
+}
+
+
 
 .grafico-box h3 {
     color: var(--verde);
@@ -307,7 +318,7 @@ html, body {
 
 @media (min-width: 1200px) {
     .estatisticas, .estatisticasUser {
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(3, 1fr);
     }
     
     .itemDoUser i, .itemDoUsuario i {

@@ -63,7 +63,7 @@
                             <i class="bi bi-camera-reels"></i>
                             <div class="textoEstatiUser">
                                 <span>{{ $quantidadeCurtei }}</span>
-                                <p>Reels</p>
+                                <p>Curteis</p>
                             </div>
                         </div>
 

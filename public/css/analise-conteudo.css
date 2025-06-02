@@ -30,8 +30,8 @@
 }
 
 .container-conteudos-postados{
-    width: 1300px;
-    
+    width: 1000px;
+    height: 750px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;

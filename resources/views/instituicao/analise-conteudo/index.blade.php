@@ -61,7 +61,7 @@
                     </div>
                 </div>
                 
-                <div class="container-conteudos-postados mb-5 " style="width: 700px;">
+                <div class="container-conteudos-postados mb-5 " style="width: 600px;">
                     <div class="h-50 col-12">
                         <div class="flex-row">
                             <div class="d-flex justify-content-between align-items-center">

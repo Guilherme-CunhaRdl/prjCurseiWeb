@@ -570,7 +570,7 @@ return response()->json([
         $chats = $queryBuilder->get();
 
         Broadcast(new MensagemChat($mensagem))->toOthers();
-        broadcast(new TelaChat($chats, $request->idChat));
+        Broadcast(new TelaChat($chats, $request->idChat));
 
         return response()->json([
             'message' => 'Mensagem enviada com sucesso!',

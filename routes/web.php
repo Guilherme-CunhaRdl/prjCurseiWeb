@@ -3,6 +3,9 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\InstituicaoController;
 use App\Http\Controllers\PostController;
+use App\Mail\ContatoInstituicao;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -47,7 +50,7 @@ route::prefix('curseiAdm')->group(function(){
     Route::put('/instituicao/{id}/atualizarInst', [AdminController::class, 'atualizarInst'])->name('instituicao.atualizarDados');
     Route::put('/instituicao/{id}/atualizarEndereco', [AdminController::class, 'atualizarInstDados'])->name('instituicao.atualizarEndereco');
     Route::get('/verificarInts/{id}/{acao}', 'App\Http\Controllers\AdminController@verificarInst');
-
+    
 });
 
 

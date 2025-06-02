@@ -59,4 +59,24 @@ class instituicaoControllerApi extends Controller
         'data' => $instituicoes,
     ]);
     }
+
+    public function verificarInstituicaoSolicitada($id)
+    {
+     
+        $instituicao = Instituicao::where('id_user', $id)->first();
+        if ($instituicao) {
+            return response()->json([
+                'sucesso' => true,
+                'mensagem' => 'Instituição já cadastrada.',
+                'code' => 200,
+                'data' => $instituicao,
+            ]);
+        } else {
+            return response()->json([
+                'sucesso' => false,
+                'mensagem' => 'Instituição não encontrada.',
+                'code' => 404,
+            ]);
+        }
+    }
 }

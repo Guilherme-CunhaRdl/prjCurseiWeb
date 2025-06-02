@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\ContatoInstituicao;
 use App\Models\Seguidores;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -15,11 +16,11 @@ use App\Models\User;
 use App\Models\Curtida;
 use App\Models\Curtei;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\RedirectResponse;
-
-
-
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class AdminController extends Controller
 {
@@ -179,10 +180,10 @@ class AdminController extends Controller
         $nome = Adm::pluck('nome_admin');
         return response()->json($nome);
     }
-  
+
     public function instituicoesAdm()
     {
-        
+
         $todasInstituicoes = User::whereHas('instituicao') // Só usuários que são instituições
             ->withCount([
                 'posts as total_curtidas' => function ($query) {
@@ -192,7 +193,7 @@ class AdminController extends Controller
                     $query->where('status_seguidores', 1);
                 },
             ])
-            ->with('instituicao') 
+            ->with('instituicao')
             ->get();
 
         return view('area-adm.instituicoes', compact('todasInstituicoes'));
@@ -205,8 +206,8 @@ class AdminController extends Controller
     {
 
         $posts = Post::with(['usuario', 'curtidas'])
-        ->withCount(['curtidas', 'comentario'])
-        ->get();
+            ->withCount(['curtidas', 'comentario'])
+            ->get();
 
         return view('area-adm.TodosPost', compact('posts'));
     }
@@ -223,41 +224,41 @@ class AdminController extends Controller
     public function DashDoUserAdm($userId)
     {
         $usuario = User::withCount(['seguidor', 'seguindo'])->find($userId);
-    
+
         if (!$usuario) {
             return redirect()->back()->with('error', 'Usuário não encontrado.');
         }
-    
-     
+
+
         $numeroPosts = Post::where('id_user', $userId)->count();
         $numeroCurtidas = Curtida::whereIn('id_post', Post::where('id_user', $userId)->pluck('id'))->count();
         $quantidadeCurtei = Curtei::where('id_user', $userId)->count();
-    
-      
-        $ultimosSeguidores = Seguidores::with(['usuarioSeguidor' => function($query) {
+
+
+        $ultimosSeguidores = Seguidores::with(['usuarioSeguidor' => function ($query) {
             $query->select('id', 'nome_user', 'img_user', 'arroba_user');
         }])
-        ->where('id_user_seguido', $userId)
-        ->where('status_seguidores', true)
-        ->orderBy('created_at', 'desc')
-        ->limit(5)
-        ->get();
-    
-   
-        $seguindo = Seguidores::with(['usuarioSeguido' => function($query) {
+            ->where('id_user_seguido', $userId)
+            ->where('status_seguidores', true)
+            ->orderBy('created_at', 'desc')
+            ->limit(5)
+            ->get();
+
+
+        $seguindo = Seguidores::with(['usuarioSeguido' => function ($query) {
             $query->select('id', 'nome_user', 'img_user', 'arroba_user');
         }])
-        ->where('id_user_seguidor', $userId)
-        ->where('status_seguidores', true)
-        ->orderBy('created_at', 'desc')
-        ->limit(5)
-        ->get();
-    
+            ->where('id_user_seguidor', $userId)
+            ->where('status_seguidores', true)
+            ->orderBy('created_at', 'desc')
+            ->limit(5)
+            ->get();
+
         return view('area-adm.dashboardUser', [
             'usuario' => $usuario,
             'numeroPosts' => $numeroPosts,
             'numeroCurtidas' => $numeroCurtidas,
-            'numeroSeguidores' => $usuario->seguidor_count, 
+            'numeroSeguidores' => $usuario->seguidor_count,
             'numeroSeguindo' => $usuario->seguindo_count,
             'ultimosSeguidores' => $ultimosSeguidores,
             'seguindo' => $seguindo,
@@ -285,7 +286,7 @@ class AdminController extends Controller
             'numeroSeguidores',
             'numeroSeguindo',
             'quantidadeCurtei',
-             'quantidadeReposts'
+            'quantidadeReposts'
         ));
     }
 
@@ -293,51 +294,51 @@ class AdminController extends Controller
     {
         $request->validate([
             'nome' => 'required|string|max:255',
-            'email' => 'required|email|unique:tb_user,email_user,'.$id,
-            'usuario' => 'required|string|max:255|unique:tb_user,arroba_user,'.$id,
+            'email' => 'required|email|unique:tb_user,email_user,' . $id,
+            'usuario' => 'required|string|max:255|unique:tb_user,arroba_user,' . $id,
             'senha' => 'nullable|string|min:6', // Senha opcional
             'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'banner' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
-    
+
         $usuario = User::findOrFail($id);
-    
-       
+
+
         if ($request->hasFile('foto')) {
-   
-            if ($usuario->img_user && file_exists(public_path('img/user/fotoPerfil/'.$usuario->img_user))) {
-                unlink(public_path('img/user/fotoPerfil/'.$usuario->img_user));
+
+            if ($usuario->img_user && file_exists(public_path('img/user/fotoPerfil/' . $usuario->img_user))) {
+                unlink(public_path('img/user/fotoPerfil/' . $usuario->img_user));
             }
-            
-            $nomeImagem = 'perfil_'.time().'.'.$request->foto->extension();
+
+            $nomeImagem = 'perfil_' . time() . '.' . $request->foto->extension();
             $request->foto->move(public_path('img/user/fotoPerfil'), $nomeImagem);
             $usuario->img_user = $nomeImagem;
         }
-    
-     
+
+
         if ($request->hasFile('banner')) {
-       
-            if ($usuario->banner_user && file_exists(public_path('img/user/bannerPerfil/'.$usuario->banner_user))) {
-                unlink(public_path('img/user/bannerPerfil/'.$usuario->banner_user));
+
+            if ($usuario->banner_user && file_exists(public_path('img/user/bannerPerfil/' . $usuario->banner_user))) {
+                unlink(public_path('img/user/bannerPerfil/' . $usuario->banner_user));
             }
-            
-            $nomeBanner = 'banner_'.time().'.'.$request->banner->extension();
+
+            $nomeBanner = 'banner_' . time() . '.' . $request->banner->extension();
             $request->banner->move(public_path('img/user/bannerPerfil'), $nomeBanner);
             $usuario->banner_user = $nomeBanner;
         }
-    
-   
+
+
         $usuario->nome_user = $request->nome;
         $usuario->arroba_user = $request->usuario;
         $usuario->email_user = $request->email;
-        
-     
+
+
         if ($request->filled('senha')) {
             $usuario->senha_user = Hash::make($request->senha);
         }
-    
+
         $usuario->save();
-    
+
         return redirect()->route('usuario')->with('success', 'Usuário atualizado com sucesso!');
     }
 
@@ -345,67 +346,67 @@ class AdminController extends Controller
 
     public function atualizarInst(Request $request, $id)
     {
- 
+
         $validated = $request->validate([
             'nome' => 'required|string|max:255',
-            'email' => 'required|email|unique:tb_user,email_user,'.$id,
-            'usuario' => 'required|string|max:255|unique:tb_user,arroba_user,'.$id,
+            'email' => 'required|email|unique:tb_user,email_user,' . $id,
+            'usuario' => 'required|string|max:255|unique:tb_user,arroba_user,' . $id,
             'senha' => 'nullable|string|min:6',
             'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'banner' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
         ]);
-    
+
         try {
             $usuario = User::findOrFail($id);
             if ($request->hasFile('foto')) {
-                if ($usuario->img_user && file_exists(public_path('img/user/fotoPerfil/'.$usuario->img_user))) {
-                    unlink(public_path('img/user/fotoPerfil/'.$usuario->img_user));
+                if ($usuario->img_user && file_exists(public_path('img/user/fotoPerfil/' . $usuario->img_user))) {
+                    unlink(public_path('img/user/fotoPerfil/' . $usuario->img_user));
                 }
-                $nomeImagem = 'perfil_'.$id.'_'.time().'.'.$request->foto->extension();
+                $nomeImagem = 'perfil_' . $id . '_' . time() . '.' . $request->foto->extension();
                 $request->foto->move(public_path('img/user/fotoPerfil'), $nomeImagem);
-                
+
 
                 $usuario->img_user = $nomeImagem;
             }
-    
+
 
             if ($request->hasFile('banner')) {
-                if ($usuario->banner_user && file_exists(public_path('img/user/bannerPerfil/'.$usuario->banner_user))) {
-                    unlink(public_path('img/user/bannerPerfil/'.$usuario->banner_user));
+                if ($usuario->banner_user && file_exists(public_path('img/user/bannerPerfil/' . $usuario->banner_user))) {
+                    unlink(public_path('img/user/bannerPerfil/' . $usuario->banner_user));
                 }
-                $nomeBanner = 'banner_'.$id.'_'.time().'.'.$request->banner->extension();
+                $nomeBanner = 'banner_' . $id . '_' . time() . '.' . $request->banner->extension();
                 $request->banner->move(public_path('img/user/bannerPerfil'), $nomeBanner);
                 $usuario->banner_user = $nomeBanner;
             }
-    
-  
+
+
             $usuario->nome_user = $validated['nome'];
             $usuario->email_user = $validated['email'];
             $usuario->arroba_user = $validated['usuario'];
-    
-     
+
+
             if (!empty($validated['senha'])) {
                 $usuario->senha_user = Hash::make($validated['senha']);
             }
-    
+
             $usuario->save();
-    
+
             return redirect()->route('instituicao')->with('success', 'Perfil atualizado com sucesso!');
-    
         } catch (\Exception $e) {
             return redirect()->back()
-                ->with('error', 'Erro ao atualizar perfil: '.$e->getMessage())
+                ->with('error', 'Erro ao atualizar perfil: ' . $e->getMessage())
                 ->withInput();
         }
     }
 
-    
-    
 
 
-    public function atualizarInstDados(Request $request,$idUsuario){
 
-        $request-> validate([
+
+    public function atualizarInstDados(Request $request, $idUsuario)
+    {
+
+        $request->validate([
             'cep' => 'required|string|max:255',
             'endereco' => 'required|string|max:255',
             'numero' => 'required|string|max:255',
@@ -414,31 +415,53 @@ class AdminController extends Controller
             'cidade' => 'required|string|max:255',
 
         ]);
-      
-        $instituicao = Instituicao::where('id_user', $idUsuario)->firstOrFail();
-        
-        $instituicao->cep_instituicao= $request->input('cep');
-        $instituicao->logradouro_instituicao= $request->input('endereco');
-        $instituicao->num_logradouro_instituicao= $request->input('numero');
-        $instituicao->bairro_instituicao= $request->input('bairro');
-        $instituicao->estado_instituicao= $request->input('estado');
-        $instituicao->cidade_instituicao= $request->input('cidade');
 
-  
+        $instituicao = Instituicao::where('id_user', $idUsuario)->firstOrFail();
+
+        $instituicao->cep_instituicao = $request->input('cep');
+        $instituicao->logradouro_instituicao = $request->input('endereco');
+        $instituicao->num_logradouro_instituicao = $request->input('numero');
+        $instituicao->bairro_instituicao = $request->input('bairro');
+        $instituicao->estado_instituicao = $request->input('estado');
+        $instituicao->cidade_instituicao = $request->input('cidade');
+
+
         $instituicao->save();
 
         return redirect()->route('instituicao');
     }
-    public function verificarInst($id,$acao){
-        if($acao == "aprovar"){
-         $instituicao = Instituicao::where('id_user', $id)->firstOrFail();
-         $instituicao->verificado_instituicao = 1;
-         $instituicao->save();
-         return redirect('/curseiAdm/dashInstituicaoAdm/'.$id);
-        }elseif( $acao == "recusar"){
-         Instituicao::where('id_user', $id)->delete();
-         return redirect( '/curseiAdm/instituicao');
- 
-     }
-     }
+
+  public function verificarInst($id, $acao)
+{
+    $instituicao = Instituicao::with('user')->where('id_user', $id)->firstOrFail();
+
+    if ($acao == "aprovar") {
+        $instituicao->verificado_instituicao = 1;
+        $instituicao->save();
+
+        $mensagem = 'Sua solicitação foi aceita! Agora, você é oficialmente uma conta institucional verificada no Cursei. Você pode acessar sua conta agora e aproveitar todas as funcionalidades exclusivas para instituições. Obrigado por fazer parte disso!';
+    } elseif ($acao == "recusar") {
+        $mensagem = 'Sua solicitação foi negada. Sentimos muito, mas com base nas informações fornecidas, não podemos aprovar sua conta institucional no Cursei. Se você tiver dúvidas ou precisar de mais informações, entre em contato conosco. Agradecemos seu interesse em fazer parte do Cursei!';
+
+        $instituicao->delete();
+    }
+
+    $email = $instituicao->user?->email_user ?? null;
+
+    if ($email) {
+        try {
+            Mail::to($email)->send(new ContatoInstituicao($instituicao, $mensagem));
+            Log::info("E-mail enviado com sucesso para: $email");
+        } catch (\Exception $e) {
+            Log::error("Erro ao enviar e-mail para $email: " . $e->getMessage());
+        }
+    } else {
+        Log::warning("Instituição {$instituicao->id} não tem e-mail associado.");
+    }
+
+    return $acao == "aprovar"
+        ? redirect('/curseiAdm/dashInstituicaoAdm/' . $id)
+        : redirect('/curseiAdm/instituicao');
+}
+
 }

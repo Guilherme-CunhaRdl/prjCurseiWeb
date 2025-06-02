@@ -33,7 +33,9 @@ class curteiController extends Controller
             ->count('tb_curtei.id');
         
         function porcentagem($valor,$total){
-            $resultado =number_format(($valor / $total) * 100,1,',','.');
+            $resultado = ($total != 0) 
+            ? number_format(($valor / $total) * 100, 1, ',', '.') 
+            : '0,0';
             return $resultado;
         }
         $porcentagemUser = porcentagem($curteiUsers,$totalCurtei);

@@ -96,6 +96,8 @@
             Curtidas
         </div>
     </div>
+
+    
 </div>
             @endforeach
                

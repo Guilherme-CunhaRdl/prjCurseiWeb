@@ -214,7 +214,7 @@ class AdminController extends Controller
     public function selectAllRellsAdm()
     {
 
-        $Curtei = Curtei::with(['user', 'curtidas'])->withCount('curtidas')->get();
+        $Curtei = Curtei::with(['usuario', 'curtidas'])->withCount('curtidas')->get();
         return view('area-adm.TodosRells', compact('Curtei'));
     }
 

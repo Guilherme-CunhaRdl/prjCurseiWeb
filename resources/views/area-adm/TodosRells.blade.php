@@ -10,6 +10,7 @@
     @include('area-adm.componentes.links-base')
 
     <link rel="stylesheet" href="{{asset('css/instituicoesAdm.css')}}">
+    <link rel="stylesheet" href="{{asset('css/dashCurtei.css')}}">
 </head>
 <body>
 @include('area-adm.componentes.sidebar')
@@ -64,48 +65,47 @@
 
             </div>
 
-                            <div class="listarCards">
+            <div class="listarCards">
+    @foreach($Curtei as $C)    
+    <div class="cardsPost">
+        <div class="topoCard">
+            <img src="{{ asset('img/user/fotoPerfil/' . ($C->usuario->img_user ?? 'default-banner.jpg')) }}" alt="Foto perfil" class="logoInstituicao">
+            <div class="userInfo">
+                <h3 class="nomeInstituicao">{{ $C->usuario->nome_user ?? 'Desconhecido' }}</h3>
+                <small class="tempoPost">{{ $C->created_at->diffForHumans() }}</small>
+            </div>
+        </div>
 
-                     
-                
-             @foreach($Curtei as $C)    
-                <div class="cardsPost">
-                    <div class="topoCard">
-                        <img src="{{ asset('img/user/fotoPerfil/' . ($C->user->img_user ?? 'default-banner.jpg')) }}" alt="Logo" class="logoInstituicao">
-                        <h3 class="nomeInstituicao">{{ $C->user->nome_user ?? 'Desconhecido' }}</h3>
-                    </div>
+        @if($C->legenda_curtei)
+        <div class="legendaPost">
+            <p>{{ $C->legenda_curtei }}</p>
+        </div>
+        @endif
 
-       
+        <div class="videoWrapper">
+    <div class="videoContainer">
+        <video controls class="videoPost" poster="{{ asset($C->caminho_curtei_thumb) }}">
+            <source src="{{ asset($C->caminho_curtei) }}" type="video/mp4">
+        </video>
+    </div>
+</div>
 
-                                    <div class="videoRells">
-                    <img src="{{ asset('img/user/imgRells/imgRells.jpg') }}" alt="Imagem do post">
-                </div>
-
-
-                    <div class="infoCard">
-                        <div>
-                        <span>0</span>
-                        Comentarios
-                        </div>
-                        <div>
-                        <span>{{ $C->curtidas_count }}</span>
-                        Curtidas
-                        </div>
-                    </div>   
-                </div>
-                @endforeach
-                
-
-
-           
-                
-                
-
-               
-
-
-                
-                </div>
+        <div class="interactionButtons">
+            <div class="interactionBtn">
+                <i class="fas fa-heart"></i>
+                <span>{{ $C->curtidas->count() }}</span>
+            </div>
+            <div class="interactionBtn">
+                <i class="fas fa-comment"></i>
+                <span>{{ $C->comentarios_count ?? 0 }}</span>
+            </div>
+            <div class="interactionBtn">
+                <i class="fas fa-share"></i>
+            </div>
+        </div>
+    </div>
+    @endforeach
+</div>
 
 
     </main>

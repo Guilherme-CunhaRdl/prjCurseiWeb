@@ -14,6 +14,8 @@ use App\Models\NaoInteressado;
 use App\Models\Hashtag;
 use App\Models\CurtidaComentario;
 use App\Models\PostHashtag;
+use App\Models\Evento;
+
 use Error;
 use Illuminate\Support\Facades\File;
 
@@ -496,6 +498,96 @@ IF(
             'code' => 200,
             'Post' => $post,
         ]);
+    }
+    public function criarEvento(Request $request, $idUser){
+
+        
+         $nomeImagem = null;
+
+
+        if ($request->hasFile('img') && $request->file('img')->isValid()) {
+            $extensao = $request->file('img')->getClientOriginalExtension();
+            $nomeImagem = time() . '_' . uniqid() . '.' . $extensao;
+            $request->file('img')->move(public_path('img/user/imgPosts'), $nomeImagem);
+        }
+
+               function normalizarTexto1($texto)
+        {
+            $texto = mb_strtolower($texto, 'UTF-8');
+            $texto = preg_replace(
+                ['/[áàãâä]/u', '/[éèêë]/u', '/[íìîï]/u', '/[óòõôö]/u', '/[úùûü]/u', '/[ç]/u'],
+                ['a', 'e', 'i', 'o', 'u', 'c'],
+                $texto
+            );
+            return $texto;
+        }
+
+        function identificarAreaPorPontuacao1($texto)
+        {
+            $areas = config('areas');
+
+            $pontuacoes = array_fill_keys(array_keys($areas), 0);
+
+            // Normaliza o texto de entrada e quebra em palavras
+            $palavras = explode(' ', normalizarTexto1($texto));
+
+            foreach ($palavras as $palavra) {
+                foreach ($areas as $area => $keywords) {
+                    // Normaliza as palavras-chave também
+                    foreach ($keywords as $keyword) {
+                        if ($palavra === normalizarTexto1($keyword)) {
+                            $pontuacoes[$area]++;
+                        }
+                    }
+                }
+            }
+
+            arsort($pontuacoes);
+
+            $maiorPontuacao = reset($pontuacoes);
+            if ($maiorPontuacao === 0) {
+                return 'indefinido';
+            }
+
+            return array_key_first($pontuacoes);
+        }
+     $conteudo = identificarAreaPorPontuacao1($request->descEvento);
+       try{
+
+           $post = Post::create([
+              'status_post' => 1,
+              'conteudo_post' => $nomeImagem,
+              'descricao_post' => $request->tituloEvento,
+              'area_post' => $conteudo,
+              'id_user' => $idUser,
+              'created_at' => now(),
+              'update_at' => now(),
+          ]);
+          $evento = Evento::create([
+          'desc_evento'=> $request->descEvento,
+          'link_evento' =>$request->link,
+          'data_inicio_evento'=>$request->inicio,
+          'data_fim_evento'=>$request->fim,
+          'status_evento'=>1,
+          'id_post'=>$post->id,
+          'created_at' => now(),
+          'update_at' => now(),
+          ]);
+           return response()->json([
+            'sucesso' => true,
+            'mensagem' => 'Evento criado com sucesso!',
+            'code' => 200,
+    
+        ]);
+       }catch(error){
+        return response()->json([
+            'sucesso' => true,
+            'mensagem' => 'erro',
+            'code' => 000,
+            'Post' => $post,
+        ]);
+       }
+       
     }
     /**
      * Display the specified resource.

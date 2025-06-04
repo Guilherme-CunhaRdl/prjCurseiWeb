@@ -13,12 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('tb_planejamento', function (Blueprint $table) {
+        Schema::create('tb_evento', function (Blueprint $table) {
             $table->id();
-            $table->string('nome_planejamento', 100);
-            $table->date('data_inicio_planejamento');
-            $table->date('data_fim_planejamento');
-            $table->boolean('status_planejamento');
+            $table->string('desc_evento', 3000);
+            $table->string('link_evento', 3000);
+            $table->timestamp('data_inicio_evento');
+$table->timestamp('data_fim_evento')->nullable();
+            $table->boolean('status_evento');
             $table->unsignedBigInteger('id_post');
             $table->foreign('id_post')->references('id')->on('tb_post');
             $table->timestamps();
@@ -32,6 +33,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('tb_planejamento');
+        Schema::dropIfExists('tb_evento');
     }
 };

@@ -33,6 +33,7 @@ Route::post('/user/escolherInteresesses', [UserControllerApi::class, 'escolherIn
 
  Route::get('/cursei/posts', [PostControllerApi::class, 'indexApi'])->name('posts.index');
 Route::post('/cursei/postsUpdate/{id}', [PostControllerApi::class, 'updateApi'])->name('posts.update');
+ Route::post('/cursei/evento/{id}', [PostControllerApi::class, 'criarEvento'])->name('posts.criarEvento');
 
  Route::post('/cursei/posts/{idUser}', [PostControllerApi::class, 'storeApi'])->name('posts.store');
  Route::get('/cursei/posts/user/{idUser}', [PostControllerApi::class, 'getPostsByUser'])->name('posts.byUser');

@@ -79,7 +79,7 @@
                                     class="img-ultimo-curtido" alt="">
                             </div>
                             <div class="col">
-                                <h2>{{ $post->titulo_post }}</h2>
+                                <h4>{{ $post->titulo_post }}</h4>
                                 <p style="color: #868686">{{ $post->descricao_post }}</p>
                                 <p> </p>
                             </div>

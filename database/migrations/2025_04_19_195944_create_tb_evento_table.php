@@ -17,8 +17,8 @@ return new class extends Migration
             $table->id();
             $table->string('desc_evento', 3000);
             $table->string('link_evento', 3000);
-            $table->timestamp('data_inicio_evento');
-$table->timestamp('data_fim_evento')->nullable();
+            $table->date('data_inicio_evento');
+$table->date('data_fim_evento')->nullable();
             $table->boolean('status_evento');
             $table->unsignedBigInteger('id_post');
             $table->foreign('id_post')->references('id')->on('tb_post');

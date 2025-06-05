@@ -26,190 +26,87 @@ use Illuminate\Support\Facades\DB;
 
 class PostControllerApi extends Controller
 {
-    public function posts($tipo, $idUser, $quantidade, $pagina, $pesquisa)
-    {
-        $ignorarPosts = 0;
-        for ($i = 0; $i <= $pagina; $i++) {
-            $ignorarPosts = $ignorarPosts + $quantidade;
-        };
-        $ignorarPosts = $ignorarPosts - $quantidade;
+ public function posts($tipo, $idUser, $quantidade, $pagina, $pesquisa)
+{
+    $ignorarPosts = 0;
+    for ($i = 0; $i <= $pagina; $i++) {
+        $ignorarPosts = $ignorarPosts + $quantidade;
+    };
+    $ignorarPosts = $ignorarPosts - $quantidade;
 
-        $query = DB::table('tb_post')
+    $query = DB::table('tb_post')
+        ->join('tb_user', 'tb_post.id_user', '=', 'tb_user.id')
+        ->leftJoin('tb_post as repost', 'tb_post.repost_id', '=', 'repost.id')
+        ->leftJoin('tb_user as repost_user', 'repost.id_user', '=', 'repost_user.id')
+        ->leftJoin('tb_curtida', 'tb_post.id', '=', 'tb_curtida.id_post')
+        ->leftJoin('tb_comentario', 'tb_post.id', '=', 'tb_comentario.id_post')
+        ->leftJoin('tb_seguidores', 'tb_post.id_user', '=', 'id_user_seguido')
+        ->leftJoin('tb_evento', 'tb_post.id', '=', 'tb_evento.id_post'); 
+
+    if ($tipo == 1 || $tipo == 7 || $tipo == 8 || $tipo == 3 || $tipo == 9) {
+
+        $preferencias = DB::table('tb_user_preferencia')
+            ->where('id_user', $idUser)
+            ->pluck('preferencia')
+            ->toArray();
+        $preferenciasStr = implode(',', array_map(function ($a) {
+            return "'$a'";
+        }, $preferencias));
+
+        $usuariosNaoInteressados = DB::table('tb_nao_interessado_post')
+            ->join('tb_post', 'tb_nao_interessado_post.id_post', '=', 'tb_post.id')
+            ->where('tb_nao_interessado_post.id_user', $idUser)
+            ->pluck('tb_post.id_user')
+            ->toArray();
+
+        $areasNaoInteressadas = DB::table('tb_nao_interessado_post')
+            ->join('tb_post', 'tb_nao_interessado_post.id_post', '=', 'tb_post.id')
+            ->where('tb_nao_interessado_post.id_user', $idUser)
+            ->pluck('tb_post.area_post')
+            ->toArray();
+        $usuariosStr = !empty($usuariosNaoInteressados)
+            ? implode(',', $usuariosNaoInteressados)
+            : 'NULL';
+
+        $areasStr = !empty($areasNaoInteressadas)
+            ? implode(',', array_map(fn($a) => "'$a'", $areasNaoInteressadas))
+            : "'NULL'";
+        $subQuery = DB::table('tb_post')
             ->join('tb_user', 'tb_post.id_user', '=', 'tb_user.id')
             ->leftJoin('tb_post as repost', 'tb_post.repost_id', '=', 'repost.id')
             ->leftJoin('tb_user as repost_user', 'repost.id_user', '=', 'repost_user.id')
             ->leftJoin('tb_curtida', 'tb_post.id', '=', 'tb_curtida.id_post')
             ->leftJoin('tb_comentario', 'tb_post.id', '=', 'tb_comentario.id_post')
-            ->leftJoin('tb_seguidores', 'tb_post.id_user', '=', 'id_user_seguido');
-        // $query = $query->leftJoin('tb_seguidores', function ($join) use ($idUser) {
-        //     $join->on('tb_seguidores.id_user_seguidor', '=', DB::raw($idUser))
-        //         ->on('tb_seguidores.id_user_seguido', '=', 'tb_post.id_user');
-        // });
+            ->leftJoin('tb_seguidores', function ($join) use ($idUser) {
+                $join->on('tb_seguidores.id_user_seguidor', '=', DB::raw($idUser))
+                    ->on('tb_seguidores.id_user_seguido', '=', 'tb_post.id_user');
+            })
+            ->leftJoin('tb_bloqueado as bloqueio1', function ($join) use ($idUser) {
+                $join->on('bloqueio1.id_user_bloqueado', '=', 'tb_post.id_user')
+                    ->where('bloqueio1.id_user_bloqueando', '=', DB::raw($idUser));
+            })
+            ->leftJoin('tb_bloqueado as bloqueio2', function ($join) use ($idUser) {
+                $join->on('bloqueio2.id_user_bloqueando', '=', 'tb_post.id_user')
+                    ->where('bloqueio2.id_user_bloqueado', '=', DB::raw($idUser));
+            })
+            ->leftJoin('tb_nao_interessado_post', function ($join) use ($idUser) {
+                $join->on('tb_nao_interessado_post.id_post', '=', 'tb_post.id')
+                    ->where('tb_nao_interessado_post.id_user', '=', DB::raw($idUser));
+            })
+            ->leftJoin('tb_evento', 'tb_post.id', '=', 'tb_evento.id_post') // Adicionado
+            ->whereNull('bloqueio1.id')->whereNull('bloqueio2.id')
+            ->where('tb_post.id_user', '!=', $idUser)
+            ->where('tb_post.status_post', 1)
+            ->where('tb_user.status_user', 1);
 
-        if ($tipo == 1 || $tipo == 7 || $tipo == 8 || $tipo == 3 || $tipo == 9) {
-
-            $preferencias = DB::table('tb_user_preferencia')
-                ->where('id_user', $idUser)
-                ->pluck('preferencia')
-                ->toArray();
-            $preferenciasStr = implode(',', array_map(function ($a) {
-                return "'$a'";
-            }, $preferencias));
-
-            // Cria a subquery com o score embutido
-            $usuariosNaoInteressados = DB::table('tb_nao_interessado_post')
-                ->join('tb_post', 'tb_nao_interessado_post.id_post', '=', 'tb_post.id')
-                ->where('tb_nao_interessado_post.id_user', $idUser)
-                ->pluck('tb_post.id_user')
-                ->toArray();
-
-            // Áreas de posts marcados como "não interessado"
-            $areasNaoInteressadas = DB::table('tb_nao_interessado_post')
-                ->join('tb_post', 'tb_nao_interessado_post.id_post', '=', 'tb_post.id')
-                ->where('tb_nao_interessado_post.id_user', $idUser)
-                ->pluck('tb_post.area_post')
-                ->toArray();
-            $usuariosStr = !empty($usuariosNaoInteressados)
-                ? implode(',', $usuariosNaoInteressados)
-                : 'NULL';
-
-            $areasStr = !empty($areasNaoInteressadas)
-                ? implode(',', array_map(fn($a) => "'$a'", $areasNaoInteressadas))
-                : "'NULL'";
-            $subQuery = DB::table('tb_post')
-                ->join('tb_user', 'tb_post.id_user', '=', 'tb_user.id')
-                ->leftJoin('tb_post as repost', 'tb_post.repost_id', '=', 'repost.id')
-                ->leftJoin('tb_user as repost_user', 'repost.id_user', '=', 'repost_user.id')
-                ->leftJoin('tb_curtida', 'tb_post.id', '=', 'tb_curtida.id_post')
-                ->leftJoin('tb_comentario', 'tb_post.id', '=', 'tb_comentario.id_post')
-                ->leftJoin('tb_seguidores', function ($join) use ($idUser) {
-                    $join->on('tb_seguidores.id_user_seguidor', '=', DB::raw($idUser))
-                        ->on('tb_seguidores.id_user_seguido', '=', 'tb_post.id_user');
-                })
-                ->leftJoin('tb_bloqueado as bloqueio1', function ($join) use ($idUser) {
-                    $join->on('bloqueio1.id_user_bloqueado', '=', 'tb_post.id_user')
-                        ->where('bloqueio1.id_user_bloqueando', '=', DB::raw($idUser));
-                })
-                ->leftJoin('tb_bloqueado as bloqueio2', function ($join) use ($idUser) {
-                    $join->on('bloqueio2.id_user_bloqueando', '=', 'tb_post.id_user')
-                        ->where('bloqueio2.id_user_bloqueado', '=', DB::raw($idUser));
-                })
-                ->leftJoin('tb_nao_interessado_post', function ($join) use ($idUser) {
-                    $join->on('tb_nao_interessado_post.id_post', '=', 'tb_post.id')
-                        ->where('tb_nao_interessado_post.id_user', '=', DB::raw($idUser));
-                })
-                ->whereNull('bloqueio1.id')->whereNull('bloqueio2.id')
-                ->where('tb_post.id_user', '!=', $idUser)
-                ->where('tb_post.status_post', 1)
-                ->where('tb_user.status_user', 1);
-
-            if ($tipo == 3 || $tipo == 9) {
-                $subQuery = $subQuery->where(function ($query) use ($pesquisa) {
-                    $query->where('tb_user.arroba_user', 'like', "%$pesquisa%")
-                        ->orWhere('tb_user.nome_user', 'like', "%$pesquisa%")
-                        ->orWhere('tb_post.descricao_post', 'like', "%$pesquisa%");
-                });
-            }
-            $subQuery = $subQuery
-                ->groupBy(
-                    'tb_post.id_user',
-                    'tb_post.id',
-                    'tb_user.arroba_user',
-                    'tb_user.img_user',
-                    'tb_user.nome_user',
-                    'tb_post.created_at',
-                    'tb_post.updated_at',
-                    'tb_post.descricao_post',
-                    'tb_post.conteudo_post',
-                    'tb_post.repost_id',
-                    'tb_seguidores.id',
-                    'repost.id',
-                    'repost.descricao_post',
-                    'repost.conteudo_post',
-                    'repost_user.nome_user',
-                    'repost_user.arroba_user',
-                    'repost_user.img_user',
-                    'repost.created_at',
-                    'tb_nao_interessado_post.id',
-                    'tb_post.area_post'
-                )
-                ->selectRaw("
-            tb_post.id_user,
-            tb_post.id AS id_post,
-            tb_user.img_user,
-            tb_user.nome_user,
-            tb_post.created_at,
-            tb_post.updated_at,
-            tb_post.descricao_post,
-            tb_post.conteudo_post,
-            tb_user.arroba_user,
-            tb_post.repost_id,
-            tb_post.area_post,
-            repost.id AS repost_post_id,
-            repost.descricao_post AS repost_descricao,
-            repost.conteudo_post AS repost_conteudo,
-            repost_user.nome_user AS repost_autor,
-            repost_user.arroba_user AS repost_arroba,
-            repost_user.img_user AS repost_img,
-            TIMESTAMPDIFF(SECOND, repost.created_at, NOW()) AS tempo_repostado,
-           
-            COUNT(DISTINCT tb_curtida.id) AS curtidas,
-            COUNT(DISTINCT tb_comentario.id) AS comentarios,
-           (
-        SELECT COUNT(*) 
-        FROM tb_post AS reposts 
-        WHERE reposts.repost_id = tb_post.id
-    ) AS total_reposts,
-            IF(tb_seguidores.id IS NOT NULL, 1,0) AS segue_usuario,
-            TIMESTAMPDIFF(SECOND, tb_post.created_at, NOW()) AS tempo_insercao,
-            IF(EXISTS (
-                SELECT 1 FROM tb_curtida 
-                WHERE tb_curtida.id_post = tb_post.id 
-                AND tb_curtida.id_user = $idUser
-                AND tb_curtida.status_curtida = 1
-            ), 1, 0) AS curtiu_post,
-
-            (COUNT(DISTINCT tb_curtida.id) *1.5
-            + IF(tb_seguidores.id IS NOT NULL, 15, 0) 
-            + RAND() 
-            + IF(tb_post.area_post IN ($preferenciasStr), 20, 0)
-            + IF(tb_nao_interessado_post.id IS NOT NULL, -25, 0)
-             + IF(tb_post.id_user IN ($usuariosStr), -50, 0)
-            + IF(tb_post.area_post IN ($areasStr), -30, 0)
-       + (250000 / (TIMESTAMPDIFF(SECOND, tb_post.created_at, NOW()) + 60))
-) AS score,
-
-IF(
-    EXISTS (
-        SELECT 1 
-        FROM tb_instituicao 
-        WHERE tb_instituicao.id_user = tb_post.id_user and tb_instituicao.verificado_instituicao = 1
-    ), 1, 0
-) AS instituicao
-
-        ");
-
-            // Transforma a subquery em uma tabela temporária e ordena por score
-            $query = DB::table(DB::raw("({$subQuery->toSql()}) as posts"))
-                ->mergeBindings($subQuery)
-                ->orderByDesc($tipo == 8 ? 'curtidas' : ($tipo == 9 ? 'created_at' : 'score'))
-                ->offset($ignorarPosts)
-                ->limit($quantidade);
-
-            if ($tipo == 7) {
-                $query = $query->where('instituicao', 1);
-            }
-            $posts = $query->get();
-
-            return response()->json([
-                'sucesso' => true,
-                'data' => $posts,
-                'message' => 'Posts Retornados com Sucesso',
-                'code' => 200,
-            ]);
+        if ($tipo == 3 || $tipo == 9) {
+            $subQuery = $subQuery->where(function ($query) use ($pesquisa) {
+                $query->where('tb_user.arroba_user', 'like', "%$pesquisa%")
+                    ->orWhere('tb_user.nome_user', 'like', "%$pesquisa%")
+                    ->orWhere('tb_post.descricao_post', 'like', "%$pesquisa%");
+            });
         }
-
-        $query = $query
+        $subQuery = $subQuery
             ->groupBy(
                 'tb_post.id_user',
                 'tb_post.id',
@@ -221,9 +118,7 @@ IF(
                 'tb_post.descricao_post',
                 'tb_post.conteudo_post',
                 'tb_post.repost_id',
-                'tb_post.area_post',
                 'tb_seguidores.id',
-
                 'repost.id',
                 'repost.descricao_post',
                 'repost.conteudo_post',
@@ -231,44 +126,62 @@ IF(
                 'repost_user.arroba_user',
                 'repost_user.img_user',
                 'repost.created_at',
-
-
+                'tb_nao_interessado_post.id',
+                'tb_post.area_post',
+                'tb_evento.data_inicio_evento', 
+                'tb_evento.data_fim_evento',
+                 'tb_evento.id',
+                 'tb_post.link_post'
             )
             ->selectRaw("
-            tb_post.id_user,
-            tb_post.id AS id_post,
-            tb_user.img_user,
-            tb_user.nome_user,
-            tb_post.created_at,
-            tb_post.updated_at,
-            tb_post.descricao_post,
-            tb_post.conteudo_post,
-            tb_user.arroba_user,
-            tb_post.repost_id,
-            tb_post.area_post,
-            repost.id AS repost_post_id,
-            repost.descricao_post AS repost_descricao,
-            repost.conteudo_post AS repost_conteudo,
-            repost_user.nome_user AS repost_autor,
-            repost_user.arroba_user AS repost_arroba,
-            repost_user.img_user AS repost_img,
-            TIMESTAMPDIFF(SECOND, repost.created_at, NOW()) AS tempo_repostado,
-           
-            COUNT(DISTINCT tb_curtida.id) AS curtidas,
-            COUNT(DISTINCT tb_comentario.id) AS comentarios,
-           (
-        SELECT COUNT(*) 
-        FROM tb_post AS reposts 
-        WHERE reposts.repost_id = tb_post.id
-    ) AS total_reposts,
-            IF(tb_seguidores.id IS NOT NULL, 1,0) AS segue_usuario,
-            TIMESTAMPDIFF(SECOND, tb_post.created_at, NOW()) AS tempo_insercao,
-            IF(EXISTS (
-                SELECT 1 FROM tb_curtida 
-                WHERE tb_curtida.id_post = tb_post.id 
-                AND tb_curtida.id_user = $idUser
-                AND tb_curtida.status_curtida = 1
-            ), 1, 0) AS curtiu_post,
+        tb_post.id_user,
+        tb_post.id AS id_post,
+        tb_user.img_user,
+        tb_user.nome_user,
+        tb_post.created_at,
+        tb_post.updated_at,
+        tb_post.descricao_post,
+        tb_post.conteudo_post,
+        tb_user.arroba_user,
+        tb_post.repost_id,
+        tb_post.area_post,
+        tb_post.link_post,
+        repost.id AS repost_post_id,
+        repost.descricao_post AS repost_descricao,
+        repost.conteudo_post AS repost_conteudo,
+        repost_user.nome_user AS repost_autor,
+        repost_user.arroba_user AS repost_arroba,
+        repost_user.img_user AS repost_img,
+        TIMESTAMPDIFF(SECOND, repost.created_at, NOW()) AS tempo_repostado,
+        DATE_FORMAT(tb_evento.data_inicio_evento, '%d/%m/%Y') as data_inicio_evento,
+        DATE_FORMAT(tb_evento.data_fim_evento, '%d/%m/%Y') as data_fim_evento,  
+        tb_evento.id as evento_id,
+        COUNT(DISTINCT tb_curtida.id) AS curtidas,
+        COUNT(DISTINCT tb_comentario.id) AS comentarios,
+       (
+    SELECT COUNT(*) 
+    FROM tb_post AS reposts 
+    WHERE reposts.repost_id = tb_post.id
+) AS total_reposts,
+        IF(tb_seguidores.id IS NOT NULL, 1,0) AS segue_usuario,
+        TIMESTAMPDIFF(SECOND, tb_post.created_at, NOW()) AS tempo_insercao,
+        IF(EXISTS (
+            SELECT 1 FROM tb_curtida 
+            WHERE tb_curtida.id_post = tb_post.id 
+            AND tb_curtida.id_user = $idUser
+            AND tb_curtida.status_curtida = 1
+        ), 1, 0) AS curtiu_post,
+
+        (COUNT(DISTINCT tb_curtida.id) *1.5
+        + IF(tb_seguidores.id IS NOT NULL, 15, 0) 
+        + RAND() 
+        + IF(tb_post.area_post IN ($preferenciasStr), 20, 0)
+        + IF(tb_nao_interessado_post.id IS NOT NULL, -25, 0)
+         + IF(tb_post.id_user IN ($usuariosStr), -50, 0)
+        + IF(tb_post.area_post IN ($areasStr), -30, 0)
+   + (250000 / (TIMESTAMPDIFF(SECOND, tb_post.created_at, NOW()) + 60))
+) AS score,
+
 IF(
     EXISTS (
         SELECT 1 
@@ -276,45 +189,137 @@ IF(
         WHERE tb_instituicao.id_user = tb_post.id_user and tb_instituicao.verificado_instituicao = 1
     ), 1, 0
 ) AS instituicao
-        ");
 
+    ");
 
-        switch ($tipo) {
-            case 0:
-                $query = $query->orderByDesc('curtidas');
-                break;
-            case 1:
-                // $query = $query->orderByDesc('score'); // Ordenando pelo score
-                break;
-            case 2:
-                $query = $query->orderByDesc('tb_post.created_at')->where('tb_post.id_user', $pesquisa);
-                break;
-
-            case 4:
-                $query = $query->where('tb_post.id', $pesquisa);
-                break;
-            case 5:
-                $query = $query->orderByDesc('tb_post.created_at')->where('tb_post.id_user', $pesquisa)->whereNotNull('tb_post.repost_id');
-                break;
-            case 6:
-                $query = $query->orderByDesc('tb_post.created_at')->where('tb_post.id_user', $pesquisa)->whereNotNull('tb_post.conteudo_post');
-                break;
-        }
-
-        $posts = $query
+        $query = DB::table(DB::raw("({$subQuery->toSql()}) as posts"))
+            ->mergeBindings($subQuery)
+            ->orderByDesc($tipo == 8 ? 'curtidas' : ($tipo == 9 ? 'created_at' : 'score'))
             ->offset($ignorarPosts)
-            ->limit($quantidade)
-            ->where('tb_post.status_post', 1)
-            ->where('tb_user.status_user', 1)
-            ->get();
+            ->limit($quantidade);
 
-        return  response()->json([
+        if ($tipo == 7) {
+            $query = $query->where('instituicao', 1);
+        }
+        $posts = $query->get();
+
+        return response()->json([
             'sucesso' => true,
             'data' => $posts,
             'message' => 'Posts Retornados com Sucesso',
             'code' => 200,
         ]);
     }
+
+    $query = $query
+        ->groupBy(
+            'tb_post.id_user',
+            'tb_post.id',
+            'tb_user.arroba_user',
+            'tb_user.img_user',
+            'tb_user.nome_user',
+            'tb_post.created_at',
+            'tb_post.updated_at',
+            'tb_post.descricao_post',
+            'tb_post.conteudo_post',
+            'tb_post.repost_id',
+            'tb_post.area_post',
+            'tb_seguidores.id',
+            'repost.id',
+            'repost.descricao_post',
+            'repost.conteudo_post',
+            'repost_user.nome_user',
+            'repost_user.arroba_user',
+            'repost_user.img_user',
+            'repost.created_at',
+            'tb_evento.data_inicio_evento', 
+            'tb_evento.data_fim_evento',
+            'tb_evento.id',
+            'tb_post.link_post'
+        )
+        ->selectRaw("
+        tb_post.id_user,
+        tb_post.id AS id_post,
+        tb_user.img_user,
+        tb_user.nome_user,
+        tb_post.created_at,
+        tb_post.updated_at,
+        tb_post.descricao_post,
+        tb_post.conteudo_post,
+        tb_user.arroba_user,
+        tb_post.repost_id,
+        tb_post.area_post,
+        tb_post.link_post,
+        repost.id AS repost_post_id,
+        repost.descricao_post AS repost_descricao,
+        repost.conteudo_post AS repost_conteudo,
+        repost_user.nome_user AS repost_autor,
+        repost_user.arroba_user AS repost_arroba,
+        repost_user.img_user AS repost_img,
+        TIMESTAMPDIFF(SECOND, repost.created_at, NOW()) AS tempo_repostado,
+        DATE_FORMAT(tb_evento.data_inicio_evento, '%d/%m/%Y') as data_inicio_evento,
+        DATE_FORMAT(tb_evento.data_fim_evento, '%d/%m/%Y') as data_fim_evento,
+        tb_evento.id as evento_id,
+        COUNT(DISTINCT tb_curtida.id) AS curtidas,
+        COUNT(DISTINCT tb_comentario.id) AS comentarios,
+       (
+    SELECT COUNT(*) 
+    FROM tb_post AS reposts 
+    WHERE reposts.repost_id = tb_post.id
+) AS total_reposts,
+        IF(tb_seguidores.id IS NOT NULL, 1,0) AS segue_usuario,
+        TIMESTAMPDIFF(SECOND, tb_post.created_at, NOW()) AS tempo_insercao,
+        IF(EXISTS (
+            SELECT 1 FROM tb_curtida 
+            WHERE tb_curtida.id_post = tb_post.id 
+            AND tb_curtida.id_user = $idUser
+            AND tb_curtida.status_curtida = 1
+        ), 1, 0) AS curtiu_post,
+IF(
+    EXISTS (
+        SELECT 1 
+        FROM tb_instituicao 
+        WHERE tb_instituicao.id_user = tb_post.id_user and tb_instituicao.verificado_instituicao = 1
+    ), 1, 0
+) AS instituicao
+    ");
+
+
+    switch ($tipo) {
+        case 0:
+            $query = $query->orderByDesc('curtidas');
+            break;
+        case 1:
+            break;
+        case 2:
+            $query = $query->orderByDesc('tb_post.created_at')->where('tb_post.id_user', $pesquisa);
+            break;
+
+        case 4:
+            $query = $query->where('tb_post.id', $pesquisa);
+            break;
+        case 5:
+            $query = $query->orderByDesc('tb_post.created_at')->where('tb_post.id_user', $pesquisa)->whereNotNull('tb_post.repost_id');
+            break;
+        case 6:
+            $query = $query->orderByDesc('tb_post.created_at')->where('tb_post.id_user', $pesquisa)->whereNotNull('tb_post.conteudo_post');
+            break;
+    }
+
+    $posts = $query
+        ->offset($ignorarPosts)
+        ->limit($quantidade)
+        ->where('tb_post.status_post', 1)
+        ->where('tb_user.status_user', 1)
+        ->get();
+
+    return  response()->json([
+        'sucesso' => true,
+        'data' => $posts,
+        'message' => 'Posts Retornados com Sucesso',
+        'code' => 200,
+    ]);
+}
 
 
 
@@ -486,6 +491,7 @@ IF(
             'conteudo_post' => $nomeImagem,
             'descricao_post' => $request->descricaoPost,
             'repost_id' => $request->repost,
+            'link_post' => $request->link,
             'area_post' => $conteudo,
             'id_user' => $idUser,
             'created_at' => now(),
@@ -589,6 +595,11 @@ IF(
        }
        
     }
+    public function showEvento($id){
+        $evento = DB ::table('tb_evento')->join('tb_post','tb_post.id','=','tb_evento.id_post')->join('tb_user','tb_post.id_user','=','tb_user.id')->where('tb_evento.id',$id)->get();
+        return $evento;
+    }
+    
     /**
      * Display the specified resource.
      *

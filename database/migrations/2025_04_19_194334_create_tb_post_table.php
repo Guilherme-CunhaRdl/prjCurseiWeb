@@ -20,6 +20,7 @@ public function up()
         $table->string('conteudo_post', 36)->nullable();
         $table->string('descricao_post')->nullable();
         $table->enum('area_post', [ 'Tecnologia','Saúde','Design','Artes','Engenharia','Esportes','Ciências','Línguas','Administração','Marketing','Nutrição','indefinido'])->default('indefinido');
+        $table->string('link_post', 2000)->nullable();
 
         $table->foreignId('id_user')->constrained('tb_user')->onDelete('cascade');
         $table->foreignId('repost_id')->nullable()->constrained('tb_post')->onDelete('cascade');

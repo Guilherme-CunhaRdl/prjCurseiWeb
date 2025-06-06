@@ -78,7 +78,7 @@ Route::post('/cursei/chat/criarCanal', [MensagemControllerApi::class, 'criarCana
 Route::post('cursei/user/{userId}', [UserControllerApi::class, 'alterarUser']); 
 Route::post('cursei/user/autenticacao/{userId}', [UserControllerApi::class, 'atualizarDoisFatores']);
 
-Route::get('/cursei/user/puxar/{id}', [UserControllerApi::class, 'puxarUser']);
+Route::get('/cursei/user/selecionarUser/{id}', [UserControllerApi::class, 'selectUser']);
 
 //ROTAS DO CURTEI
 Route::group(['middleware' => ['cors']], function() {

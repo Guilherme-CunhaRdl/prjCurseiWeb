@@ -325,25 +325,25 @@ class UserControllerApi extends Controller
             'Post' => $usuario,
         ]);
     }
-    public function puxarUser($id)
+    public function selectUser(Request $request, $id)
     {
         $user = DB::table('tb_user')
-                  ->where('id', $id)
-                  ->select(['arroba_user', 'email_user', 'senha_user']) 
-                  ->first();
-    
-        if (!$user) {
+                      ->where('id', $id)
+                      ->select('*') 
+                      ->first();
+        
+            if (!$user) {
+                return response()->json([
+                    'error' => 'Usuário não encontrado',
+                    'debug' => ['id_buscado' => $id]
+                ], 404);
+            }
+        
             return response()->json([
-                'error' => 'Usuário não encontrado',
-                'debug' => ['id_buscado' => $id]
-            ], 404);
+                'User' => $user
+            ]);
         }
     
-        return response()->json([
-            'User' => $User,
-            'meta' => ['retrieved_at' => now()->toDateTimeString()]
-        ]);
-    }
     public function verificarPreferencia($id)
     {
         $verificar = UserPreferencia::where('id_user', $id)->exists();

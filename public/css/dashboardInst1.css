@@ -1,0 +1,355 @@
+:root {
+    --verde: #05A4B6;
+    --fundo: #F6F6F6;
+    --branco: #fff;
+    --preto: #2c2c2c;
+    --cinzaClaro: #898989;
+    --cinzaEscuro: #616161;
+    --vermelho: #CC0000;
+}
+
+
+html, body {
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+    background-color: var(--fundo);
+    color: var(--preto);
+    overflow-x: hidden;
+    max-width: 100%;
+}
+
+
+.painel-usuario {
+
+    padding: 0 1rem;
+    max-width: 1400px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    box-sizing: border-box;
+}
+
+
+
+.headerUserAdm {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.cabecalhoUser {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1rem;
+}
+
+.fotoUser {
+    width: 105px;
+    height: 105px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid var(--verde);
+}
+
+.fotoUser img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.buttonSair {
+    align-self: center;
+}
+
+.botaoSair {
+    color: var(--vermelho);
+    border: none;
+    background-color: transparent;
+    font-size: 1.1rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+
+
+.layout {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 100%;
+}
+
+.conteudo-principal {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    flex: 1;
+}
+
+
+.estatisticas, .estatisticasUser {
+    display: grid;
+    grid-template-columns: repeat(6, 6fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.itemDoUser, .itemDoUsuario {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background-color: var(--branco);
+    border-radius: 8px;
+    padding: 1rem;
+    border-left: 3px solid var(--verde);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.itemDoUser i, .itemDoUsuario i {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(5, 164, 182, 0.1);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    color: var(--verde);
+    font-size: 1.5rem;
+}
+
+.textoEstati, .textoEstatiUser {
+    display: flex;
+    flex-direction: column;
+}
+
+.textoEstati span, .textoEstatiUser span {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--cinzaEscuro);
+}
+
+.textoEstati p, .textoEstatiUser p {
+    color: var(--cinzaClaro);
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+.painelInformacoes {
+    background-color: var(--branco);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 0 10px rgba(0,0,0,0.08);
+    font-size: 0.95rem;
+    color: var(--cinzaEscuro);
+    line-height: 1.6;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.botoesInfo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.botoesInfo h3 {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--verde);
+}
+
+.botaoEdicao {
+    background: transparent;
+    border: none;
+    color: var(--verde);
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.botaoEdicao:hover {
+    transform: scale(1.1);
+}
+
+.painelInformacoes p {
+    margin-bottom: 0.8rem;
+}
+
+.painelInformacoes strong {
+    color: var(--cinzaEscuro);
+}
+
+
+.informacoes-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+
+
+.grafico-box {
+    background: var(--branco);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.grafico-box canvas {
+    width: 100% !important;
+    height: auto !important;
+    max-height: 300px;
+}
+
+
+
+.grafico-box h3 {
+    color: var(--verde);
+    margin-top: 0;
+}
+
+.total-views {
+    font-size: 2rem;
+    color: var(--cinzaEscuro);
+    margin: 0.5rem 0;
+}
+
+.sub-text {
+    color: var(--cinzaClaro);
+    margin-bottom: 1.5rem;
+}
+
+.container-modal, .cont-modal-verificar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-perfil, .modal-verificar {
+    background: var(--branco);
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.2);
+    overflow-y: auto;
+}
+
+.modal-perfil {
+    width: 95%;
+    max-width: 600px;
+    max-height: 90vh;
+}
+
+.modal-verificar {
+    padding: 2rem;
+    max-width: 500px;
+    text-align: center;
+}
+
+.modal-verificar h2 {
+    color: var(--verde);
+    margin-top: 0;
+}
+
+.modal-verificar div {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.modal-verificar a {
+    padding: 0.5rem 1.5rem;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+
+
+/* Responsividade pra deixar bonitinho */
+@media (min-width: 768px) {
+    .headerUserAdm {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .cabecalhoUser {
+        flex-direction: row;
+        text-align: left;
+    }
+    
+    .estatisticas, .estatisticasUser {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+}
+
+@media (min-width: 992px) {
+    .layout {
+        flex-direction: row;
+    }
+
+    
+    .informacoes-container {
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    .painelInformacoes.grafico {
+        min-width: 350px;
+    }
+}
+
+@media (min-width: 1200px) {
+    .estatisticas, .estatisticasUser {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .itemDoUser i, .itemDoUsuario i {
+        width: 60px;
+        height: 60px;
+        font-size: 1.8rem;
+    }
+
+
+
+
+}
+
+@media (max-width: 480px) {
+    .estatisticas, .estatisticasUser {
+        grid-template-columns: 1fr;
+    }
+    
+    .painelInformacoes {
+        padding: 1rem;
+    }
+}
+
+
+.modal-verificar a#recusar {
+    background-color: var(--vermelho);
+    color: white;
+}
+
+.modal-verificar a:not(#recusar) {
+    background-color: var(--verde);
+    color: white;
+}
+

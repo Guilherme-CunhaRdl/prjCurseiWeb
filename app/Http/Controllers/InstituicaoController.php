@@ -122,13 +122,13 @@ class InstituicaoController extends Controller
             ->get();
 
         //selecionando planejados
-        $planejados = DB::table('tb_planejamento')
-            ->join('tb_post', 'tb_planejamento.id_post', '=', 'tb_post.id')
+        $planejados = DB::table('tb_evento')
+            ->join('tb_post', 'tb_evento.id_post', '=', 'tb_post.id')
             ->join('tb_user', 'tb_post.id_user', '=', 'tb_user.id')
             ->where('tb_user.id', $instituicaoId)
-            ->orderBy('tb_planejamento.created_at', 'desc')
+            ->orderBy('tb_evento.created_at', 'desc')
             ->limit(2)
-            ->select('tb_planejamento.nome_planejamento', 'tb_planejamento.data_inicio_planejamento', 'tb_planejamento.data_fim_planejamento', 'tb_planejamento.status_planejamento', 'tb_post.descricao_post', 'tb_post.conteudo_post')
+            ->select('tb_evento.desc_evento', 'tb_evento.data_inicio_evento', 'link_evento' , 'tb_evento.data_fim_evento', 'tb_evento.status_evento', 'tb_post.descricao_post', 'tb_post.conteudo_post')
             ->get();
 
         //retornando tudo

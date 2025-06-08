@@ -63,7 +63,6 @@
                             <div class="p-1 d-flex justify-content-between align-items-center flex-column h-100 ">
                                 <div class="col-12 d-flex justify-content-between align-items-center ">
                                     <h3>Ultimo Editado</h3>
-                                    <i class="bi bi-arrow-right-circle" style="font-size: 30px;"></i>
                                 </div>
                                 @foreach ($ultimoPost as $item)
 
@@ -71,7 +70,7 @@
                                     <div class="box-img-ultimo-editado">
                                         <img class="img-fluid" src="{{ url('img/user/imgPosts/' . $item->conteudo_post) }}" alt="">
                                     </div>
-                                    <div class="d-flex text-center  flex-column ms-3" style="width: 300px;">
+                                    <div class="d-flex text-start  flex-column ms-3" style="width: 300px;">
                                         <h3>{{ $item->titulo_post }}</h3>
                                         <p style="color: #868686;"> {{ $item->descricao_post }} </p>
                                     </div>
@@ -107,9 +106,8 @@
                                                 <img class="img-fluid" src="{{ url('img/user/imgPosts/' . $item->conteudo_post) }}">
                                             </div>
                                             <div class="col-8 ms-3 d-flex flex-column text-start justify-content-center"    >
-                                                <div class="d-flex align-items-end  justify-content-between col-12 h-50">
-                                                    <h3>{{ $item->nome_planejamento }}</h2>
-                                                        <i class="bi bi-arrow-left-circle" style="font-size: 30px;"></i>
+                                                <div class="d-flex align-items-start  justify-content-between col-12 h-25">
+                                                    <h4>{{ $item->desc_evento }}</h4>
 
                                                 </div>
                                                 <div class="col-12 h-50 d-flex align-items-start ">

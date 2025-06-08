@@ -26,114 +26,114 @@ use Illuminate\Support\Facades\DB;
 
 class PostControllerApi extends Controller
 {
- public function posts($tipo, $idUser, $quantidade, $pagina, $pesquisa)
-{
-    $ignorarPosts = 0;
-    for ($i = 0; $i <= $pagina; $i++) {
-        $ignorarPosts = $ignorarPosts + $quantidade;
-    };
-    $ignorarPosts = $ignorarPosts - $quantidade;
+    public function posts($tipo, $idUser, $quantidade, $pagina, $pesquisa)
+    {
+        $ignorarPosts = 0;
+        for ($i = 0; $i <= $pagina; $i++) {
+            $ignorarPosts = $ignorarPosts + $quantidade;
+        };
+        $ignorarPosts = $ignorarPosts - $quantidade;
 
-    $query = DB::table('tb_post')
-        ->join('tb_user', 'tb_post.id_user', '=', 'tb_user.id')
-        ->leftJoin('tb_post as repost', 'tb_post.repost_id', '=', 'repost.id')
-        ->leftJoin('tb_user as repost_user', 'repost.id_user', '=', 'repost_user.id')
-        ->leftJoin('tb_curtida', 'tb_post.id', '=', 'tb_curtida.id_post')
-        ->leftJoin('tb_comentario', 'tb_post.id', '=', 'tb_comentario.id_post')
-        ->leftJoin('tb_seguidores', 'tb_post.id_user', '=', 'id_user_seguido')
-        ->leftJoin('tb_evento', 'tb_post.id', '=', 'tb_evento.id_post'); 
-
-    if ($tipo == 1 || $tipo == 7 || $tipo == 8 || $tipo == 3 || $tipo == 9) {
-
-        $preferencias = DB::table('tb_user_preferencia')
-            ->where('id_user', $idUser)
-            ->pluck('preferencia')
-            ->toArray();
-        $preferenciasStr = implode(',', array_map(function ($a) {
-            return "'$a'";
-        }, $preferencias));
-
-        $usuariosNaoInteressados = DB::table('tb_nao_interessado_post')
-            ->join('tb_post', 'tb_nao_interessado_post.id_post', '=', 'tb_post.id')
-            ->where('tb_nao_interessado_post.id_user', $idUser)
-            ->pluck('tb_post.id_user')
-            ->toArray();
-
-        $areasNaoInteressadas = DB::table('tb_nao_interessado_post')
-            ->join('tb_post', 'tb_nao_interessado_post.id_post', '=', 'tb_post.id')
-            ->where('tb_nao_interessado_post.id_user', $idUser)
-            ->pluck('tb_post.area_post')
-            ->toArray();
-        $usuariosStr = !empty($usuariosNaoInteressados)
-            ? implode(',', $usuariosNaoInteressados)
-            : 'NULL';
-
-        $areasStr = !empty($areasNaoInteressadas)
-            ? implode(',', array_map(fn($a) => "'$a'", $areasNaoInteressadas))
-            : "'NULL'";
-        $subQuery = DB::table('tb_post')
+        $query = DB::table('tb_post')
             ->join('tb_user', 'tb_post.id_user', '=', 'tb_user.id')
             ->leftJoin('tb_post as repost', 'tb_post.repost_id', '=', 'repost.id')
             ->leftJoin('tb_user as repost_user', 'repost.id_user', '=', 'repost_user.id')
             ->leftJoin('tb_curtida', 'tb_post.id', '=', 'tb_curtida.id_post')
             ->leftJoin('tb_comentario', 'tb_post.id', '=', 'tb_comentario.id_post')
-            ->leftJoin('tb_seguidores', function ($join) use ($idUser) {
-                $join->on('tb_seguidores.id_user_seguidor', '=', DB::raw($idUser))
-                    ->on('tb_seguidores.id_user_seguido', '=', 'tb_post.id_user');
-            })
-            ->leftJoin('tb_bloqueado as bloqueio1', function ($join) use ($idUser) {
-                $join->on('bloqueio1.id_user_bloqueado', '=', 'tb_post.id_user')
-                    ->where('bloqueio1.id_user_bloqueando', '=', DB::raw($idUser));
-            })
-            ->leftJoin('tb_bloqueado as bloqueio2', function ($join) use ($idUser) {
-                $join->on('bloqueio2.id_user_bloqueando', '=', 'tb_post.id_user')
-                    ->where('bloqueio2.id_user_bloqueado', '=', DB::raw($idUser));
-            })
-            ->leftJoin('tb_nao_interessado_post', function ($join) use ($idUser) {
-                $join->on('tb_nao_interessado_post.id_post', '=', 'tb_post.id')
-                    ->where('tb_nao_interessado_post.id_user', '=', DB::raw($idUser));
-            })
-            ->leftJoin('tb_evento', 'tb_post.id', '=', 'tb_evento.id_post') // Adicionado
-            ->whereNull('bloqueio1.id')->whereNull('bloqueio2.id')
-            ->where('tb_post.id_user', '!=', $idUser)
-            ->where('tb_post.status_post', 1)
-            ->where('tb_user.status_user', 1);
+            ->leftJoin('tb_seguidores', 'tb_post.id_user', '=', 'id_user_seguido')
+            ->leftJoin('tb_evento', 'tb_post.id', '=', 'tb_evento.id_post');
 
-        if ($tipo == 3 || $tipo == 9) {
-            $subQuery = $subQuery->where(function ($query) use ($pesquisa) {
-                $query->where('tb_user.arroba_user', 'like', "%$pesquisa%")
-                    ->orWhere('tb_user.nome_user', 'like', "%$pesquisa%")
-                    ->orWhere('tb_post.descricao_post', 'like', "%$pesquisa%");
-            });
-        }
-        $subQuery = $subQuery
-            ->groupBy(
-                'tb_post.id_user',
-                'tb_post.id',
-                'tb_user.arroba_user',
-                'tb_user.img_user',
-                'tb_user.nome_user',
-                'tb_post.created_at',
-                'tb_post.updated_at',
-                'tb_post.descricao_post',
-                'tb_post.conteudo_post',
-                'tb_post.repost_id',
-                'tb_seguidores.id',
-                'repost.id',
-                'repost.descricao_post',
-                'repost.conteudo_post',
-                'repost_user.nome_user',
-                'repost_user.arroba_user',
-                'repost_user.img_user',
-                'repost.created_at',
-                'tb_nao_interessado_post.id',
-                'tb_post.area_post',
-                'tb_evento.data_inicio_evento', 
-                'tb_evento.data_fim_evento',
-                 'tb_evento.id',
-                 'tb_post.link_post'
-            )
-            ->selectRaw("
+        if ($tipo == 1 || $tipo == 7 || $tipo == 8 || $tipo == 3 || $tipo == 9) {
+
+            $preferencias = DB::table('tb_user_preferencia')
+                ->where('id_user', $idUser)
+                ->pluck('preferencia')
+                ->toArray();
+            $preferenciasStr = implode(',', array_map(function ($a) {
+                return "'$a'";
+            }, $preferencias));
+
+            $usuariosNaoInteressados = DB::table('tb_nao_interessado_post')
+                ->join('tb_post', 'tb_nao_interessado_post.id_post', '=', 'tb_post.id')
+                ->where('tb_nao_interessado_post.id_user', $idUser)
+                ->pluck('tb_post.id_user')
+                ->toArray();
+
+            $areasNaoInteressadas = DB::table('tb_nao_interessado_post')
+                ->join('tb_post', 'tb_nao_interessado_post.id_post', '=', 'tb_post.id')
+                ->where('tb_nao_interessado_post.id_user', $idUser)
+                ->pluck('tb_post.area_post')
+                ->toArray();
+            $usuariosStr = !empty($usuariosNaoInteressados)
+                ? implode(',', $usuariosNaoInteressados)
+                : 'NULL';
+
+            $areasStr = !empty($areasNaoInteressadas)
+                ? implode(',', array_map(fn($a) => "'$a'", $areasNaoInteressadas))
+                : "'NULL'";
+            $subQuery = DB::table('tb_post')
+                ->join('tb_user', 'tb_post.id_user', '=', 'tb_user.id')
+                ->leftJoin('tb_post as repost', 'tb_post.repost_id', '=', 'repost.id')
+                ->leftJoin('tb_user as repost_user', 'repost.id_user', '=', 'repost_user.id')
+                ->leftJoin('tb_curtida', 'tb_post.id', '=', 'tb_curtida.id_post')
+                ->leftJoin('tb_comentario', 'tb_post.id', '=', 'tb_comentario.id_post')
+                ->leftJoin('tb_seguidores', function ($join) use ($idUser) {
+                    $join->on('tb_seguidores.id_user_seguidor', '=', DB::raw($idUser))
+                        ->on('tb_seguidores.id_user_seguido', '=', 'tb_post.id_user');
+                })
+                ->leftJoin('tb_bloqueado as bloqueio1', function ($join) use ($idUser) {
+                    $join->on('bloqueio1.id_user_bloqueado', '=', 'tb_post.id_user')
+                        ->where('bloqueio1.id_user_bloqueando', '=', DB::raw($idUser));
+                })
+                ->leftJoin('tb_bloqueado as bloqueio2', function ($join) use ($idUser) {
+                    $join->on('bloqueio2.id_user_bloqueando', '=', 'tb_post.id_user')
+                        ->where('bloqueio2.id_user_bloqueado', '=', DB::raw($idUser));
+                })
+                ->leftJoin('tb_nao_interessado_post', function ($join) use ($idUser) {
+                    $join->on('tb_nao_interessado_post.id_post', '=', 'tb_post.id')
+                        ->where('tb_nao_interessado_post.id_user', '=', DB::raw($idUser));
+                })
+                ->leftJoin('tb_evento', 'tb_post.id', '=', 'tb_evento.id_post') // Adicionado
+                ->whereNull('bloqueio1.id')->whereNull('bloqueio2.id')
+                ->where('tb_post.id_user', '!=', $idUser)
+                ->where('tb_post.status_post', 1)
+                ->where('tb_user.status_user', 1);
+
+            if ($tipo == 3 || $tipo == 9) {
+                $subQuery = $subQuery->where(function ($query) use ($pesquisa) {
+                    $query->where('tb_user.arroba_user', 'like', "%$pesquisa%")
+                        ->orWhere('tb_user.nome_user', 'like', "%$pesquisa%")
+                        ->orWhere('tb_post.descricao_post', 'like', "%$pesquisa%");
+                });
+            }
+            $subQuery = $subQuery
+                ->groupBy(
+                    'tb_post.id_user',
+                    'tb_post.id',
+                    'tb_user.arroba_user',
+                    'tb_user.img_user',
+                    'tb_user.nome_user',
+                    'tb_post.created_at',
+                    'tb_post.updated_at',
+                    'tb_post.descricao_post',
+                    'tb_post.conteudo_post',
+                    'tb_post.repost_id',
+                    'tb_seguidores.id',
+                    'repost.id',
+                    'repost.descricao_post',
+                    'repost.conteudo_post',
+                    'repost_user.nome_user',
+                    'repost_user.arroba_user',
+                    'repost_user.img_user',
+                    'repost.created_at',
+                    'tb_nao_interessado_post.id',
+                    'tb_post.area_post',
+                    'tb_evento.data_inicio_evento',
+                    'tb_evento.data_fim_evento',
+                    'tb_evento.id',
+                    'tb_post.link_post'
+                )
+                ->selectRaw("
         tb_post.id_user,
         tb_post.id AS id_post,
         tb_user.img_user,
@@ -192,52 +192,52 @@ IF(
 
     ");
 
-        $query = DB::table(DB::raw("({$subQuery->toSql()}) as posts"))
-            ->mergeBindings($subQuery)
-            ->orderByDesc($tipo == 8 ? 'curtidas' : ($tipo == 9 ? 'created_at' : 'score'))
-            ->offset($ignorarPosts)
-            ->limit($quantidade);
+            $query = DB::table(DB::raw("({$subQuery->toSql()}) as posts"))
+                ->mergeBindings($subQuery)
+                ->orderByDesc($tipo == 8 ? 'curtidas' : ($tipo == 9 ? 'created_at' : 'score'))
+                ->offset($ignorarPosts)
+                ->limit($quantidade);
 
-        if ($tipo == 7) {
-            $query = $query->where('instituicao', 1);
+            if ($tipo == 7) {
+                $query = $query->where('instituicao', 1);
+            }
+            $posts = $query->get();
+
+            return response()->json([
+                'sucesso' => true,
+                'data' => $posts,
+                'message' => 'Posts Retornados com Sucesso',
+                'code' => 200,
+            ]);
         }
-        $posts = $query->get();
 
-        return response()->json([
-            'sucesso' => true,
-            'data' => $posts,
-            'message' => 'Posts Retornados com Sucesso',
-            'code' => 200,
-        ]);
-    }
-
-    $query = $query
-        ->groupBy(
-            'tb_post.id_user',
-            'tb_post.id',
-            'tb_user.arroba_user',
-            'tb_user.img_user',
-            'tb_user.nome_user',
-            'tb_post.created_at',
-            'tb_post.updated_at',
-            'tb_post.descricao_post',
-            'tb_post.conteudo_post',
-            'tb_post.repost_id',
-            'tb_post.area_post',
-            'tb_seguidores.id',
-            'repost.id',
-            'repost.descricao_post',
-            'repost.conteudo_post',
-            'repost_user.nome_user',
-            'repost_user.arroba_user',
-            'repost_user.img_user',
-            'repost.created_at',
-            'tb_evento.data_inicio_evento', 
-            'tb_evento.data_fim_evento',
-            'tb_evento.id',
-            'tb_post.link_post'
-        )
-        ->selectRaw("
+        $query = $query
+            ->groupBy(
+                'tb_post.id_user',
+                'tb_post.id',
+                'tb_user.arroba_user',
+                'tb_user.img_user',
+                'tb_user.nome_user',
+                'tb_post.created_at',
+                'tb_post.updated_at',
+                'tb_post.descricao_post',
+                'tb_post.conteudo_post',
+                'tb_post.repost_id',
+                'tb_post.area_post',
+                'tb_seguidores.id',
+                'repost.id',
+                'repost.descricao_post',
+                'repost.conteudo_post',
+                'repost_user.nome_user',
+                'repost_user.arroba_user',
+                'repost_user.img_user',
+                'repost.created_at',
+                'tb_evento.data_inicio_evento',
+                'tb_evento.data_fim_evento',
+                'tb_evento.id',
+                'tb_post.link_post'
+            )
+            ->selectRaw("
         tb_post.id_user,
         tb_post.id AS id_post,
         tb_user.img_user,
@@ -285,41 +285,41 @@ IF(
     ");
 
 
-    switch ($tipo) {
-        case 0:
-            $query = $query->orderByDesc('curtidas');
-            break;
-        case 1:
-            break;
-        case 2:
-            $query = $query->orderByDesc('tb_post.created_at')->where('tb_post.id_user', $pesquisa);
-            break;
+        switch ($tipo) {
+            case 0:
+                $query = $query->orderByDesc('curtidas');
+                break;
+            case 1:
+                break;
+            case 2:
+                $query = $query->orderByDesc('tb_post.created_at')->where('tb_post.id_user', $pesquisa);
+                break;
 
-        case 4:
-            $query = $query->where('tb_post.id', $pesquisa);
-            break;
-        case 5:
-            $query = $query->orderByDesc('tb_post.created_at')->where('tb_post.id_user', $pesquisa)->whereNotNull('tb_post.repost_id');
-            break;
-        case 6:
-            $query = $query->orderByDesc('tb_post.created_at')->where('tb_post.id_user', $pesquisa)->whereNotNull('tb_post.conteudo_post');
-            break;
+            case 4:
+                $query = $query->where('tb_post.id', $pesquisa);
+                break;
+            case 5:
+                $query = $query->orderByDesc('tb_post.created_at')->where('tb_post.id_user', $pesquisa)->whereNotNull('tb_post.repost_id');
+                break;
+            case 6:
+                $query = $query->orderByDesc('tb_post.created_at')->where('tb_post.id_user', $pesquisa)->whereNotNull('tb_post.conteudo_post');
+                break;
+        }
+
+        $posts = $query
+            ->offset($ignorarPosts)
+            ->limit($quantidade)
+            ->where('tb_post.status_post', 1)
+            ->where('tb_user.status_user', 1)
+            ->get();
+
+        return  response()->json([
+            'sucesso' => true,
+            'data' => $posts,
+            'message' => 'Posts Retornados com Sucesso',
+            'code' => 200,
+        ]);
     }
-
-    $posts = $query
-        ->offset($ignorarPosts)
-        ->limit($quantidade)
-        ->where('tb_post.status_post', 1)
-        ->where('tb_user.status_user', 1)
-        ->get();
-
-    return  response()->json([
-        'sucesso' => true,
-        'data' => $posts,
-        'message' => 'Posts Retornados com Sucesso',
-        'code' => 200,
-    ]);
-}
 
 
 
@@ -505,10 +505,11 @@ IF(
             'Post' => $post,
         ]);
     }
-    public function criarEvento(Request $request, $idUser){
+    public function criarEvento(Request $request, $idUser)
+    {
 
-        
-         $nomeImagem = null;
+
+        $nomeImagem = null;
 
 
         if ($request->hasFile('img') && $request->file('img')->isValid()) {
@@ -517,7 +518,7 @@ IF(
             $request->file('img')->move(public_path('img/user/imgPosts'), $nomeImagem);
         }
 
-               function normalizarTexto1($texto)
+        function normalizarTexto1($texto)
         {
             $texto = mb_strtolower($texto, 'UTF-8');
             $texto = preg_replace(
@@ -557,49 +558,139 @@ IF(
 
             return array_key_first($pontuacoes);
         }
-     $conteudo = identificarAreaPorPontuacao1($request->descEvento);
-       try{
+        $conteudo = identificarAreaPorPontuacao1($request->descEvento);
+        try {
 
-           $post = Post::create([
-              'status_post' => 1,
-              'conteudo_post' => $nomeImagem,
-              'descricao_post' => $request->tituloEvento,
-              'area_post' => $conteudo,
-              'id_user' => $idUser,
-              'created_at' => now(),
-              'update_at' => now(),
-          ]);
-          $evento = Evento::create([
-          'desc_evento'=> $request->descEvento,
-          'link_evento' =>$request->link,
-          'data_inicio_evento'=>$request->inicio,
-          'data_fim_evento'=>$request->fim,
-          'status_evento'=>1,
-          'id_post'=>$post->id,
-          'created_at' => now(),
-          'update_at' => now(),
-          ]);
-           return response()->json([
-            'sucesso' => true,
-            'mensagem' => 'Evento criado com sucesso!',
-            'code' => 200,
-    
-        ]);
-       }catch(error){
-        return response()->json([
-            'sucesso' => true,
-            'mensagem' => 'erro',
-            'code' => 000,
-            'Post' => $post,
-        ]);
-       }
-       
+            $post = Post::create([
+                'status_post' => 1,
+                'conteudo_post' => $nomeImagem,
+                'descricao_post' => $request->tituloEvento,
+                'area_post' => $conteudo,
+                'id_user' => $idUser,
+                'created_at' => now(),
+                'update_at' => now(),
+            ]);
+            $evento = Evento::create([
+                'desc_evento' => $request->descEvento,
+                'link_evento' => $request->link,
+                'data_inicio_evento' => $request->inicio,
+                'data_fim_evento' => $request->fim,
+                'status_evento' => 1,
+                'id_post' => $post->id,
+                'created_at' => now(),
+                'update_at' => now(),
+            ]);
+            return response()->json([
+                'sucesso' => true,
+                'mensagem' => 'Evento criado com sucesso!',
+                'code' => 200,
+
+            ]);
+        } catch (error) {
+            return response()->json([
+                'sucesso' => true,
+                'mensagem' => 'erro',
+                'code' => 000,
+                'Post' => $post,
+            ]);
+        }
     }
-    public function showEvento($id){
-        $evento = DB ::table('tb_evento')->join('tb_post','tb_post.id','=','tb_evento.id_post')->join('tb_user','tb_post.id_user','=','tb_user.id')->where('tb_evento.id',$id)->get();
+    public function showEvento($id)
+    {
+        $evento = DB::table('tb_evento')->join('tb_post', 'tb_post.id', '=', 'tb_evento.id_post')->join('tb_user', 'tb_post.id_user', '=', 'tb_user.id')->where('tb_evento.id', $id)->get();
         return $evento;
     }
-    
+    public function editEvento(Request $request,)
+    {
+        $evento = Evento::find($request->idEvento);
+
+        if ($evento) {
+            // Atualizar o evento
+            $evento->update([
+                'desc_evento' => $request->descEvento,
+                'link_evento' => $request->link,
+                'data_inicio_evento' => $request->inicio,
+                'data_fim_evento' => $request->fim,
+                'status_evento' => 1,
+                'updated_at' => now(),
+            ]);
+
+            // Buscar o post relacionado a esse evento
+            $post = Post::find($evento->id_post);
+            $nomeImagem = null;
+            if ($request->hasFile('img') && $request->file('img')->isValid()) {
+
+                if ($post->image) {
+                    // Deletar a imagem antiga se ela existir
+                    $imagePath = public_path('img/user/imgPosts/' . $post->image);
+                    if (File::exists($imagePath)) {
+                        File::delete($imagePath);
+                    }
+                }
+
+                $extensao = $request->file('img')->getClientOriginalExtension();
+                $nomeImagem = time() . '_' . uniqid() . '.' . $extensao;
+
+                $request->file('img')->move(public_path('img/user/imgPosts'), $nomeImagem);
+
+                $post->conteudo_post = $nomeImagem;
+            }
+             function normalizarTexto2($texto)
+        {
+            $texto = mb_strtolower($texto, 'UTF-8');
+            $texto = preg_replace(
+                ['/[áàãâä]/u', '/[éèêë]/u', '/[íìîï]/u', '/[óòõôö]/u', '/[úùûü]/u', '/[ç]/u'],
+                ['a', 'e', 'i', 'o', 'u', 'c'],
+                $texto
+            );
+            return $texto;
+        }
+
+        function identificarAreaPorPontuacao2($texto)
+        {
+            $areas = config('areas');
+
+            $pontuacoes = array_fill_keys(array_keys($areas), 0);
+
+            // Normaliza o texto de entrada e quebra em palavras
+            $palavras = explode(' ', normalizarTexto2($texto));
+
+            foreach ($palavras as $palavra) {
+                foreach ($areas as $area => $keywords) {
+                    // Normaliza as palavras-chave também
+                    foreach ($keywords as $keyword) {
+                        if ($palavra === normalizarTexto2($keyword)) {
+                            $pontuacoes[$area]++;
+                        }
+                    }
+                }
+            }
+
+            arsort($pontuacoes);
+
+            $maiorPontuacao = reset($pontuacoes);
+            if ($maiorPontuacao === 0) {
+                return 'indefinido';
+            }
+
+            return array_key_first($pontuacoes);
+        }
+            $conteudo = identificarAreaPorPontuacao2($request->descEvento);
+            if ($post) {
+                $post->update([
+                    'status_post' => 1,
+                    'descricao_post' => $request->tituloEvento,
+                    'area_post' => $conteudo,
+                    'updated_at' => now(),
+                ]);
+                if ($request->hasFile('img') && $request->file('img')->isValid()) {
+                    $post->update([
+                    'conteudo_post' => $nomeImagem,
+                    ]);
+                }
+            }
+        }
+    }
     /**
      * Display the specified resource.
      *
@@ -693,6 +784,9 @@ IF(
         $post->descricao_post = $request->descricaoPost;
         $post->updated_at = now();
         $post->area_post = $conteudo;
+        if($request->link){
+            $post->link_post = $request->link;
+        }
         $post->save();
 
         return $request->descricaoPost;

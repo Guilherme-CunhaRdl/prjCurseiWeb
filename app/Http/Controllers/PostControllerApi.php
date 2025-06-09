@@ -97,13 +97,14 @@ class PostControllerApi extends Controller
                 ->whereNull('bloqueio1.id')->whereNull('bloqueio2.id')
                 ->where('tb_post.id_user', '!=', $idUser)
                 ->where('tb_post.status_post', 1)
-                ->where('tb_user.status_user', 1);
-
+                ->where('tb_user.status_user', 1)
+                ->where('tb_post.created_at','<=',now());
             if ($tipo == 3 || $tipo == 9) {
                 $subQuery = $subQuery->where(function ($query) use ($pesquisa) {
                     $query->where('tb_user.arroba_user', 'like', "%$pesquisa%")
                         ->orWhere('tb_user.nome_user', 'like', "%$pesquisa%")
                         ->orWhere('tb_post.descricao_post', 'like', "%$pesquisa%");
+                        
                 });
             }
             $subQuery = $subQuery
@@ -162,6 +163,7 @@ class PostControllerApi extends Controller
     SELECT COUNT(*) 
     FROM tb_post AS reposts 
     WHERE reposts.repost_id = tb_post.id
+    AND tb_post.created_at <= now()
 ) AS total_reposts,
         IF(tb_seguidores.id IS NOT NULL, 1,0) AS segue_usuario,
         TIMESTAMPDIFF(SECOND, tb_post.created_at, NOW()) AS tempo_insercao,
@@ -266,6 +268,7 @@ IF(
     SELECT COUNT(*) 
     FROM tb_post AS reposts 
     WHERE reposts.repost_id = tb_post.id
+    AND tb_post.created_at <= now()
 ) AS total_reposts,
         IF(tb_seguidores.id IS NOT NULL, 1,0) AS segue_usuario,
         TIMESTAMPDIFF(SECOND, tb_post.created_at, NOW()) AS tempo_insercao,
@@ -282,6 +285,7 @@ IF(
         WHERE tb_instituicao.id_user = tb_post.id_user and tb_instituicao.verificado_instituicao = 1
     ), 1, 0
 ) AS instituicao
+            
     ");
 
 
@@ -311,6 +315,7 @@ IF(
             ->limit($quantidade)
             ->where('tb_post.status_post', 1)
             ->where('tb_user.status_user', 1)
+            ->where('tb_post.created_at','<=',now())
             ->get();
 
         return  response()->json([
@@ -486,6 +491,11 @@ IF(
                 }
             }
         }
+        if($request->data && $request->hora){
+            $create_at = "$request->data $request->hora:00";
+        }else{
+            $create_at = now();
+        }
         $post = Post::create([
             'status_post' => 1,
             'conteudo_post' => $nomeImagem,
@@ -494,7 +504,7 @@ IF(
             'link_post' => $request->link,
             'area_post' => $conteudo,
             'id_user' => $idUser,
-            'created_at' => now(),
+            'created_at' => $create_at,
             'update_at' => now(),
         ]);
         pegarHashtags($request->descricaoPost, $post->id);
@@ -569,12 +579,12 @@ IF(
                 'id_user' => $idUser,
                 'created_at' => now(),
                 'update_at' => now(),
-            ]);
+            ]); 
             $evento = Evento::create([
                 'desc_evento' => $request->descEvento,
                 'link_evento' => $request->link,
-                'data_inicio_evento' => $request->inicio,
-                'data_fim_evento' => $request->fim,
+                'data_inicio_evento' => "$request->inicio $request->hinicio:00",
+                'data_fim_evento' => "$request->fim $request->hfim:00",
                 'status_evento' => 1,
                 'id_post' => $post->id,
                 'created_at' => now(),

@@ -328,22 +328,22 @@ class UserControllerApi extends Controller
     public function selectUser(Request $request, $id)
     {
         $user = DB::table('tb_user')
-                      ->where('id', $id)
-                      ->select('*') 
-                      ->first();
-        
-            if (!$user) {
-                return response()->json([
-                    'error' => 'Usuário não encontrado',
-                    'debug' => ['id_buscado' => $id]
-                ], 404);
-            }
-        
+            ->where('id', $id)
+            ->select('*')
+            ->first();
+
+        if (!$user) {
             return response()->json([
-                'User' => $user
-            ]);
+                'error' => 'Usuário não encontrado',
+                'debug' => ['id_buscado' => $id]
+            ], 404);
         }
-    
+
+        return response()->json([
+            'User' => $user
+        ]);
+    }
+
     public function verificarPreferencia($id)
     {
         $verificar = UserPreferencia::where('id_user', $id)->exists();
@@ -586,7 +586,8 @@ class UserControllerApi extends Controller
     }
     public function notificacao($id, $acao)
     {
-        $notificacoes = DB::table(DB::raw("(
+        $notificacoes = DB::table(DB::raw(
+            "(
     -- CURTIDAS
   SELECT 
       CONCAT('curtida_', tb_curtida.id) AS id,
@@ -668,7 +669,32 @@ WHERE
     JOIN tb_user ON tb_seguidores.id_user_seguidor = tb_user.id
     WHERE tb_seguidores.id_user_seguido = $id
     AND tb_seguidores.id_user_seguidor != $id  
-) as notificacoes"))
+
+    UNION ALL
+    
+        SELECT
+        CONCAT('evento_', tb_evento.id) AS id,
+        tb_evento.data_inicio_evento,
+        'evento' As tipo,
+        tb_user.id AS idUsuario,
+        tb_user.nome_user AS usuario,
+        tb_user.arroba_user AS arroba,
+        tb_user.img_user AS img_user,
+        NULL AS referencia,
+        TIMESTAMPDIFF(SECOND,  tb_evento.data_inicio_evento, NOW()) AS tempo_inserido,
+        tb_post.descricao_post AS mensagem
+        FROM tb_lembrete_evento
+        JOIN tb_evento on tb_evento.id = tb_lembrete_evento.id_evento
+        JOIN tb_post on tb_evento.id_post = tb_post.id
+        JOIN tb_user on tb_post.id_user = tb_user.id
+
+        WHERE tb_lembrete_evento.id_user = $id AND   tb_evento.data_inicio_evento <= NOW()
+            ) as notificacoes
+"
+
+
+
+        ))
             ->orderBy('created_at', 'desc');
 
 
@@ -844,5 +870,28 @@ WHERE
             'code' => 200,
 
         ]);
+    }
+    public function lembreteEvento($idEvento, $idUser)
+    {
+        $existe = DB::table('tb_lembrete_evento')
+            ->where('id_user', $idUser)
+            ->where('id_evento', $idEvento)
+            ->exists();
+
+        if ($existe) {
+            
+            DB::table('tb_lembrete_evento')
+                ->where('id_user', $idUser)
+                ->where('id_evento', $idEvento)
+                ->delete();
+        } else {
+            
+            DB::table('tb_lembrete_evento')->insert([
+                'id_user' => $idUser,
+                'id_evento' => $idEvento,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
     }
 }

@@ -2,7 +2,7 @@
             <!-- Esquerda -->
             <div class="navbar-title">
                 <i class='bx bx-home-alt'></i>
-                <p>Dashboard</p>
+                <p>{{ $titulo }}</p>
             </div>
 
             <!-- Direita -->

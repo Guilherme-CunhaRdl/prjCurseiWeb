@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Posts</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
+
+
+    @include('area-instituicao.componentes.padrao') 
+    <link rel="stylesheet" href="{{ asset('css/postsIntituicao.css') }}">
+  
+</head>
+
+<body>
+     @include('area-instituicao.componentes.sidebar')
+
+   
+    <main>
+        @include('area-instituicao.componentes.navbar', ['titulo' => 'Posts'])
+        <div class="container-fluid cont">
+            <div class="esquerda">
+                <div class="lista-dados-topo">
+                    <div class="card-dados">
+                        <i class='bx bx-home-alt'></i>
+                        <div class="dados-card-dados">
+                            <p class="numero">40</p>
+                            <p>posts</p>
+                        </div>
+                    </div>
+                    <div class="card-dados">
+                        <i class='bx bx-home-alt'></i>
+                        <div class="dados-card-dados">
+                            <p class="numero">3</p>
+                            <p>Reposts</p>
+                        </div>
+                    </div>
+                    <div class="card-dados">
+                        <i class='bx bx-home-alt'></i>
+                        <div class="dados-card-dados">
+                            <p class="numero">5</p>
+                            <p>Eventos</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="topo-catalogo">
+                    <div class="">
+                        <div class="inputCont">
+                            <input type="text" placeholder="Pesquise pela descrição do post">
+                            <i class='bx  bx-search'></i>
+                        </div>
+                    </div>
+                    <button>
+                        <p>Novo posts</p>
+                        <i class='bx bx-plus'></i>
+                    </button>
+                </div>
+                <div class="lista-catalogo-card">
+                    <div class="card-conteudo">
+                       <div class="cont-desc-card">
+                         <p>Venho fazer um anuncio, shadow o oricio é um cara muito legal e tirou ara muito legalcara
+                            muito legal e tirou ara muito legal e tirou uma foto muito legal cmg e agora e</p>
+                       </div>
+                        <div class="img">
+                            <img src="https://sm.ign.com/ign_br/screenshot/default/capa-17_ja3s.png" alt="">
+                        </div>
+                        <div class="infos-conteudo">
+                            <div class="info">
+                                <i class='bx bx-heart'></i>
+                                <p>5</p>
+                            </div>
+                            <div class="info">
+                                <i class='bx  bx-message-circle'></i>
+                                <p>5</p>
+                            </div>
+                            <div class="info">
+                                <i class='bx bx-repeat-alt'></i>
+                                <p>5</p>
+                            </div>
+
+                        </div>
+
+                    </div>
+                    <div class="card-conteudo">
+                        <p>Venho fazer um auito legalcara
+                            muito legal e tirou ara muito legal e tirou uma foto muito legal cmg e agora e</p>
+                        <div class="img">
+                            <img src="https://sm.ign.com/ign_br/screenshot/default/capa-17_ja3s.png" alt="">
+                        </div>
+                        <div class="infos-conteudo">
+                            <div class="info">
+                                <i class='bx bx-heart'></i>
+                                <p>5</p>
+                            </div>
+                            <div class="info">
+                                <i class='bx  bx-message-circle'></i>
+                                <p>5</p>
+                            </div>
+                            <div class="info">
+                                <i class='bx bx-repeat-alt'></i>
+                                <p>5</p>
+                            </div>
+
+                        </div>
+
+                    </div>
+                    <div class="card-conteudo">
+                        <p>Venho fazer um anuncio, shadow o oricio é um cara muito legal e tirou ara muito legalcara
+                            muito legal e tirou ara muito legal e tirou uma foto muito legal cmg e agora e</p>
+                        <div class="img">
+                            <img src="https://sm.ign.com/ign_br/screenshot/default/capa-17_ja3s.png" alt="">
+                        </div>
+                        <div class="infos-conteudo">
+                            <div class="info">
+                                <i class='bx bx-heart'></i>
+                                <p>5</p>
+                            </div>
+                            <div class="info">
+                                <i class='bx  bx-message-circle'></i>
+                                <p>5</p>
+                            </div>
+                            <div class="info">
+                                <i class='bx bx-repeat-alt'></i>
+                                <p>5</p>
+                            </div>
+
+                        </div>
+
+                    </div>
+                    <div class="card-conteudo">
+                        <p>Venho fazer um anuncio, shadow o oricio é um cara muito legal e tirou ara muito legalcara
+                            muito legal e tirou ara muito legal e tirou uma foto muito legal cmg e agora e</p>
+                        <div class="img">
+                            <img src="https://sm.ign.com/ign_br/screenshot/default/capa-17_ja3s.png" alt="">
+                        </div>
+                        <div class="infos-conteudo">
+                            <div class="info">
+                                <i class='bx bx-heart'></i>
+                                <p>5</p>
+                            </div>
+                            <div class="info">
+                                <i class='bx  bx-message-circle'></i>
+                                <p>5</p>
+                            </div>
+                            <div class="info">
+                                <i class='bx bx-repeat-alt'></i>
+                                <p>5</p>
+                            </div>
+
+                        </div>
+
+                    </div>
+                    <div class="card-conteudo">
+                        <p>Venho fazer um anuncio, shadow o oricio é um cara muito legal e tirou ara muito legalcara
+                            muito legal e tirou ara muito legal e tirou uma foto muito legal cmg e agora e</p>
+                        <div class="img">
+                            <img src="https://sm.ign.com/ign_br/screenshot/default/capa-17_ja3s.png" alt="">
+                        </div>
+                        <div class="infos-conteudo">
+                            <div class="info">
+                                <i class='bx bx-heart'></i>
+                                <p>5</p>
+                            </div>
+                            <div class="info">
+                                <i class='bx  bx-message-circle'></i>
+                                <p>5</p>
+                            </div>
+                            <div class="info">
+                                <i class='bx bx-repeat-alt'></i>
+                                <p>5</p>
+                            </div>
+
+                        </div>
+
+                    </div>
+                    <div class="card-conteudo">
+                        <p>Venho fazer um anuncio, shadow o oricio é um cara muito legal e tirou ara muito legalcara
+                            muito legal e tirou ara muito legal e tirou uma foto muito legal cmg e agora e</p>
+                        <div class="img">
+                            <img src="https://sm.ign.com/ign_br/screenshot/default/capa-17_ja3s.png" alt="">
+                        </div>
+                        <div class="infos-conteudo">
+                            <div class="info">
+                                <i class='bx bx-heart'></i>
+                                <p>5</p>
+                            </div>
+                            <div class="info">
+                                <i class='bx  bx-message-circle'></i>
+                                <p>5</p>
+                            </div>
+                            <div class="info">
+                                <i class='bx bx-repeat-alt'></i>
+                                <p>5</p>
+                            </div>
+
+                        </div>
+
+                    </div>
+                    <div class="card-conteudo">
+                        <p>Venho fazer um anuncio, shadow o oricio é um cara muito legal e tirou ara muito legalcara
+                            muito legal e tirou ara muito legal e tirou uma foto muito legal cmg e agora e</p>
+                        <div class="img">
+                            <img src="https://sm.ign.com/ign_br/screenshot/default/capa-17_ja3s.png" alt="">
+                        </div>
+                        <div class="infos-conteudo">
+                            <div class="info">
+                                <i class='bx bx-heart'></i>
+                                <p>5</p>
+                            </div>
+                            <div class="info">
+                                <i class='bx  bx-message-circle'></i>
+                                <p>5</p>
+                            </div>
+                            <div class="info">
+                                <i class='bx bx-repeat-alt'></i>
+                                <p>5</p>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="direita">
+                <div class="card-direita engajamento-cont">
+                    <p class="titulo-card">
+                        Engajamento
+                    </p>
+                    <div>
+                        <div class="dados-engajamento">
+                            <p class="numero">40 <i class='bx bx-home-alt'></i></p>
+                            <p>Media de curtidas</p>
+                        </div>
+                        <div class="dados-engajamento">
+                            <p class="numero">40 <i class='bx bx-home-alt'></i></p>
+                            <p>Media de curtidas</p>
+                        </div>
+                        <div class="dados-engajamento">
+                            <p class="numero">40 <i class='bx bx-home-alt'></i></p>
+                            <p>Media de curtidas</p>
+                        </div>
+                        <div class="dados-engajamento">
+                            <p class="numero">40 <i class='bx bx-home-alt'></i></p>
+                            <p>Media de curtidas</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-direita areaposts-cont">
+                    <p class="titulo-card">
+                        Área dos posts
+                    </p>
+                    <div class="cont-grafico">
+                        <canvas id="grafico"></canvas>
+                        <div>
+                            <p>40%</p>
+                            <p class="area">Tecnologia</p>
+                        </div>
+                    </div>
+                    <div class="areas-lista">
+                        <div><span style="background: #b05fc0;"></span> Tecnologia</div>
+                        <div><span style="background: var(--inst);"></span> Tecnologia</div>
+                         <div><span style="background: var(--sidebar);"></span> Tecnologia</div>
+                    </div>
+                </div>
+                <div class="card-direita diassemana-cont">
+                    <p class="titulo-card">
+                        Posts por dia da semana
+                    </p>
+                    <div class="cont-grafico">
+                        <div class="canvas"></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        const ctx = document.getElementById('grafico');
+
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Tecnologia', 'Saúde', 'Nutrição'],
+                datasets: [{
+                    data: [40, 30, 30],
+                    backgroundColor: ['#b05fc0', '#51b8f3', '#ff8c00'],
+                    borderWidth: 0,
+                }]
+            },
+            options: {
+                rotation: -90,
+                circumference: 180,
+                cutout: '70%',
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { enabled: false }
+                }
+            }
+        });
+    </script>
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>

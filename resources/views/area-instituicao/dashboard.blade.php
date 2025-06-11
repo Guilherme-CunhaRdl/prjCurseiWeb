@@ -19,7 +19,7 @@
         @include('area-instituicao.componentes.sidebar')
 
     <main>
-         @include('area-instituicao.componentes.navbar')
+@include('area-instituicao.componentes.navbar', ['titulo' => 'Dashboard'])
        
         <div class="container-fluid cont">
             <div class="esquerda">

@@ -78,8 +78,14 @@ route::prefix('curseiAdm')->group(function(){
 Route::prefix('curseiInstituicao')->group(function () {
     Route::get('/dashboard', function () {
         return view('area-instituicao.dashboard');
-    })->name('dashboard.index');
+    })->name('dashboardInst');
 
+    Route::get('/posts', function () {
+        return view('area-instituicao.posts');
+    })->name('postsInst');
+            Route::get('/curteis', function () {
+        return view('area-instituicao.curtei');
+    })->name('curteiInst');
     
 Route::get('/seguidores', function () {
     $seguidores = [
@@ -95,7 +101,7 @@ Route::get('/seguidores', function () {
             'nome' => 'Beltrano Souza',
             'nome_usuario' => 'beltrano456',
             'email' => 'beltrano@email.com',
-            'foto_perfil' => 'foto2.jpg'
+            'foto_perfil' => null
         ]
     ];
     return view('area-instituicao.seguidores', compact('seguidores'));
@@ -119,10 +125,7 @@ Route::get('/conta', function () {
     })->name('instituicao.conta');
 
 });
- Route::delete('/seguidores/{id}/remover', function ($id) {
-    // só para não dar erro, não faz nada
-    return redirect()->back();
-})->name('instituicao.removerSeguidor');
+
 
 
 // fim da area instituicao ---------------------------------------------------------------------------------------------------------

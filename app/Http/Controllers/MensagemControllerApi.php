@@ -113,12 +113,12 @@ $subCanais = DB::table('tb_mensagem_canal AS mensagemC')
 $canaisQuery = DB::table('tb_canal AS canal')
     ->leftJoin('tb_membros_canal AS membrosC', 'canal.id', '=', 'membrosC.id_canal')
     ->join('tb_user AS user', 'canal.user_criador_canal', '=', 'user.id')
-    ->join('tb_mensagem_canal AS mensagemC', 'mensagemC.id_canal', '=', 'canal.id')
-    ->joinSub($subCanais, 'sub', function ($join) {
+    ->leftJoin('tb_mensagem_canal AS mensagemC', 'mensagemC.id_canal', '=', 'canal.id')
+    ->leftJoinSub($subCanais, 'sub', function ($join) {
         $join->on('mensagemC.id', '=', 'sub.ultima_mensagem_id');
     })
     ->where(function ($query) use ($idUser) {
-        $query->where('membrosC.id_user', $idUser)
+        $query->orWhere('membrosC.id_user', $idUser)
               ->orWhere('canal.user_criador_canal', $idUser);
     })
 ->selectRaw("
@@ -126,7 +126,7 @@ $canaisQuery = DB::table('tb_canal AS canal')
     canal.nome_canal as nome,
     canal.imagem_canal AS img,
     user.arroba_user as arroba,
-    mensagemC.id_user_enviador AS id_remetente,
+    canal.user_criador_canal AS id_remetente,
     mensagemC.img_mensagem_canal AS img_mensagem, 
     mensagemC.conteudo_mensagem_canal AS ultima_mensagem,
     mensagemC.created_at,

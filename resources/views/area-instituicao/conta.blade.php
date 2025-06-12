@@ -18,7 +18,7 @@
     <main>
         @include('area-instituicao.componentes.navbar', [
             'navbarIcon' => 'bx-user',
-            'navbarTitle' => 'Conta'
+            'titulo' => 'Conta'
         ])
 
         <div class="container-fluid cont">

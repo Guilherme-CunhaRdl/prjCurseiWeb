@@ -16,11 +16,14 @@ return new class extends Migration
         Schema::create('tb_storyes', function (Blueprint $table) {
             $table->id();
             $table->string('conteudo_storyes');
-            $table->date('data_inicio');
-            $table->boolean('status_storyes');
+            $table->dateTime('data_inicio');
+            $table->boolean('status_storyes')->default(true);
             $table->unsignedBigInteger('id_user');
-            $table->foreign('id_user')->references('id')->on('tb_user')->onDelete('cascade');
+            $table->string('legenda', 220)->nullable();
+            $table->string('tipo_midia', 10); 
             $table->timestamps();
+    
+            $table->foreign('id_user')->references('id')->on('tb_user')->onDelete('cascade');
         });
     }
 

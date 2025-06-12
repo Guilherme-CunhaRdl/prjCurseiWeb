@@ -2,7 +2,7 @@
             <!-- Esquerda -->
      <div class="navbar-title">
     <i class='bx {{ $navbarIcon ?? "bx-home-alt" }}'></i>
-    <p>{{ $navbarTitle ?? "Dashboard" }}</p>
+    <p>{{ $titulo ?? "Dashboard" }}</p>
 </div>
 
             <!-- Direita -->
@@ -15,7 +15,7 @@
                 <div class="dropdown">
                     <div class="d-flex align-items-center gap-2 dropdown-toggle" data-bs-toggle="dropdown" role="button"
                         aria-expanded="false">
-                        <img src="../../../public/img/user/fotoPerfil/1746553339_681a49fbdd278.jpg" class="profile-img"
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRLlEbcdOHQQz51aAgsC6hIzwpRqTZxVxQCdC-DvkU-jG2_GQ3VbNDNz-1H3aL3USxZRF4&usqp=CAU" class="profile-img"
                             alt="Perfil">
                         <div class="profile-info">
                             <span>Etec de Itaquera</span>

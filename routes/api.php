@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostControllerApi;
 use App\Http\Controllers\UserControllerApi;
+use App\Http\Controllers\StoryController;
 use App\Http\Controllers\InstituicaoControllerApi;
 use App\Http\Controllers\MensagemControllerApi;
 use App\Http\Controllers\HashtagController;
@@ -96,6 +97,17 @@ Route::get('/cursei/explorar/recomendarHashtags/{id}',[HashtagController::class,
 //ROTAS DO CURTEI
 Route::post('/curtei/upload', [CurteiController::class, 'storeCurtei']);
 Route::get('/curtei/videos', [CurteiController::class, 'mostrarVideos']);
+
+
+//ROTAS DOS STORYES
+Route::post('/stories/upload', [StoryController::class, 'upload']);
+    Route::get('/stories', [StoryController::class, 'index']);
+    Route::delete('/stories/{id}', [StoryController::class, 'destroy']);
+
+
+    Route::get('/ping', function () {
+        return response()->json(['pong' => true]);
+    });
  
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();

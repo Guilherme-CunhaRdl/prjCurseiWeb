@@ -78,10 +78,13 @@ route::prefix('curseiAdm')->group(function(){
  route::prefix('curseiInstituicao')->group( function(){
         Route::get('/dashboard', function () {
         return view('area-instituicao.dashboard');
-    })->name('dashboard');
+    })->name('dashboardInst');
          Route::get('/posts', function () {
         return view('area-instituicao.posts');
-    })->name('posts');
+    })->name('postsInst');
+            Route::get('/curteis', function () {
+        return view('area-instituicao.curtei');
+    })->name('curteiInst');
  });
 
 

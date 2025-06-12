@@ -53,14 +53,14 @@
                         </div>
                     </div>
                     <div class="cardDados">
-                        <i class="fa-solid fa-repeat"></i>
+                        <i class='bx bxs-repeat'></i>
                         <div>
                             <p class="numero">5</p>
                             <p>Reposts</p>
                         </div>
                     </div>
                     <div class="cardDados">
-                        <i class="fa-solid fa-share"></i>
+                        <i class='bx bxs-share'></i>
                         <div>
                             <p class="numero">26</p>
                             <p>Compartilhados</p>
@@ -155,6 +155,65 @@
                     <p>Posts por dia na semana</p>
                     <div>
                         <canvas id="a"></canvas>
+                    </div>
+                </div>
+                <div class="posts">
+                    <div class="row   justify-content-between" >
+                        <div class="col">
+                        <p class="tipo-post">Post mais engajado</p>
+                              <div class="card-conteudo">
+                       <div class="cont-desc-card">
+                         <p>Venha para a etec de guianasses ,temos muitas opções de cursos</p>
+                       </div>
+                        <div class="img">
+                            <img src="https://etecsantosdumont.com.br/wp-content/uploads/2023/03/335588264_613348350805960_3933893113793637074_n.jpg" alt="">
+                        </div>
+                        <div class="infos-conteudo">
+                            <div class="info">
+                                <i class='bx bx-heart'></i>
+                                <p>22</p>
+                            </div>
+                            <div class="info">
+                                <i class='bx  bx-message-circle'></i>
+                                <p>6</p>
+                            </div>
+                            <div class="info">
+                                <i class='bx bx-repeat-alt'></i>
+                                <p>3</p>
+                            </div>
+
+                        </div>
+
+                    </div>
+                        </div>
+                        <div class="col">
+                               <p class="tipo-post">Post mais recente</p>
+                                   <div class="card-conteudo">
+                       <div class="cont-desc-card">
+                         <p>Inscrições abertas para etec de guianasses!! corra!!</p>
+                       </div>
+                        <div class="img">
+                            <img src="https://bkpsitecpsnew.blob.core.windows.net/uploadsitecps/sites/48/2025/05/2025_posts_rede_sociais__card01_vestibulinho_2025_02sem_feed_cps_02-1-scaled.png" alt="">
+                        </div>
+                        <div class="infos-conteudo">
+                            <div class="info">
+                                <i class='bx bx-heart'></i>
+                                <p>32</p>
+                            </div>
+                            <div class="info">
+                                <i class='bx  bx-message-circle'></i>
+                                <p>12</p>
+                            </div>
+                            <div class="info">
+                                <i class='bx bx-repeat-alt'></i>
+                                <p>7</p>
+                            </div>
+
+                        </div>
+
+                    </div>
+                        </div>
+
                     </div>
                 </div>
             </div>

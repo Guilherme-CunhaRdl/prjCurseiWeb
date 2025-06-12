@@ -99,17 +99,17 @@ class StoryController extends Controller
                     'user' => [
                         'id' => $story->user->id,
                         'nome' => $story->user->nome_user,
-                        'foto' => $story->user->img_user ? url($story->user->img_user) : null
+
+                        'foto' => $story->user->img_user ? url('/img/user/fotoPerfil/' . $story->user->img_user) : null
                     ]
                 ];
             });
-
+    
         return response()->json([
             'success' => true,
             'data' => $stories
         ]);
     }
-
     public function destroy($id)
     {
         try {

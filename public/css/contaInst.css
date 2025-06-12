@@ -1,0 +1,470 @@
+.card-conta {
+    border-radius: 10px;
+    margin-bottom: 24px;
+    background: var(--branco);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+}
+
+.card-conta .header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 18px 18px 10px 18px;
+    border-bottom: 1px solid #eee;
+}
+
+.card-conta .header .titulo {
+    font-weight: bold;
+    font-size: 1.25rem;
+    color: var(--preto);
+}
+
+.card-conta .header .titulo-laranja {
+    color: var(--inst);
+}
+
+.card-conta .banner {
+    height: 180px;
+    width: 100%;
+    object-fit: cover;
+    border-radius: 0;
+    position: relative;
+    background: var(--cinzaClaro);
+}
+
+
+
+.card-conta .perfil-info {
+    padding: 48px 32px 16px 32px;
+}
+
+.card-conta .perfil-info .nome {
+    font-weight: bold;
+    font-size: 1.5rem;
+        color: var(--preto);
+}
+
+.card-conta .perfil-info .arroba {
+    color: var(--texto);
+    font-size: 1rem;
+}
+
+.card-conta .perfil-info .bio {
+    color: var(--texto);
+    font-size: 1rem;
+    margin: 8px 0 0 0;
+}
+
+.card-conta .perfil-info .contagem {
+    display: flex;
+    gap: 32px;
+    font-size: 0.98rem;
+    margin-top: 10px;
+}
+
+.card-conta .perfil-info .contagem span {
+    font-weight: 500;
+}
+
+.card-conta .perfil-info .btn-editar {
+    min-width: 150px;
+    float: right;
+}
+
+.card-conta .institucional-info {
+    padding: 24px 32px 24px 32px;
+}
+
+.card-conta .institucional-info .linha-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+}
+
+.card-conta .institucional-info .nome-inst {
+    font-weight: bold;
+    font-size: 1.5rem;
+    letter-spacing: 0.5px;
+        color: var(--preto);
+}
+
+.card-conta .institucional-info .arroba-inst {
+    color: var(--texto);
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.card-conta .institucional-info .cidade {
+    color: var(--texto);
+    font-size: 0.98rem;
+    margin-left: 8px;
+}
+
+.card-conta .institucional-info .btn-editar {
+    min-width: 150px;
+}
+
+.card-conta .institucional-info .dados {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 32px;
+    margin-top: 10px;
+    font-size: 0.98rem;
+    color: var(--texto);
+}
+
+.card-conta .institucional-info .dados div {
+    font-weight: 600;
+}
+
+ .perfil-banner-area {
+            position: relative;
+            height: 180px;
+            background: var(--cinzaClaro);
+            border-radius: 0 0 10px 10px;
+            overflow: hidden;
+        }
+        .perfil-banner-area img.banner {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .perfil-info-area {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+            margin-top: 60px;
+        }
+        .perfil-nome-arroba {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            margin-left: 130px; /* espaço para a foto */
+        }
+        .perfil-nome-arroba .nome {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0;
+                color: var(--preto);
+        }
+        .perfil-nome-arroba .arroba {
+    color: var(--texto);
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+        .perfil-btn-editar {
+            min-width: 150px;
+            height: 36px;
+        }
+        .perfil-bio {
+            margin: 8px 0 0 32px;
+            color: var(--texto);
+            font-size: 1rem;
+        }
+        .perfil-contagem {
+            margin: 12px 0 0 32px;
+            font-size: 0.98rem;
+            color: var(--texto);
+            display: flex;
+            gap: 32px;
+        }
+        /* Conta institucional ajustes de fonte */
+        .institucional-info .nome-inst {
+            font-size: 2rem !important;
+            font-weight: bold;
+        }
+        .institucional-info .arroba-inst {
+            font-size: 1.2rem !important;
+            font-weight: 600;
+        }
+        .institucional-info .cidade {
+            font-size: 1.05rem !important;
+            color: #aaa;
+            margin-left: 10px;
+        }
+        .institucional-info .dados {
+            font-size: 1.08rem !important;
+        }
+
+        /* Topo da conta institucional */
+.institucional-topo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+    margin-top: 8px;
+}
+
+.nome-inst {
+    font-size: 2.2rem !important;
+    font-weight: bold;
+    color: #555;
+    line-height: 1;
+}
+
+.cidade {
+    font-size: 1.1rem !important;
+    color: #888;
+    margin-left: 8px;
+    font-weight: 500;
+}
+
+.arroba-inst {
+    font-size: 1.25rem !important;
+    color: #888;
+    font-weight: 600;
+    display: block;
+    margin-top: -2px;
+}
+
+.btn-editar-conta {
+    min-width: 220px;
+    font-size: 1rem;
+    height: 36px;
+    border-radius: 6px !important;
+    background-color: #448FFF !important;
+}
+
+/* Dados em duas colunas */
+.institucional-dados {
+    display: flex;
+    justify-content: flex-start;
+    gap: 60px;
+    margin-top: 8px;
+    font-size: 1.18rem;
+    color: #444;
+    font-weight: 600;
+}
+
+.institucional-dados > div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.dado-label {
+    color: var(--texto);
+    font-size: 1.05rem;
+    font-weight: 500;
+    margin-bottom: -2px;
+}
+
+.dado-valor {
+    margin-bottom: 6px;
+}
+
+.perfil-cursei .perfil-banner-box {
+    position: relative;
+    width: 100%;
+    height: 280px;
+    background: var(--cinzaClaro);
+    border-radius: 10px 10px 0 0;
+
+    z-index: 1;
+}
+.perfil-cursei .perfil-banner-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.perfil-cursei .perfil-foto-box {
+    position: absolute;
+    left: 40px;
+    bottom: -60px;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    z-index: 2; 
+    border: 2px solid #fff;
+}
+.perfil-cursei .perfil-foto-img {
+    width: 112px;
+    height: 112px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #fff;
+    border: none;
+    z-index: 3;
+}
+.perfil-cursei .perfil-info-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 0; 
+    padding: 0 40px 0 0; 
+    min-height: 180px; 
+    z-index: 1;
+    position: relative;
+}
+.perfil-cursei .perfil-nome-arroba-box {
+     display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-left: 180px; /* Deixa o texto ao lado da foto */
+    min-height: 90px;
+    gap: 0;
+}
+.perfil-cursei .perfil-nome {
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--preto);
+    margin-bottom: 0;
+    line-height: 1.1;
+}
+.perfil-cursei .perfil-arroba {
+    color: var(--texto);
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin-top: -2px;
+}
+.perfil-cursei .perfil-btn-editar {
+    min-width: 220px;
+    font-size: 1rem;
+    height: 36px;
+    border-radius: 6px !important;
+    background-color: #448FFF !important;
+}
+.perfil-cursei .perfil-bio-box {
+    margin: 8px 0 0 0;
+    color: var(--texto);
+    font-size: 1rem;
+    max-width: 100%;
+    font-weight: 400;
+}
+.perfil-cursei .perfil-contagem-box {
+    margin: 8px 0 0 0;
+    font-size: 0.98rem;
+    color: var(--texto);
+    display: flex;
+    gap: 32px;
+    font-weight: 400;
+}
+
+.perfil-cursei .perfil-contagem-box b {
+    color: var(--preto);
+    font-weight: 600;
+}
+
+.perfil-cursei .perfil-contagem-box .contagem-label {
+    color: var(--texto);
+    font-weight: 400;
+}
+
+
+.modal-editar-conta {
+    min-width: 700px;
+    max-width: 98vw;
+    background: var(--branco);
+    border-radius: 12px;
+    padding: 28px 32px 18px 32px;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+.modal-editar-conta .modal-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+.modal-editar-conta .modal-titulo {
+    font-weight: bold;
+    color: var(--inst);
+    font-size: 1.18rem;
+}
+.modal-editar-conta .modal-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px 32px;
+    margin-bottom: 0;
+    margin-top: 0;
+}
+.modal-editar-conta .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.modal-editar-conta label {
+    font-size: 0.98rem;
+    color: var(--texto);
+    font-weight: 500;
+}
+.modal-editar-conta .form-control {
+    background: var(--cinzaClaro);
+    border: 1px solid var(--cinzaClaro);
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 1rem;
+    color: var(--texto);
+    font-weight: 500;
+}
+.modal-editar-conta .form-control:disabled {
+    background: var(--cinzaClaro);
+    color: #aaa;
+}
+.modal-editar-conta .modal-botoes {
+    display: flex;
+    justify-content: flex-end;
+    gap: 16px;
+    margin-top: 24px;
+}
+.modal-editar-conta .btn-cancelar {
+    background: var(--branco);
+    border: 1px solid var(--cinzaClaro);
+    color: var(--texto);
+    border-radius: 6px;
+    padding: 8px 32px;
+    font-weight: 500;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.modal-editar-conta .btn-confirmar {
+    background: var(--inst);
+    color: var(--branco);
+    border: none;
+    border-radius: 6px;
+    padding: 8px 32px;
+    font-weight: 500;
+    font-size: 1rem;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.modal-seguidores {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+.modal-editar-conta {
+    position: relative;
+}
+.modal-fechar-x {
+    position: absolute;
+    top: 16px;
+    right: 24px;
+    background: none;
+    border: none;
+    font-size: 2rem;
+    color: var(--texto);
+    cursor: pointer;
+    z-index: 10;
+    line-height: 1;
+    padding: 0;
+}

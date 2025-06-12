@@ -6,7 +6,7 @@
             <p>Instituição</p>
         </div>
         <div class="links">
-            <a href="#" class="link link_focus">
+            <a href="{{ route ('dashboard.index')}}" class="link link_focus">
                 <p>Dashboard</p>
                 <i class='bx bx-home-alt'></i>
             </a>
@@ -18,7 +18,7 @@
                 <p>Curteis</p>
                 <i class='bx bxs-videos'></i>
             </a>
-            <a href="#" class="link ">
+            <a href="{{ route('instituicao.seguidores')}}" class="link ">
                 <p>Seguidores</p>
                 <i class='bx bx-user'></i>
             </a>

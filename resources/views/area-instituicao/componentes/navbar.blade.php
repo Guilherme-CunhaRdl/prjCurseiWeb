@@ -1,9 +1,9 @@
  <nav class="navbar-custom d-flex justify-content-between align-items-center">
             <!-- Esquerda -->
-            <div class="navbar-title">
-                <i class='bx bx-home-alt'></i>
-                <p>Dashboard</p>
-            </div>
+     <div class="navbar-title">
+    <i class='bx {{ $navbarIcon ?? "bx-home-alt" }}'></i>
+    <p>{{ $navbarTitle ?? "Dashboard" }}</p>
+</div>
 
             <!-- Direita -->
             <div class="navbar-right ">
@@ -24,7 +24,7 @@
                     </div>
 
                     <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="#">Perfil</a></li>
+                        <li><a class="dropdown-item" href="{{ route('instituicao.conta')}}">Perfil</a></li>
                         <li><a class="dropdown-item" href="#">Configurações</a></li>
                         <li>
                             <hr class="dropdown-divider">

@@ -11,7 +11,7 @@
 
 
     @include('area-instituicao.componentes.padrao') 
-    <link rel="stylesheet" href="{{ asset('css/postsIntituicao.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/curteiIntituicao.css') }}">
   
 </head>
 
@@ -20,49 +20,47 @@
 
    
     <main>
-        @include('area-instituicao.componentes.navbar', ['titulo' => 'Posts'])
+        @include('area-instituicao.componentes.navbar', ['titulo' => 'Curteis'])
         <div class="container-fluid cont">
             <div class="esquerda">
                 <div class="lista-dados-topo">
                     <div class="card-dados">
-                        <i class='bx bx-image'></i>
+                        <i class='bx bxs-videos'></i>
                         <div class="dados-card-dados">
                             <p class="numero">40</p>
-                            <p>Posts</p>
+                            <p>Curteis</p>
                         </div>
                     </div>
                     <div class="card-dados">
-                        <i class='bx bx-repeat'></i>
+                        <i class='bx bx-message-circle'></i>
                         <div class="dados-card-dados">
                             <p class="numero">3</p>
-                            <p>Reposts</p>
+                            <p>Comentarios</p>
                         </div>
                     </div>
                     <div class="card-dados">
-                       <i class='bxr  bx-education'  ></i> 
+                       <i class='bxr  bx-heart'  ></i> 
                         <div class="dados-card-dados">
                             <p class="numero">5</p>
-                            <p>Eventos</p>
+                            <p>Curtidas</p>
                         </div>
                     </div>
                 </div>
                 <div class="topo-catalogo">
                     <div class="">
                         <div class="inputCont">
-                            <input type="text" placeholder="Pesquise pela descrição do post">
+                            <input type="text" placeholder="Pesquise pela descrição do curtei">
                             <i class='bx  bx-search'></i>
                         </div>
                     </div>
                     <button>
-                        <p>Novo posts</p>
+                        <p>Novo Curtei</p>
                         <i class='bx bx-plus'></i>
                     </button>
                 </div>
               <div class="lista-catalogo-card">
                     <div class="card-conteudo">
-                       <div class="cont-desc-card">
-                         <p>Venha para a etec de guianasses ,temos muitas opções de cursos</p>
-                       </div>
+                       
                         <div class="img">
                             <img src="https://etecsantosdumont.com.br/wp-content/uploads/2023/03/335588264_613348350805960_3933893113793637074_n.jpg" alt="">
                         </div>
@@ -84,9 +82,7 @@
 
                     </div>
                        <div class="card-conteudo">
-                       <div class="cont-desc-card">
-                         <p>Inscrições abertas para etec de guianasses!! corra!!</p>
-                       </div>
+                      
                         <div class="img">
                             <img src="https://bkpsitecpsnew.blob.core.windows.net/uploadsitecps/sites/48/2025/05/2025_posts_rede_sociais__card01_vestibulinho_2025_02sem_feed_cps_02-1-scaled.png" alt="">
                         </div>
@@ -108,9 +104,7 @@
 
                     </div>
                            <div class="card-conteudo">
-                       <div class="cont-desc-card">
-                         <p>Inscrições para processo seletivo do primeiro semestre de 2025 nas Etecs estão abertas — Prefeitura de São Vicente</p>
-                       </div>
+                       
                         <div class="img">
                             <img src="https://etecsantosdumont.com.br/wp-content/uploads/2024/05/Vestibulinho-20242.jpg" alt="">
                         </div>
@@ -147,10 +141,7 @@
                             <p class="numero">40 <i class='bx bx-message-circle'></i></p>
                             <p>Comentarios</p>
                         </div>
-                        <div class="dados-engajamento">
-                            <p class="numero">40 <i class='bx bx-repeat'></i></p>
-                            <p>Reposts</p>
-                        </div>
+                        
                         <div class="dados-engajamento">
                             <p class="numero">40 <i class='bx bx-share'></i></p>
                             <p >Compartilhamentos</p>
@@ -159,7 +150,7 @@
                 </div>
                 <div class="card-direita areaposts-cont">
                     <p class="titulo-card">
-                        Área dos posts
+                       Interesses de quem curti
                     </p>
                     <div class="cont-grafico">
                         <canvas id="grafico"></canvas>

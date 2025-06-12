@@ -735,4 +735,33 @@ return response()->json([
             'code' => 200,
         ]);
     }
+
+    public function selectCanaisApi($userId){
+        $canais = DB::table('tb_canal as c')
+            ->leftJoin('tb_membros_canal as mc', 'c.id', '=', 'mc.id_canal')
+            ->whereNotIn('c.id', function ($query) use ($userId) {
+                $query->select('id_canal')
+                    ->from('tb_membros_canal')
+                    ->where('id_user', $userId);
+            })
+            ->select([
+                'c.id as canal_id',
+                'c.nome_canal as canal_nome',
+                'c.descricao_canal as canal_descricao',
+                'c.imagem_canal as canal_imagem',
+                'c.user_criador_canal as canal_criador_id',
+
+                'mc.id as membro_id',
+                'mc.id_canal as membro_id_canal',
+                'mc.id_user as membro_id_user',
+            ])
+            ->get();
+
+     return response()->json([
+            'sucesso' => true,
+            'canais' => $canais,
+            'message' => 'Canais Retornados com Sucesso',
+            'code' => 200,
+        ]);
+    }
 }

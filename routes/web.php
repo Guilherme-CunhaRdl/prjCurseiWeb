@@ -75,17 +75,57 @@ route::prefix('curseiAdm')->group(function(){
 // Route::get('/bibliotecaMidia/filtrar', [InstituicaoController::class, 'filtrar'])->name('biblioteca.filtrar');
 // Route::post('/bibliotecaMidia/criarPost', [InstituicaoController::class, 'criarPost'])->name('biblioteca.criarPost');
 // });
- route::prefix('curseiInstituicao')->group( function(){
-        Route::get('/dashboard', function () {
+Route::prefix('curseiInstituicao')->group(function () {
+    Route::get('/dashboard', function () {
         return view('area-instituicao.dashboard');
     })->name('dashboardInst');
-         Route::get('/posts', function () {
+
+    Route::get('/posts', function () {
         return view('area-instituicao.posts');
     })->name('postsInst');
             Route::get('/curteis', function () {
         return view('area-instituicao.curtei');
     })->name('curteiInst');
- });
+    
+Route::get('/seguidores', function () {
+    $seguidores = [
+        (object)[
+            'id' => 1,
+            'nome' => 'Fulano da Silva',
+            'nome_usuario' => 'fulano123',
+            'email' => 'fulano@email.com',
+            'foto_perfil' => null
+        ],
+        (object)[
+            'id' => 2,
+            'nome' => 'Beltrano Souza',
+            'nome_usuario' => 'beltrano456',
+            'email' => 'beltrano@email.com',
+            'foto_perfil' => null
+        ]
+    ];
+    return view('area-instituicao.seguidores', compact('seguidores'));
+})->name('instituicao.seguidores');
+
+Route::get('/conta', function () {  
+        // Exemplo de dados fictícios para exibir na tela
+        $instituicao = (object)[
+            'banner_user' => 'banner.png',
+            'img_user' => 'img-perfil.png',
+            'nome_user' => 'Etec de itaquera',
+            'arroba_user' => 'etecitaquera',
+            'bio_user' => 'Mane fé filho, é suco de goiaba...',
+            'seguidores' => 1,
+            'seguindo' => 0,
+            'cnpj' => '12.345.678/0001-90',
+            'telefone' => '(11) 91234-5678',
+            'email' => 'etecitaquera@gmail.com'
+        ];
+        return view('area-instituicao.conta', compact('instituicao'));
+    })->name('instituicao.conta');
+
+});
+
 
 
 // fim da area instituicao ---------------------------------------------------------------------------------------------------------

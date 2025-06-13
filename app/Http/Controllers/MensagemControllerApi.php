@@ -12,6 +12,7 @@ use App\Models\Chat;
 use App\Models\Canal;
 use App\Models\MensagemCanal;
 use App\Models\MembrosCanal;
+use Exception;
 use Illuminate\Support\Facades\Broadcast;
 
 
@@ -764,4 +765,49 @@ return response()->json([
             'code' => 200,
         ]);
     }
+
+    public function seguirCanal(Request $request){
+
+        try{
+        $canalCriado = MembrosCanal::create([
+            'id_canal' => $request->idCanal,
+            'id_user' => $request->idUsuario,
+            'created_at' => now()
+        ]);
+         return response()->json([
+            'seguidor' => $canalCriado,
+            'sucesso' => true,
+            'code' => 200
+        ]);
+    }catch(Exception $erro){
+        
+        return response()->json([
+            'seguidor' => $erro->getMessage(),
+            'sucesso' => false,
+            'code' => 500
+        ]);
+    }
+
+    }
+
+    public function deixarSeguir($idUsuario){
+
+        try{
+            MembrosCanal::where('id_user', '=', $idUsuario)->delete();
+            return response()->json([
+                'resposta' => 'Você deixou de seguir o Canal',
+                'code' => 200,
+                'sucesso' => true
+            ]);  
+        }
+        catch(Exception $erro){
+            return response()->json([
+                'resposta' => $erro->getMessage(),
+                'code' => 500,
+                'sucesso' => false
+            ]);  
+        }
+
+    }
+
 }

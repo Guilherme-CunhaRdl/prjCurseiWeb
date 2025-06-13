@@ -78,6 +78,8 @@ Route::post('/cursei/chat/enviarMensagem/{tipoMensagem}', [MensagemControllerApi
 Route::get('/cursei/chat/adicionarChat/{idUserLogado}/{idSeguidor}', [MensagemControllerApi::class, 'selectSeguidor'])->name('chat.seguidor');
 Route::post('/cursei/chat/criarCanal', [MensagemControllerApi::class, 'criarCanal'])->name('chat.criarCanal');
 Route::get('/cursei/chat/selecionarCanais/{id}', [MensagemControllerApi::class, 'selectCanaisApi']); 
+Route::post('/cursei/chat/seguirCanal', [MensagemControllerApi::class, 'seguirCanal']); 
+Route::delete('/cursei/chat/deixarSeguir/{id}', [MensagemControllerApi::class, 'deixarSeguir']); 
 
 Route::post('cursei/user/{userId}', [UserControllerApi::class, 'alterarUser']); 
 Route::post('cursei/user/autenticacao/{userId}', [UserControllerApi::class, 'atualizarDoisFatores']);

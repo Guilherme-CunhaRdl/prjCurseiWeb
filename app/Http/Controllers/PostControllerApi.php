@@ -308,6 +308,9 @@ IF(
             case 6:
                 $query = $query->orderByDesc('tb_post.created_at')->where('tb_post.id_user', $pesquisa)->whereNotNull('tb_post.conteudo_post');
                 break;
+                case 10:
+                      $query = $query->orderByDesc('tb_post.created_at')->where('tb_post.descricao_post', 'like', "%$pesquisa%")->where('tb_post.id_user',$idUser);
+                       break;
         }
 
         $posts = $query

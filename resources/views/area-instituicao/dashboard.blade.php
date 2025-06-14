@@ -308,7 +308,7 @@
                 datasets: [{
                         label: 'Usuarios',
                         data: [5, 2, 5, 2, 4, 5, 5],
-                        backgroundColor: '#FF8418   ',
+                        backgroundColor: localStorage.getItem('instCor'),
                         borderRadius: 2,
                         yAxisID: 'y',
 

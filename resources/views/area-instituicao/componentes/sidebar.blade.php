@@ -33,3 +33,12 @@ links.forEach(link => {
     }
 });
     </script>
+
+        <div id="contLoading">
+<!-- 
+    <div class="flex-col gap-4 w-full flex items-center justify-center">
+  <div class="spinner-bg"></div>
+</div> -->
+<div class="loader"></div>
+    </div>
+    

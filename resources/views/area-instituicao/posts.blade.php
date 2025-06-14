@@ -10,15 +10,15 @@
         integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
 
 
-    @include('area-instituicao.componentes.padrao') 
+    @include('area-instituicao.componentes.padrao')
     <link rel="stylesheet" href="{{ asset('css/postsIntituicao.css') }}">
-  
+
 </head>
 
 <body>
-     @include('area-instituicao.componentes.sidebar')
+    @include('area-instituicao.componentes.sidebar')
 
-   
+
     <main>
         @include('area-instituicao.componentes.navbar', ['titulo' => 'Posts'])
         <div class="container-fluid cont">
@@ -39,7 +39,7 @@
                         </div>
                     </div>
                     <div class="card-dados">
-                       <i class='bxr  bx-education'  ></i> 
+                        <i class='bxr  bx-education'></i>
                         <div class="dados-card-dados">
                             <p class="numero">5</p>
                             <p>Eventos</p>
@@ -49,7 +49,7 @@
                 <div class="topo-catalogo">
                     <div class="">
                         <div class="inputCont">
-                            <input type="text" placeholder="Pesquise pela descrição do post">
+                            <input type="text" placeholder="Pesquise pela descrição do post" id="pesquisarPosts">
                             <i class='bx  bx-search'></i>
                         </div>
                     </div>
@@ -58,11 +58,11 @@
                         <i class='bx bx-plus'></i>
                     </button>
                 </div>
-              <div class="lista-catalogo-card">
+                <!-- <div class="lista-catalogo-card">
                     <div class="card-conteudo">
-                       <div class="cont-desc-card">
-                         <p>Venha para a etec de guianasses ,temos muitas opções de cursos</p>
-                       </div>
+                        <div class="cont-desc-card">
+                            <p>Venha para a etec de guianasses ,temos muitas opções de cursos</p>
+                        </div>
                         <div class="img">
                             <img src="https://etecsantosdumont.com.br/wp-content/uploads/2023/03/335588264_613348350805960_3933893113793637074_n.jpg" alt="">
                         </div>
@@ -83,10 +83,10 @@
                         </div>
 
                     </div>
-                       <div class="card-conteudo">
-                       <div class="cont-desc-card">
-                         <p>Inscrições abertas para etec de guianasses!! corra!!</p>
-                       </div>
+                    <div class="card-conteudo">
+                        <div class="cont-desc-card">
+                            <p>Inscrições abertas para etec de guianasses!! corra!!</p>
+                        </div>
                         <div class="img">
                             <img src="https://bkpsitecpsnew.blob.core.windows.net/uploadsitecps/sites/48/2025/05/2025_posts_rede_sociais__card01_vestibulinho_2025_02sem_feed_cps_02-1-scaled.png" alt="">
                         </div>
@@ -107,10 +107,10 @@
                         </div>
 
                     </div>
-                           <div class="card-conteudo">
-                       <div class="cont-desc-card">
-                         <p>Inscrições para processo seletivo do primeiro semestre de 2025 nas Etecs estão abertas — Prefeitura de São Vicente</p>
-                       </div>
+                    <div class="card-conteudo">
+                        <div class="cont-desc-card">
+                            <p>Inscrições para processo seletivo do primeiro semestre de 2025 nas Etecs estão abertas — Prefeitura de São Vicente</p>
+                        </div>
                         <div class="img">
                             <img src="https://etecsantosdumont.com.br/wp-content/uploads/2024/05/Vestibulinho-20242.jpg" alt="">
                         </div>
@@ -131,8 +131,10 @@
                         </div>
 
                     </div>
-                    </div>
+                </div> -->
+                  <div class="lista-catalogo-card" id="listaPosts"></div>
             </div>
+          
             <div class="direita">
                 <div class="card-direita engajamento-cont">
                     <p class="titulo-card">
@@ -153,7 +155,7 @@
                         </div>
                         <div class="dados-engajamento">
                             <p class="numero">40 <i class='bx bx-share'></i></p>
-                            <p >Compartilhamentos</p>
+                            <p>Compartilhamentos</p>
                         </div>
                     </div>
                 </div>
@@ -171,7 +173,7 @@
                     <div class="areas-lista">
                         <div><span style="background: #b05fc0;"></span> Tecnologia</div>
                         <div><span style="background: var(--inst);"></span> Saúde</div>
-                         <div><span style="background: var(--sidebar);"></span> Nutrição</div>
+                        <div><span style="background: var(--sidebar);"></span> Nutrição</div>
                     </div>
                 </div>
                 <div class="card-direita diassemana-cont">
@@ -189,6 +191,9 @@
     </main>
 
 
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="{{ asset('js/postsInstituicao.js') }}"></script>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -211,8 +216,12 @@
                 circumference: 180,
                 cutout: '70%',
                 plugins: {
-                    legend: { display: false },
-                    tooltip: { enabled: false }
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        enabled: false
+                    }
                 }
             }
         });

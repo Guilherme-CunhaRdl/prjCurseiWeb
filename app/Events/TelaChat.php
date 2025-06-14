@@ -39,7 +39,7 @@ public function broadcastAs()
     return[
     'msgs' =>  $this->chats->map(function($msg){
         return [
-                    'id_ultima_mensagem' => $this->idChat,
+                    'id_ultima_mensagem' => $msg->id_mensagem,
                     'id_mensagem' => $msg->id_mensagem,
                     'id_chat' => $msg->id_chat,
                     'ultima_mensagem' => $msg->ultima_mensagem,

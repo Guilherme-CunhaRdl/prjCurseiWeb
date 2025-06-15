@@ -2,18 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\EnviarMsgCanal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Mensagem;
 use Illuminate\Support\Facades\Log;
 use App\Events\MensagemChat;
 use App\Events\TelaChat;
+use App\Events\ViewMsgCanal;
 use App\Models\Chat;
 use App\Models\Canal;
 use App\Models\MensagemCanal;
 use App\Models\MembrosCanal;
 use Exception;
 use Illuminate\Support\Facades\Broadcast;
+use function broadcast; // ✅ se estiver usando broadcast()
 
 
 class MensagemControllerApi extends Controller
@@ -592,7 +595,7 @@ return response()->json([
 
         $chats = $queryBuilder->get();
 
-        Broadcast(new MensagemChat($mensagem))->toOthers();
+        broadcast(new MensagemChat($mensagem))->toOthers();
         Broadcast(new TelaChat($chats, $request->idChat));
 
         return response()->json([
@@ -868,6 +871,36 @@ return response()->json([
         $mensagem->created_at = now();
         $mensagem->save();
 
+
+        $idEnviador = $request->idEnviador;
+        $sub = DB::table('tb_mensagem_canal')
+            ->select(DB::raw('MAX(id) as ultima_mensagem_id'))
+            ->groupBy('id_canal');
+
+        $queryBuilder = DB::table('tb_mensagem_canal')
+            ->join('tb_user AS enviador', 'tb_mensagem_canal.id_user_enviador', '=', 'enviador.id')
+            ->join('tb_canal AS c', 'tb_mensagem_canal.id_canal', '=', 'c.id')
+            ->joinSub($sub, 'sub', function ($join) {
+                $join->on('tb_mensagem_canal.id', '=', 'sub.ultima_mensagem_id');
+            })
+            ->select(
+                'tb_mensagem_canal.id AS id_mensagem',
+                'c.id AS id_chat',
+                'tb_mensagem_canal.conteudo_mensagem_canal AS ultima_mensagem',
+                'tb_mensagem_canal.img_mensagem_canal AS foto_enviada',
+                'tb_mensagem_canal.id_user_enviador AS enviador',
+                
+
+                'tb_mensagem_canal.created_at'
+            )
+            ->orderByDesc('id_mensagem');
+
+        $canais = $queryBuilder->get();
+                
+        Log::info('Dados para broadcast EnviarMsgCanal', ['canais' => $canais]);
+
+        Broadcast(new EnviarMsgCanal($mensagem))->toOthers();
+        Broadcast(new ViewMsgCanal($canais, $request->idChat));
 
         return response()->json([
             'mensagem' => $mensagem,

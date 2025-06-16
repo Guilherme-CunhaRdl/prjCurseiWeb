@@ -82,10 +82,10 @@ Route::get('/cursei/chat/selecionarCanais/{id}', [MensagemControllerApi::class, 
 Route::post('/cursei/chat/seguirCanal', [MensagemControllerApi::class, 'seguirCanal']); 
 Route::delete('/cursei/chat/deixarSeguir/{id}', [MensagemControllerApi::class, 'deixarSeguir']); 
 
-Route::post('cursei/user/{userId}', [UserControllerApi::class, 'alterarUser']); 
+Route::post('cursei/user/atualizar/{userId}', [UserControllerApi::class, 'alterarUser']); 
 Route::post('cursei/user/autenticacao/{userId}', [UserControllerApi::class, 'atualizarDoisFatores']);
 
-Route::get('/cursei/user/selecionarUser/{id}', [UserControllerApi::class, 'selectUser']);
+Route::post('/cursei/user/selecionarUser/{id}', [UserControllerApi::class, 'selectUser']);
 
 //ROTAS DO CURTEI
 Route::group(['middleware' => ['cors']], function() {

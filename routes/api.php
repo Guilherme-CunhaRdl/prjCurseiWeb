@@ -38,6 +38,7 @@ Route::post('/cursei/postsUpdate/{id}', [PostControllerApi::class, 'updateApi'])
  Route::get('/cursei/evento/{id}', [PostControllerApi::class, 'showEvento'])->name('posts.verEvento');
  Route::post('/cursei/eventoUpdate', [PostControllerApi::class, 'editEvento'])->name('posts.editEvento');
  Route::get('/cursei/lembreteEvento/{idEvento}/{idUser}', [UserControllerApi::class, 'lembreteEvento'])->name('user.lembreteEvento');
+ Route::post('/cursei/posts/impulsionar', [PostControllerApi::class, 'impulsionar'])->name('posts.impulsionar');
 
  Route::post('/cursei/posts/{idUser}', [PostControllerApi::class, 'storeApi'])->name('posts.store');
  Route::get('/cursei/posts/user/{idUser}', [PostControllerApi::class, 'getPostsByUser'])->name('posts.byUser');

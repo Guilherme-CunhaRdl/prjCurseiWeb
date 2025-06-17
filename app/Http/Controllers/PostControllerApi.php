@@ -15,7 +15,7 @@ use App\Models\Hashtag;
 use App\Models\CurtidaComentario;
 use App\Models\PostHashtag;
 use App\Models\Evento;
-
+use App\Models\Impulsionar;
 use Error;
 use Illuminate\Support\Facades\File;
 
@@ -41,7 +41,8 @@ class PostControllerApi extends Controller
             ->leftJoin('tb_curtida', 'tb_post.id', '=', 'tb_curtida.id_post')
             ->leftJoin('tb_comentario', 'tb_post.id', '=', 'tb_comentario.id_post')
             ->leftJoin('tb_seguidores', 'tb_post.id_user', '=', 'id_user_seguido')
-            ->leftJoin('tb_evento', 'tb_post.id', '=', 'tb_evento.id_post');
+            ->leftJoin('tb_evento', 'tb_post.id', '=', 'tb_evento.id_post')
+            ->leftJoin('tb_impulsionar', 'tb_post.id', '=', 'tb_impulsionar.id_post');
 
         if ($tipo == 1 || $tipo == 7 || $tipo == 8 || $tipo == 3 || $tipo == 9) {
 
@@ -77,6 +78,8 @@ class PostControllerApi extends Controller
                 ->leftJoin('tb_user as repost_user', 'repost.id_user', '=', 'repost_user.id')
                 ->leftJoin('tb_curtida', 'tb_post.id', '=', 'tb_curtida.id_post')
                 ->leftJoin('tb_comentario', 'tb_post.id', '=', 'tb_comentario.id_post')
+                ->leftJoin('tb_impulsionar', 'tb_post.id', '=', 'tb_impulsionar.id_post')
+
                 ->leftJoin('tb_seguidores', function ($join) use ($idUser) {
                     $join->on('tb_seguidores.id_user_seguidor', '=', DB::raw($idUser))
                         ->on('tb_seguidores.id_user_seguido', '=', 'tb_post.id_user');
@@ -98,13 +101,12 @@ class PostControllerApi extends Controller
                 ->where('tb_post.id_user', '!=', $idUser)
                 ->where('tb_post.status_post', 1)
                 ->where('tb_user.status_user', 1)
-                ->where('tb_post.created_at','<=',now());
+                ->where('tb_post.created_at', '<=', now());
             if ($tipo == 3 || $tipo == 9) {
                 $subQuery = $subQuery->where(function ($query) use ($pesquisa) {
                     $query->where('tb_user.arroba_user', 'like', "%$pesquisa%")
                         ->orWhere('tb_user.nome_user', 'like', "%$pesquisa%")
                         ->orWhere('tb_post.descricao_post', 'like', "%$pesquisa%");
-                        
                 });
             }
             $subQuery = $subQuery
@@ -132,7 +134,10 @@ class PostControllerApi extends Controller
                     'tb_evento.data_inicio_evento',
                     'tb_evento.data_fim_evento',
                     'tb_evento.id',
-                    'tb_post.link_post'
+                    'tb_post.link_post',
+                    'tb_impulsionar.data_fim',
+                    'tb_impulsionar.id_post'
+
                 )
                 ->selectRaw("
         tb_post.id_user,
@@ -181,6 +186,8 @@ class PostControllerApi extends Controller
         + IF(tb_nao_interessado_post.id IS NOT NULL, -25, 0)
          + IF(tb_post.id_user IN ($usuariosStr), -50, 0)
         + IF(tb_post.area_post IN ($areasStr), -30, 0)
++IF(tb_impulsionar.id_post IS NOT NULL AND tb_impulsionar.data_fim > NOW(), 60, 0)
+
    + (250000 / (TIMESTAMPDIFF(SECOND, tb_post.created_at, NOW()) + 60))
 ) AS score,
 
@@ -190,7 +197,13 @@ IF(
         FROM tb_instituicao 
         WHERE tb_instituicao.id_user = tb_post.id_user and tb_instituicao.verificado_instituicao = 1
     ), 1, 0
-) AS instituicao
+) AS instituicao,
+ IF(
+  tb_impulsionar.id_post IS NOT NULL 
+  AND tb_impulsionar.data_fim > NOW(),
+  1, 0
+) AS impulsionado
+
 
     ");
 
@@ -237,7 +250,9 @@ IF(
                 'tb_evento.data_inicio_evento',
                 'tb_evento.data_fim_evento',
                 'tb_evento.id',
-                'tb_post.link_post'
+                'tb_post.link_post',
+                'tb_impulsionar.data_fim',
+                'tb_impulsionar.id_post'
             )
             ->selectRaw("
         tb_post.id_user,
@@ -284,8 +299,13 @@ IF(
         FROM tb_instituicao 
         WHERE tb_instituicao.id_user = tb_post.id_user and tb_instituicao.verificado_instituicao = 1
     ), 1, 0
-) AS instituicao
-            
+) AS instituicao,
+            IF(
+  tb_impulsionar.id_post IS NOT NULL 
+  AND tb_impulsionar.data_fim > NOW(),
+  1, 0
+) AS impulsionado
+
     ");
 
 
@@ -308,9 +328,9 @@ IF(
             case 6:
                 $query = $query->orderByDesc('tb_post.created_at')->where('tb_post.id_user', $pesquisa)->whereNotNull('tb_post.conteudo_post');
                 break;
-                case 10:
-                      $query = $query->orderByDesc('tb_post.created_at')->where('tb_post.descricao_post', 'like', "%$pesquisa%")->where('tb_post.id_user',$idUser);
-                       break;
+            case 10:
+                $query = $query->orderByDesc('tb_post.created_at')->where('tb_post.descricao_post', 'like', "%$pesquisa%")->where('tb_post.id_user', $idUser);
+                break;
         }
 
         $posts = $query
@@ -318,7 +338,7 @@ IF(
             ->limit($quantidade)
             ->where('tb_post.status_post', 1)
             ->where('tb_user.status_user', 1)
-            ->where('tb_post.created_at','<=',now())
+            ->where('tb_post.created_at', '<=', now())
             ->get();
 
         return  response()->json([
@@ -494,9 +514,9 @@ IF(
                 }
             }
         }
-        if($request->data && $request->hora){
+        if ($request->data && $request->hora) {
             $create_at = "$request->data $request->hora:00";
-        }else{
+        } else {
             $create_at = now();
         }
         $post = Post::create([
@@ -582,7 +602,7 @@ IF(
                 'id_user' => $idUser,
                 'created_at' => now(),
                 'update_at' => now(),
-            ]); 
+            ]);
             $evento = Evento::create([
                 'desc_evento' => $request->descEvento,
                 'link_evento' => $request->link,
@@ -648,46 +668,46 @@ IF(
 
                 $post->conteudo_post = $nomeImagem;
             }
-             function normalizarTexto2($texto)
-        {
-            $texto = mb_strtolower($texto, 'UTF-8');
-            $texto = preg_replace(
-                ['/[áàãâä]/u', '/[éèêë]/u', '/[íìîï]/u', '/[óòõôö]/u', '/[úùûü]/u', '/[ç]/u'],
-                ['a', 'e', 'i', 'o', 'u', 'c'],
-                $texto
-            );
-            return $texto;
-        }
+            function normalizarTexto2($texto)
+            {
+                $texto = mb_strtolower($texto, 'UTF-8');
+                $texto = preg_replace(
+                    ['/[áàãâä]/u', '/[éèêë]/u', '/[íìîï]/u', '/[óòõôö]/u', '/[úùûü]/u', '/[ç]/u'],
+                    ['a', 'e', 'i', 'o', 'u', 'c'],
+                    $texto
+                );
+                return $texto;
+            }
 
-        function identificarAreaPorPontuacao2($texto)
-        {
-            $areas = config('areas');
+            function identificarAreaPorPontuacao2($texto)
+            {
+                $areas = config('areas');
 
-            $pontuacoes = array_fill_keys(array_keys($areas), 0);
+                $pontuacoes = array_fill_keys(array_keys($areas), 0);
 
-            // Normaliza o texto de entrada e quebra em palavras
-            $palavras = explode(' ', normalizarTexto2($texto));
+                // Normaliza o texto de entrada e quebra em palavras
+                $palavras = explode(' ', normalizarTexto2($texto));
 
-            foreach ($palavras as $palavra) {
-                foreach ($areas as $area => $keywords) {
-                    // Normaliza as palavras-chave também
-                    foreach ($keywords as $keyword) {
-                        if ($palavra === normalizarTexto2($keyword)) {
-                            $pontuacoes[$area]++;
+                foreach ($palavras as $palavra) {
+                    foreach ($areas as $area => $keywords) {
+                        // Normaliza as palavras-chave também
+                        foreach ($keywords as $keyword) {
+                            if ($palavra === normalizarTexto2($keyword)) {
+                                $pontuacoes[$area]++;
+                            }
                         }
                     }
                 }
+
+                arsort($pontuacoes);
+
+                $maiorPontuacao = reset($pontuacoes);
+                if ($maiorPontuacao === 0) {
+                    return 'indefinido';
+                }
+
+                return array_key_first($pontuacoes);
             }
-
-            arsort($pontuacoes);
-
-            $maiorPontuacao = reset($pontuacoes);
-            if ($maiorPontuacao === 0) {
-                return 'indefinido';
-            }
-
-            return array_key_first($pontuacoes);
-        }
             $conteudo = identificarAreaPorPontuacao2($request->descEvento);
             if ($post) {
                 $post->update([
@@ -698,7 +718,7 @@ IF(
                 ]);
                 if ($request->hasFile('img') && $request->file('img')->isValid()) {
                     $post->update([
-                    'conteudo_post' => $nomeImagem,
+                        'conteudo_post' => $nomeImagem,
                     ]);
                 }
             }
@@ -797,7 +817,7 @@ IF(
         $post->descricao_post = $request->descricaoPost;
         $post->updated_at = now();
         $post->area_post = $conteudo;
-        if($request->link){
+        if ($request->link) {
             $post->link_post = $request->link;
         }
         $post->save();
@@ -977,5 +997,23 @@ IF(
                 break;
         }
         return $resposta;
+    }
+    public function impulsionar(Request   $request)
+    {
+
+
+       try {
+   
+    Impulsionar::where('id_post', $request->idPost)->delete();
+
+   
+    Impulsionar::create([
+        'id_post' => $request->idPost,
+        'data_fim' => now()->addDays($request->dias),
+    ]);
+    return "Sucesso";
+} catch (\Throwable $e) {
+    return "Erro";
+}
     }
 }

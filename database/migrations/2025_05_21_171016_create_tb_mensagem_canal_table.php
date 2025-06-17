@@ -15,8 +15,8 @@ return new class extends Migration
     {
         Schema::create('tb_mensagem_canal', function (Blueprint $table) {
             $table->id();
-            $table->longText('conteudo_mensagem_canal');
-            $table->string('img_mensagem_canal', 300);
+            $table->longText('conteudo_mensagem_canal')->nullable();
+            $table->string('img_mensagem_canal', 300)->nullable();
             $table->unsignedBigInteger('id_user_enviador');
             $table->foreign('id_user_enviador')->references('id')->on('tb_user')->onDelete('cascade');
             $table->unsignedBigInteger('id_canal');

@@ -84,6 +84,8 @@ Route::post('/cursei/chat/seguirCanal', [MensagemControllerApi::class, 'seguirCa
 Route::delete('/cursei/chat/deixarSeguir/{id}', [MensagemControllerApi::class, 'deixarSeguir']); 
 
 Route::post('cursei/user/atualizar/{userId}', [UserControllerApi::class, 'alterarUser']); 
+Route::post('cursei/user/alterarSenha/{userId}', [UserControllerApi::class, 'alterarSenha']);
+
 Route::post('cursei/user/autenticacao/{userId}', [UserControllerApi::class, 'atualizarDoisFatores']);
 
 Route::post('/cursei/user/selecionarUser/{id}', [UserControllerApi::class, 'selectUser']);

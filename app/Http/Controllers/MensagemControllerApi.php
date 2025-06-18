@@ -584,15 +584,16 @@ catch(Exception $e){
             'idChat' => 'required',
             'idEnviador' => 'required',
         ]);
+        try{
 
-        $nomeImagem = null;
-
-        if ($request->hasFile('imgMensagem') && $request->file('imgMensagem')->isValid()) {
-            $extensao = $request->file('imgMensagem')->getClientOriginalExtension();
+            $nomeImagem = null;
+            
+            if ($request->hasFile('imgMensagem') && $request->file('imgMensagem')->isValid()) {
+                $extensao = $request->file('imgMensagem')->getClientOriginalExtension();
             $nomeImagem = time() . '_' . uniqid() . '.' . $extensao;
             $request->file('imgMensagem')->move(public_path('img/chat/fotosChat'), $nomeImagem);
         }
-
+        
         $mensagem = new Mensagem();
         $mensagem->id_chat = $request->idChat;
         $mensagem->conteudo_mensagem = $request->conteudoMensagem;
@@ -602,20 +603,20 @@ catch(Exception $e){
         $mensagem->status_mensagem = false;
         $mensagem->created_at = now();
         $mensagem->save();
-
-
+        
+        
         $idEnviador = $request->idEnviador;
         $sub = DB::table('tb_mensagem')
-            ->select(DB::raw('MAX(id) as ultima_mensagem_id'))
-            ->groupBy('id_chat');
-
+        ->select(DB::raw('MAX(id) as ultima_mensagem_id'))
+        ->groupBy('id_chat');
+        
         $queryBuilder = DB::table('tb_mensagem')
             ->join('tb_user AS enviador', 'tb_mensagem.id_user_enviador', '=', 'enviador.id')
             ->join('tb_chat AS c', 'tb_mensagem.id_chat', '=', 'c.id')
             ->join('tb_user AS user1', 'c.id_user1', '=', 'user1.id')
             ->join('tb_user AS user2', 'c.id_user2', '=', 'user2.id')
              ->leftJoin('tb_post AS p', 'tb_mensagem.id_post', '=', 'p.id')
-            ->leftJoin('tb_user AS userPostou', 'p.id_user', '=', 'userPostou.id')
+             ->leftJoin('tb_user AS userPostou', 'p.id_user', '=', 'userPostou.id')
             ->joinSub($sub, 'sub', function ($join) {
                 $join->on('tb_mensagem.id', '=', 'sub.ultima_mensagem_id');
             })
@@ -645,7 +646,7 @@ catch(Exception $e){
                 'userPostou.arroba_user AS arroba_user_postou',
 
                 'tb_mensagem.created_at'
-            )
+                )
             ->where(function ($query) use ($idEnviador) {
                 $query->where('user1.id', $idEnviador)
                     ->orWhere('user2.id', $idEnviador);
@@ -653,18 +654,25 @@ catch(Exception $e){
             ->orderByDesc('id_mensagem');
 
         $chats = $queryBuilder->get();
-
+        
         broadcast(new MensagemChat($mensagem))->toOthers();
         Broadcast(new TelaChat($chats, $request->idChat));
-
+        
         return response()->json([
             'message' => 'Mensagem enviada com sucesso!',
             'paia' => 'teste',
             'mensagem' => $mensagem,
         ], 201);
+    }catch(Exception $e){
+        return response()->json([
+            'sucesso' => false,
+            'mensagem' => 'Ocorreu um erro durante a Criação do chat: ' . $e->getMessage(),
+            'error' => 'unexpected_error'
+        ], 500);
+    }
     }
 
-
+    
     public function pesquisarChats($pesquisaUsuario, $idUserRecebidor)
     {
 

@@ -15,55 +15,37 @@ class ViewMsgCanal implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-        public $canal, $idCanal;
+    public $canal, $idCanal;
 
-
-    /**
-     * Create a new event instance.
-     *
-     * @return void
-     */
     public function __construct($canal, $idCanal)
     {
-         $this->canal = $canal;
+        $this->canal = $canal;
         $this->idCanal = $idCanal;
     }
 
-    /**
-     * Get the channels the event should broadcast on.
-     *
-     * @return \Illuminate\Broadcasting\Channel|array
-     */
     public function broadcastOn()
     {
-        return new Channel('view_canais.' . $this->idCanal);
+        return new Channel("view_canais.{$this->idCanal}");
     }
+
     public function broadcastAs()
     {
         return 'receber_mensagens_canais';
     }
 
-     public function broadcastWith()
-{
-        // Log::info('canais para evento TelaChat', [$this->canal]);
-        // Log::info("Evento TelaChat enviado para canal trazer_chats.{$this->idCanal}");
-
-    return[
-    'msgs' =>  $this->canal->map(function($msg){
+    public function broadcastWith()
+    {
         return [
-                    'id_ultima_mensagem' => $msg->id_mensagem,
+            'msgs' => $this->canal->map(function($msg) {
+                return [
                     'id_mensagem' => $msg->id_mensagem,
-                    'id_chat' => $msg->id_chat,
+                    'id_chat' => $msg->id_conversa,
                     'ultima_mensagem' => $msg->ultima_mensagem,
-                    'id_enviador' => $msg->id_enviador,
+                    'id_enviador' => $msg->enviador,
                     'created_at' => $msg->created_at,
-                    'status_mensagem' => $msg->status_mensagem,
-                    'img_enviador' => $msg->img_enviador,
-                    'nome_enviador' => $msg->nome_enviador,
-                    'arroba_enviador' => $msg->arroba_enviador,
-                    'img_mensagem' => $msg->foto_enviada
-            ];
-        })
-    ];
-}
+                    'foto_enviada' => $msg->foto_enviada,
+                ];
+            })
+        ];
+    }
 }

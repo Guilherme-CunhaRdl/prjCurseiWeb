@@ -112,10 +112,3 @@ Route::post('/stories/upload', [StoryController::class, 'upload']);
     Route::delete('/stories/{id}', [StoryController::class, 'destroy']);
 
 
-    Route::get('/ping', function () {
-        return response()->json(['pong' => true]);
-    });
- 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});

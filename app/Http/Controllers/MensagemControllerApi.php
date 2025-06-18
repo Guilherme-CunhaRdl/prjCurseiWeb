@@ -960,11 +960,11 @@ catch(Exception $e){
             })
             ->select(
                 'tb_mensagem_canal.id AS id_mensagem',
-                'c.id AS id_chat',
+                'c.id AS id_conversa',
                 'tb_mensagem_canal.conteudo_mensagem_canal AS ultima_mensagem',
                 'tb_mensagem_canal.img_mensagem_canal AS foto_enviada',
                 'tb_mensagem_canal.id_user_enviador AS enviador',
-                
+                'tb_mensagem_canal.id AS id_ultima_mensagem',
 
                 'tb_mensagem_canal.created_at'
             )

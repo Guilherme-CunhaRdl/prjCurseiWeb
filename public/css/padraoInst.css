@@ -2,7 +2,7 @@
 
 * {
     font-family: 'Inter', sans-serif;
-  
+    
 }
 body{
     background-color: var(--fundo);
@@ -39,6 +39,7 @@ main{
     height: 100dvh;
     justify-content: center;
     position: fixed;
+    z-index: 99;
 }
 .spinner-bg {
   width: 7rem;              /* igual a w-28 */

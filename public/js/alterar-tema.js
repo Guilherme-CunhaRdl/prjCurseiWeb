@@ -48,21 +48,33 @@
 
 // })
 const cores = {
-    vermelho: '#E63946',
+    vermelho: '#e90013',
     azul: '#448FFF',
     verde: '#2ECC71',
     amarelo: '#F1C40F',
     laranja: '#FF8418',
     roxo: '#9B59B6',
-    rosa: '#E91E63'
+    rosa: '#E91E63',
+    preto: '#2F2F2F',
+    verdeAqua: '#05A4B6',
+    azulEscuro: '#10009D',
 };
 
-trocarCorInst('azul')
+
 const root = document.documentElement;
 
 
-function trocarCorInst(cor) {
+function trocarCorInst(botaoClicado,cor) {
     localStorage.setItem('instCor', cores[cor]);
+    localStorage.setItem('instCorNome', cor);
+    root.style.setProperty('--inst', localStorage.getItem('instCor'));
+    document.querySelectorAll('#listaCores button').forEach(botao => {
+        botao.innerHTML = '';
+    });
+
+    botaoClicado.innerHTML = "<i class='bx bx-check'></i>";
+
+   
 }
 
 if (localStorage.getItem('instCor')) {
@@ -70,18 +82,22 @@ if (localStorage.getItem('instCor')) {
 
 } else {
     localStorage.setItem('instCor', '#000');
-}
+    localStorage.setItem('instCorNome', 'preto');
 
-if (!localStorage.getItem('temaInst')) {
-    
-    root.style.setProperty('--fundo', '#F6F6F6');
-    root.style.setProperty('--branco', '#ffffff');
-    root.style.setProperty('--preto', '#2c2c2c');
-    root.style.setProperty('--texto', '#616161');
-    root.style.setProperty('--sidebar', '#1B242E');
-    root.style.setProperty('--cinzaClaro', '#F6F6F6');
-} 
-    else {
+}
+    localStorage.getItem('instCorNome');
+
+
+if (localStorage.getItem('temaInst')) {
+    if (localStorage.getItem('temaInst') == 'claro') {
+        root.style.setProperty('--fundo', '#F6F6F6');
+        root.style.setProperty('--branco', '#ffffff');
+        root.style.setProperty('--preto', '#2c2c2c');
+        root.style.setProperty('--texto', '#616161');
+        root.style.setProperty('--sidebar', '#1B242E');
+        root.style.setProperty('--cinzaClaro', '#F6F6F6');
+        
+    } else {
         root.style.setProperty('--fundo', '#121212');
         root.style.setProperty('--branco', '#1e1e1e');
         root.style.setProperty('--preto', '#f5f5f5');
@@ -89,10 +105,23 @@ if (!localStorage.getItem('temaInst')) {
         root.style.setProperty('--sidebar', '#1e1e1e');
         root.style.setProperty('--cinzaClaro', '#1a1a1a');
     }
+}
+else {
+        localStorage.setItem('temaInst', 'claro')
+        root.style.setProperty('--fundo', '#F6F6F6');
+        root.style.setProperty('--branco', '#ffffff');
+        root.style.setProperty('--preto', '#2c2c2c');
+        root.style.setProperty('--texto', '#616161');
+        root.style.setProperty('--sidebar', '#1B242E');
+        root.style.setProperty('--cinzaClaro', '#F6F6F6');
+}
 
 
-function alterarTema() {
-    if (localStorage.getItem('temaInst') == 'claro') {
+function alterarTema(mudar) {
+       document.querySelectorAll('*').forEach(function (element) {
+            element.style.transition = '200ms';
+        });
+    if (mudar =='escuro') {
         localStorage.setItem('temaInst', 'escuro')
         root.style.setProperty('--fundo', '#121212');
         root.style.setProperty('--branco', '#1e1e1e');
@@ -101,7 +130,7 @@ function alterarTema() {
         root.style.setProperty('--sidebar', '#1e1e1e');
         root.style.setProperty('--cinzaClaro', '#1a1a1a');
     } else {
-        localStorage.setItem('temaInst', 'escuro')
+        localStorage.setItem('temaInst', 'claro')
         root.style.setProperty('--fundo', '#F6F6F6');
         root.style.setProperty('--branco', '#ffffff');
         root.style.setProperty('--preto', '#2c2c2c');
@@ -110,4 +139,27 @@ function alterarTema() {
         root.style.setProperty('--cinzaClaro', '#F6F6F6');
     }
 }
-alterarTema()
+
+function abrirModalTema() {
+  const modal = document.getElementById('ContmodalTema');
+  modal.classList.add('ativo');
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+  const modalCont = document.getElementById('ContmodalTema');
+  const modal = document.querySelector('.modalTema');
+
+  modalCont.addEventListener('click', function (e) {
+    if (!modal.contains(e.target)) {
+      fecharModalTema();
+    }
+  });
+});
+function fecharModalTema() {
+  const modal = document.getElementById('ContmodalTema');
+  modal.classList.remove('ativo');
+}
+
+
+
+

@@ -361,7 +361,6 @@ class UserControllerApi extends Controller
 {
     $usuario = User::findOrFail($userId);
 
-    // Validação simples
     $request->validate([
         'senha_atual' => 'required',
         'nova_senha' => 'required',
@@ -388,16 +387,11 @@ class UserControllerApi extends Controller
     {
         $usuario = User::findOrFail($userId);
     
-        // Atualizar nome e arroba (se vierem na requisição)
         $usuario->fill($request->only([
-            'nome_user',
+            'email_user',
             'arroba_user',
         ]));
     
-        // Se veio uma nova senha na requisição, criptografa antes de salvar
-        if ($request->filled('senha_user')) {
-            $usuario->senha_user = Hash::make($request->input('senha_user'));
-        }
     
         $usuario->save();
     

@@ -147,33 +147,63 @@ public function store(Request $request, $id_user)
         ];
     }
 
-    public function addStories(Request $request, $id_destaque)
+public function addStories(Request $request, $id_destaque)
 {
     try {
-        $destaque = Destaque::findOrFail($id_destaque);
+        // Carrega relacionamento para evitar N+1
+        $destaque = Destaque::with('stories')->findOrFail($id_destaque);
         
         $validator = Validator::make($request->all(), [
             'stories' => 'required|array|min:1',
-            'stories.*' => 'integer|exists:tb_storyes,id,id_user,'.$destaque->id_user
+            'stories.*' => [
+                'integer',
+                'exists:tb_storyes,id',
+                // Valida se o story pertence ao usuário do destaque
+                function ($attribute, $value, $fail) use ($destaque) {
+                    $story = Story::find($value);
+                    if (!$story || $story->id_user !== $destaque->id_user) {
+                        $fail("O story $value não pertence ao usuário do destaque.");
+                    }
+                }
+            ]
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()
+            ], 422);
         }
 
-        // Adiciona novos stories ao destaque
-        $destaque->stories()->attach($request->input('stories'));
+        // Filtra stories que já não estão no destaque
+        $existingStories = $destaque->stories->pluck('id')->toArray();
+        $newStories = array_diff($request->input('stories'), $existingStories);
+
+        if (empty($newStories)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Todos os stories já estão no destaque'
+            ], 400);
+        }
+
+        // Adiciona apenas os novos stories
+        $destaque->stories()->attach($newStories);
 
         return response()->json([
             'success' => true,
-            'message' => 'Stories adicionados ao destaque!'
+            'message' => 'Stories adicionados ao destaque!',
+            'stories_adicionados' => array_values($newStories)
         ]);
 
     } catch (\Exception $e) {
+        // Log do erro para depuração
+        \Log::error('Erro ao adicionar stories: ' . $e->getMessage());
+        
         return response()->json([
             'success' => false,
             'message' => 'Erro ao adicionar stories',
-            'error' => $e->getMessage()
+            'error' => $e->getMessage(),
+            'trace' => env('APP_DEBUG') ? $e->getTrace() : []
         ], 500);
     }
 }

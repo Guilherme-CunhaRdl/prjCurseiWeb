@@ -10,28 +10,30 @@ class Destaque extends Model
     use HasFactory;
 
     protected $table = 'tb_destaque';
-    protected $primaryKey = 'id'; // Garanta que está correto
+    protected $primaryKey = 'id';
     public $incrementing = true;
     public $timestamps = true;
 
     protected $fillable = [
-        'id', // Adicione esta linha
         'id_user',
         'data_destaque',
-        'id_story',
         'foto_destaque',
         'status_destaque'
     ];
 
-    // Relacionamentos
     public function user()
     {
         return $this->belongsTo(User::class, 'id_user');
     }
 
-    public function story()
+    // Relacionamento muitos-para-muitos corrigido
+    public function stories()
     {
-        return $this->belongsTo(Story::class, 'id_story');
+        return $this->belongsToMany(
+            Story::class, 
+            'destaque_story',  // Nome da tabela pivot
+            'destaque_id',     // FK na pivot para destaques
+            'story_id'         // FK na pivot para stories
+        );
     }
-
 }

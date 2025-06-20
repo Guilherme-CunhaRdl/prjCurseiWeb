@@ -147,22 +147,19 @@ public function store(Request $request, $id_user)
         ];
     }
 
-public function addStories(Request $request, $id_destaque)
+public function atualizarDestaques(Request $request, $id_destaque)
 {
     try {
-        // Carrega relacionamento para evitar N+1
         $destaque = Destaque::with('stories')->findOrFail($id_destaque);
         
         $validator = Validator::make($request->all(), [
-            'stories' => 'required|array|min:1',
+            'stories' => 'required|array',
             'stories.*' => [
                 'integer',
-                'exists:tb_storyes,id',
-                // Valida se o story pertence ao usuário do destaque
                 function ($attribute, $value, $fail) use ($destaque) {
                     $story = Story::find($value);
-                    if (!$story || $story->id_user !== $destaque->id_user) {
-                        $fail("O story $value não pertence ao usuário do destaque.");
+                    if (!$story || $story->id_user != $destaque->id_user) {
+                        $fail("O story #$value não existe ou não pertence ao usuário.");
                     }
                 }
             ]
@@ -175,35 +172,49 @@ public function addStories(Request $request, $id_destaque)
             ], 422);
         }
 
-        // Filtra stories que já não estão no destaque
-        $existingStories = $destaque->stories->pluck('id')->toArray();
-        $newStories = array_diff($request->input('stories'), $existingStories);
+        // Lista de stories desejados
+        $desiredStories = $request->input('stories');
+        
+        // Stories atuais no destaque
+        $currentStories = $destaque->stories->pluck('id')->toArray();
+        
+        // Stories para adicionar
+        $storiesToAdd = array_diff($desiredStories, $currentStories);
+        
+        // Stories para remover
+        $storiesToRemove = array_diff($currentStories, $desiredStories);
 
-        if (empty($newStories)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Todos os stories já estão no destaque'
-            ], 400);
+        // Executa as operações
+        if (!empty($storiesToAdd)) {
+            $destaque->stories()->attach($storiesToAdd);
+        }
+        
+        if (!empty($storiesToRemove)) {
+            $destaque->stories()->detach($storiesToRemove);
         }
 
-        // Adiciona apenas os novos stories
-        $destaque->stories()->attach($newStories);
+        // Atualiza a capa se necessário
+        if (!in_array($destaque->foto_destaque, $desiredStories)) {
+            $newCoverStory = $destaque->stories()->first();
+            $destaque->foto_destaque = $newCoverStory ? $newCoverStory->conteudo_storyes : '';
+            $destaque->save();
+        }
 
         return response()->json([
             'success' => true,
-            'message' => 'Stories adicionados ao destaque!',
-            'stories_adicionados' => array_values($newStories)
+            'message' => 'Destaque sincronizado com sucesso!',
+            'data' => [
+                'added' => array_values($storiesToAdd),
+                'removed' => array_values($storiesToRemove),
+                'current_stories' => $desiredStories
+            ]
         ]);
 
     } catch (\Exception $e) {
-        // Log do erro para depuração
-        \Log::error('Erro ao adicionar stories: ' . $e->getMessage());
-        
         return response()->json([
             'success' => false,
-            'message' => 'Erro ao adicionar stories',
-            'error' => $e->getMessage(),
-            'trace' => env('APP_DEBUG') ? $e->getTrace() : []
+            'message' => 'Erro ao sincronizar destaque',
+            'error' => $e->getMessage()
         ], 500);
     }
 }

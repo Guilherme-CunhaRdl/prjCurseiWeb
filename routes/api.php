@@ -128,4 +128,4 @@ Route::post('/stories/upload', [StoryController::class, 'upload']);
         Route::get('/destaques/{id_user}', [DestaqueController::class, 'index']);
         Route::post('/destaques/{id_user}', [DestaqueController::class, 'store']);
         Route::delete('/destaques/{id_user}/{id}', [DestaqueController::class, 'destroy']);
-        Route::post('/destaques/{id_destaque}/add-stories', [DestaqueController::class, 'addStories']);
+        Route::put('/destaques/{id_destaque}/stories', [DestaqueController::class, 'atualizarDestaques']);

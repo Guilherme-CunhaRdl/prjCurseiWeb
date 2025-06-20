@@ -10,6 +10,8 @@ use App\Http\Controllers\InstituicaoControllerApi;
 use App\Http\Controllers\MensagemControllerApi;
 use App\Http\Controllers\HashtagController;
 use App\Http\Controllers\CurteiController;
+use App\Http\Controllers\DestaqueController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -38,6 +40,7 @@ Route::post('/cursei/postsUpdate/{id}', [PostControllerApi::class, 'updateApi'])
  Route::get('/cursei/evento/{id}', [PostControllerApi::class, 'showEvento'])->name('posts.verEvento');
  Route::post('/cursei/eventoUpdate', [PostControllerApi::class, 'editEvento'])->name('posts.editEvento');
  Route::get('/cursei/lembreteEvento/{idEvento}/{idUser}', [UserControllerApi::class, 'lembreteEvento'])->name('user.lembreteEvento');
+ Route::post('/cursei/posts/impulsionar', [PostControllerApi::class, 'impulsionar'])->name('posts.impulsionar');
 
  Route::post('/cursei/posts/{idUser}', [PostControllerApi::class, 'storeApi'])->name('posts.store');
  Route::get('/cursei/posts/user/{idUser}', [PostControllerApi::class, 'getPostsByUser'])->name('posts.byUser');
@@ -83,6 +86,8 @@ Route::post('/cursei/chat/seguirCanal', [MensagemControllerApi::class, 'seguirCa
 Route::delete('/cursei/chat/deixarSeguir/{id}', [MensagemControllerApi::class, 'deixarSeguir']); 
 
 Route::post('cursei/user/atualizar/{userId}', [UserControllerApi::class, 'alterarUser']); 
+Route::post('cursei/user/alterarSenha/{userId}', [UserControllerApi::class, 'alterarSenha']);
+
 Route::post('cursei/user/autenticacao/{userId}', [UserControllerApi::class, 'atualizarDoisFatores']);
 
 Route::post('/cursei/user/selecionarUser/{id}', [UserControllerApi::class, 'selectUser']);
@@ -117,10 +122,9 @@ Route::post('/stories/upload', [StoryController::class, 'upload']);
     Route::delete('/stories/{id}', [StoryController::class, 'destroy']);
 
 
-    Route::get('/ping', function () {
-        return response()->json(['pong' => true]);
-    });
- 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+//ROTAS DOS DESTAQUES
+
+    // Listar destaques de um usuário específico
+        Route::get('/destaques/{id_user}', [DestaqueController::class, 'index']);
+        Route::post('/destaques/{id_user}/{id_story}', [DestaqueController::class, 'store']);
+        Route::delete('/destaques/{id_user}/{id_destaque}', [DestaqueController::class, 'destroy']);

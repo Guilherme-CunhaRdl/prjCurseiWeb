@@ -49,7 +49,10 @@ public function broadcastAs()
                     'img_enviador' => $msg->img_enviador,
                     'nome_enviador' => $msg->nome_enviador,
                     'arroba_enviador' => $msg->arroba_enviador,
-                    'img_mensagem' => $msg->foto_enviada
+                    'img_mensagem' => $msg->foto_enviada,
+                    'id_post' => $msg->id_post,
+                    'cont_post' => $msg->cont_post,
+                    
             ];
         })
     ];

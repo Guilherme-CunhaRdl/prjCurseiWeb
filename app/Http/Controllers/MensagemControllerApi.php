@@ -29,6 +29,8 @@ class MensagemControllerApi extends Controller
     public function selectChatApi($idUser, $tipo, $pesquisa)
 {
     $idUser = (int) $idUser;
+    try{
+
     
   // Subquery para última mensagem privada
 $subPrivado = DB::table('tb_mensagem')
@@ -39,6 +41,8 @@ $privadasQuery = DB::table('tb_mensagem')
     ->join('tb_chat AS c', 'tb_mensagem.id_chat', '=', 'c.id')
     ->join('tb_user AS user1', 'c.id_user1', '=', 'user1.id')
     ->join('tb_user AS user2', 'c.id_user2', '=', 'user2.id')
+    ->leftJoin('tb_post AS p', 'tb_mensagem.id_post', '=', 'p.id')
+    ->leftJoin('tb_user AS userPostou', 'p.id_user', '=', 'userPostou.id')
     ->joinSub($subPrivado, 'sub', function ($join) {
         $join->on('tb_mensagem.id', '=', 'sub.ultima_mensagem_id');
     })
@@ -60,6 +64,13 @@ $privadasQuery = DB::table('tb_mensagem')
     tb_mensagem.img_mensagem AS img_mensagem,
     tb_mensagem.conteudo_mensagem AS ultima_mensagem,
     tb_mensagem.created_at,
+    p.id AS id_post,
+    p.conteudo_post AS cont_post,
+    p.descricao_post AS desc_post,
+    userPostou.nome_user AS nome_user_postou, 
+    userPostou.img_user AS img_user_postou,
+    userPostou.id AS id_user_postou, 
+    userPostou.arroba_user AS arroba_user_postou,
     'privada' AS tipo
 ", [$idUser, $idUser, $idUser, $idUser]);
 
@@ -79,6 +90,8 @@ $instituicoesQuery = DB::table('tb_mensagem')
     ->join('tb_chat AS c', 'tb_mensagem.id_chat', '=', 'c.id')
     ->join('tb_user AS user1', 'c.id_user1', '=', 'user1.id')
     ->join('tb_user AS user2', 'c.id_user2', '=', 'user2.id')
+    ->leftJoin('tb_post AS p', 'tb_mensagem.id_post', '=', 'p.id')
+    ->leftJoin('tb_user AS userPostou', 'p.id_user', '=', 'userPostou.id')
     ->joinSub($subPrivado, 'sub', function ($join) {
         $join->on('tb_mensagem.id', '=', 'sub.ultima_mensagem_id');
     })
@@ -103,6 +116,13 @@ $instituicoesQuery = DB::table('tb_mensagem')
     tb_mensagem.img_mensagem AS img_mensagem,
     tb_mensagem.conteudo_mensagem AS ultima_mensagem,
     tb_mensagem.created_at,
+     p.id AS id_post,
+    p.conteudo_post AS cont_post,
+    p.descricao_post AS desc_post,
+    userPostou.nome_user AS nome_user_postou, 
+    userPostou.img_user AS img_user_postou,
+    userPostou.id AS id_user_postou, 
+    userPostou.arroba_user AS arroba_user_postou,
     'instituicao' AS tipo
 ", [$idUser, $idUser, $idUser, $idUser]);
     
@@ -121,7 +141,8 @@ $ultimaMensagemCompleta = DB::table('tb_mensagem_canal as mc')
         'mc.id_canal',
         'mc.img_mensagem_canal',
         'mc.conteudo_mensagem_canal',
-        'mc.created_at'
+        'mc.created_at',
+        'mc.id_post'
     )
     ->joinSub($subUltimaMensagem, 'sub', function ($join) {
         $join->on('mc.id', '=', 'sub.ultima_mensagem_id')
@@ -132,9 +153,12 @@ $ultimaMensagemCompleta = DB::table('tb_mensagem_canal as mc')
 $canaisQuery = DB::table('tb_canal AS canal')
     ->leftJoin('tb_membros_canal AS membrosC', 'canal.id', '=', 'membrosC.id_canal')
     ->join('tb_user AS user', 'canal.user_criador_canal', '=', 'user.id')
+    
     ->leftJoinSub($ultimaMensagemCompleta, 'mensagemC', function ($join) {
         $join->on('mensagemC.id_canal', '=', 'canal.id');
     })
+    ->leftJoin('tb_post AS p', 'mensagemC.id_post', '=', 'p.id')
+    ->leftJoin('tb_user AS userPostou', 'p.id_user', '=', 'userPostou.id')
     ->where(function ($query) use ($idUser) {
         $query->where('membrosC.id_user', $idUser)
               ->orWhere('canal.user_criador_canal', $idUser);
@@ -147,6 +171,13 @@ $canaisQuery = DB::table('tb_canal AS canal')
         canal.user_criador_canal AS id_remetente,
         mensagemC.img_mensagem_canal AS img_mensagem, 
         mensagemC.conteudo_mensagem_canal AS ultima_mensagem,
+         p.id AS id_post,
+        p.conteudo_post AS cont_post,
+        p.descricao_post AS desc_post,
+        userPostou.nome_user AS nome_user_postou, 
+        userPostou.img_user AS img_user_postou,
+        userPostou.id AS id_user_postou, 
+        userPostou.arroba_user AS arroba_user_postou,
         mensagemC.created_at,
         'canal' AS tipo
     ")
@@ -177,6 +208,15 @@ return response()->json([
     'code' => 200,
 ]);
 }
+catch(Exception $e){
+    return response()->json([
+    'sucesso' => true,
+    'mensagem' => 'Erro ao Encontrar mensagens.',
+    'conversas' => $e->getMessage(),
+    'code' => 200,
+]);
+}
+}
 
 
     public function selectMensagensApi($idChat)
@@ -188,6 +228,8 @@ return response()->json([
             ->join('tb_chat AS c', 'tb_mensagem.id_chat', '=', 'c.id')
             ->join('tb_user AS user1', 'c.id_user1', '=', 'user1.id')
             ->join('tb_user AS user2', 'c.id_user2', '=', 'user2.id')
+            ->leftJoin('tb_post AS p', 'tb_mensagem.id_post', '=', 'p.id')
+            ->leftJoin('tb_user AS userPostou', 'p.id_user', '=', 'userPostou.id')
             ->select(
                 'c.id AS id_chat',
                 'tb_mensagem.id AS id_mensagem',
@@ -200,7 +242,14 @@ return response()->json([
                 'tb_mensagem.img_mensagem AS foto_enviada',
                 'enviador.id AS id_enviador',
                 'enviador.img_user',
-                'enviador.nome_user'
+                'enviador.nome_user',
+                'p.id AS id_post',
+                'p.conteudo_post AS cont_post',
+                'p.descricao_post AS desc_post',
+                'userPostou.nome_user AS nome_user_postou', 
+                'userPostou.img_user AS img_user_postou',
+                'userPostou.id AS id_user_postou', 
+                'userPostou.arroba_user AS arroba_user_postou'
             )
             ->where('c.id', $idChat)
             ->orderBy('tb_mensagem.created_at', 'asc');
@@ -535,35 +584,39 @@ return response()->json([
             'idChat' => 'required',
             'idEnviador' => 'required',
         ]);
+        try{
 
-        $nomeImagem = null;
-
-        if ($request->hasFile('imgMensagem') && $request->file('imgMensagem')->isValid()) {
-            $extensao = $request->file('imgMensagem')->getClientOriginalExtension();
+            $nomeImagem = null;
+            
+            if ($request->hasFile('imgMensagem') && $request->file('imgMensagem')->isValid()) {
+                $extensao = $request->file('imgMensagem')->getClientOriginalExtension();
             $nomeImagem = time() . '_' . uniqid() . '.' . $extensao;
             $request->file('imgMensagem')->move(public_path('img/chat/fotosChat'), $nomeImagem);
         }
-
+        
         $mensagem = new Mensagem();
         $mensagem->id_chat = $request->idChat;
         $mensagem->conteudo_mensagem = $request->conteudoMensagem;
         $mensagem->img_mensagem = $tipoMensagem == 'semImagem' ? '' : $nomeImagem;
+        $mensagem->id_post = $request->idPost ? $request->idPost : null;
         $mensagem->id_user_enviador = $request->idEnviador;
         $mensagem->status_mensagem = false;
         $mensagem->created_at = now();
         $mensagem->save();
-
-
+        
+        
         $idEnviador = $request->idEnviador;
         $sub = DB::table('tb_mensagem')
-            ->select(DB::raw('MAX(id) as ultima_mensagem_id'))
-            ->groupBy('id_chat');
-
+        ->select(DB::raw('MAX(id) as ultima_mensagem_id'))
+        ->groupBy('id_chat');
+        
         $queryBuilder = DB::table('tb_mensagem')
             ->join('tb_user AS enviador', 'tb_mensagem.id_user_enviador', '=', 'enviador.id')
             ->join('tb_chat AS c', 'tb_mensagem.id_chat', '=', 'c.id')
             ->join('tb_user AS user1', 'c.id_user1', '=', 'user1.id')
             ->join('tb_user AS user2', 'c.id_user2', '=', 'user2.id')
+             ->leftJoin('tb_post AS p', 'tb_mensagem.id_post', '=', 'p.id')
+             ->leftJoin('tb_user AS userPostou', 'p.id_user', '=', 'userPostou.id')
             ->joinSub($sub, 'sub', function ($join) {
                 $join->on('tb_mensagem.id', '=', 'sub.ultima_mensagem_id');
             })
@@ -584,9 +637,16 @@ return response()->json([
                 DB::raw("IF(tb_mensagem.id_user_enviador = user1.id, user1.img_user, user2.img_user) AS img_enviador"),
                 DB::raw("IF(tb_mensagem.id_user_enviador = user1.id, user1.arroba_user, user2.arroba_user) AS arroba_enviador"),
                 DB::raw("IF(tb_mensagem.id_user_enviador = user1.id, user1.id, user2.id) AS id_enviador"),
+                'p.id AS id_post',
+                'p.conteudo_post AS cont_post',
+                'p.descricao_post AS desc_post',
+                'userPostou.nome_user AS nome_user_postou', 
+                'userPostou.img_user AS img_user_postou',
+                'userPostou.id AS id_user_postou', 
+                'userPostou.arroba_user AS arroba_user_postou',
 
                 'tb_mensagem.created_at'
-            )
+                )
             ->where(function ($query) use ($idEnviador) {
                 $query->where('user1.id', $idEnviador)
                     ->orWhere('user2.id', $idEnviador);
@@ -594,18 +654,25 @@ return response()->json([
             ->orderByDesc('id_mensagem');
 
         $chats = $queryBuilder->get();
-
+        
         broadcast(new MensagemChat($mensagem))->toOthers();
         Broadcast(new TelaChat($chats, $request->idChat));
-
+        
         return response()->json([
             'message' => 'Mensagem enviada com sucesso!',
             'paia' => 'teste',
             'mensagem' => $mensagem,
         ], 201);
+    }catch(Exception $e){
+        return response()->json([
+            'sucesso' => false,
+            'mensagem' => 'Ocorreu um erro durante a Criação do chat: ' . $e->getMessage(),
+            'error' => 'unexpected_error'
+        ], 500);
+    }
     }
 
-
+    
     public function pesquisarChats($pesquisaUsuario, $idUserRecebidor)
     {
 
@@ -619,6 +686,8 @@ return response()->json([
             ->join('tb_chat AS c', 'tb_mensagem.id_chat', '=', 'c.id')
             ->join('tb_user AS user1', 'c.id_user1', '=', 'user1.id')
             ->join('tb_user AS user2', 'c.id_user2', '=', 'user2.id')
+            ->leftJoin('tb_post AS p', 'tb_mensagem.id_post', '=', 'p.id')
+            ->leftJoin('tb_user AS userPostou', 'p.id_user', '=', 'userPostou.id')
             ->joinSub($sub, 'sub', function ($join) {
                 $join->on('tb_mensagem.id', '=', 'sub.ultima_mensagem_id');
             })
@@ -635,6 +704,13 @@ return response()->json([
                 DB::raw("IF(user1.id = $idUserRecebidor, user2.img_user, user1.img_user) AS img_enviador"),
                 DB::raw("IF(user1.id = $idUserRecebidor, user2.arroba_user, user1.arroba_user) AS arroba_enviador"),
                 DB::raw("IF(user1.id = $idUserRecebidor, user2.id, user1.id) AS id_enviador"),
+                'p.id AS id_post',
+                'p.conteudo_post AS cont_post',
+                'p.descricao_post AS desc_post',
+                'userPostou.nome_user AS nome_user_postou', 
+                'userPostou.img_user AS img_user_postou',
+                'userPostou.id AS id_user_postou', 
+                'userPostou.arroba_user AS arroba_user_postou',
                 'tb_mensagem.created_at'
             )
             ->where(function ($query) use ($idUserRecebidor) {
@@ -660,7 +736,7 @@ return response()->json([
     public function criarCanal(Request $request)
     {
 
-        $imgCanal = null;
+        $nomeImagem = null;
 
         if ($request->hasFile('imgCanal') && $request->file('imgCanal')->isValid()) {
             $extensao = $request->file('imgCanal')->getClientOriginalExtension();
@@ -767,7 +843,7 @@ return response()->json([
         try{
         $canais = DB::table('tb_canal as c')
             ->leftJoin('tb_membros_canal as mc', 'c.id', '=', 'mc.id_canal')
-            ->rightJoin('tb_user AS u', 'u.id', '=', 'c.user_criador_canal')
+            ->join('tb_user AS u', 'u.id', '=', 'c.user_criador_canal')
             ->whereNotIn('c.id', function ($query) use ($userId) {
                 $query->select('id_canal')
                     ->from('tb_membros_canal')
@@ -781,7 +857,6 @@ return response()->json([
                 'c.user_criador_canal as canal_criador_id',
                 'u.nome_user AS nome_remetente',
                 'u.arroba_user AS arroba_remetente',
-                
                 'mc.id as membro_id',
                 'mc.id_canal as membro_id_canal',
                 'mc.id_user as membro_id_user',
@@ -885,14 +960,15 @@ return response()->json([
             })
             ->select(
                 'tb_mensagem_canal.id AS id_mensagem',
-                'c.id AS id_chat',
+                'c.id AS id_conversa',
                 'tb_mensagem_canal.conteudo_mensagem_canal AS ultima_mensagem',
                 'tb_mensagem_canal.img_mensagem_canal AS foto_enviada',
                 'tb_mensagem_canal.id_user_enviador AS enviador',
-                
+                'tb_mensagem_canal.id AS id_ultima_mensagem',
 
                 'tb_mensagem_canal.created_at'
             )
+            ->where('id_user_enviador', $idEnviador)
             ->orderByDesc('id_mensagem');
 
         $canais = $queryBuilder->get();
@@ -916,5 +992,6 @@ return response()->json([
         ]);
         }
     }
+
 
 }

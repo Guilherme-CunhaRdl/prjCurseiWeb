@@ -16,8 +16,8 @@ return new class extends Migration
         Schema::create('tb_canal', function (Blueprint $table) {
             $table->id();
             $table->string('nome_canal', 100);
-            $table->longText('descricao_canal');
-            $table->string('imagem_canal', 300);
+            $table->longText('descricao_canal')->nullable();
+            $table->string('imagem_canal', 300)->nullable();
             $table->unsignedBigInteger('user_criador_canal');
             $table->foreign('user_criador_canal')->references('id')->on('tb_user')->onDelete('cascade');
             $table->timestamps();

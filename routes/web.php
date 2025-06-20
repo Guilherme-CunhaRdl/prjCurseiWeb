@@ -63,26 +63,26 @@ route::prefix('curseiAdm')->group(function(){
 // route::prefix('curseiInstituicao')->group( function(){
 // //rotas
 // Route::get('/dashboard', [InstituicaoController::class, 'index'])->name('dashboard.index');
-// Route::get('/login', [InstituicaoController::class, 'loginInstituicao'])->name('login');
+ 
 // Route::get('/analiseConteudo', [InstituicaoController::class, 'analiseConteudoInstituicao'])->name('analiseConteudo');
 // Route::get('/bibliotecaMidias', [InstituicaoController::class, 'bibliotecaMidiaIndex'])->name('biblioteca.index');
 // Route::get('/personalizacaoPagina', [InstituicaoController::class, 'personalizacaoIndex'])->name('personalizacao.index');
 
 // //funcoes
-// Route::post('/fazerLogin', [InstituicaoController::class, 'fazerLoginInstituicao'])->name('fazerLogin');
-// Route::get('/logoffInstituicao', [InstituicaoController::class, 'logoutInstituicao'])->name('logout');
 // Route::post('/personalizacaoPagina', [InstituicaoController::class, 'updatePersonalizacao'])->name('personalizacao.update');
 // Route::get('/bibliotecaMidia/filtrar', [InstituicaoController::class, 'filtrar'])->name('biblioteca.filtrar');
 // Route::post('/bibliotecaMidia/criarPost', [InstituicaoController::class, 'criarPost'])->name('biblioteca.criarPost');
 // });
 Route::prefix('curseiInstituicao')->group(function () {
+     Route::post('/fazerLogin', [InstituicaoController::class, 'fazerLoginInstituicao'])->name('fazerLogin');
+    Route::get('/logoffInstituicao', [InstituicaoController::class, 'logoutInstituicao'])->name('logout');
+    Route::get('/login', [InstituicaoController::class, 'loginInstituicao'])->name('login');
     Route::get('/dashboard', function () {
         return view('area-instituicao.dashboard');
     })->name('dashboardInst');
 
-    Route::get('/posts', function () {
-        return view('area-instituicao.posts');
-    })->name('postsInst');
+   Route::get('/posts', [InstituicaoController::class, 'posts'])->name('posts.index');
+
             Route::get('/curteis', function () {
         return view('area-instituicao.curtei');
     })->name('curteiInst');
@@ -129,3 +129,5 @@ Route::get('/conta', function () {
 
 
 // fim da area instituicao ---------------------------------------------------------------------------------------------------------
+
+

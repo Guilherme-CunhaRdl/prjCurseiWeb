@@ -12,23 +12,22 @@ class DestaqueController extends Controller
 {
     public function index($id_user)
     {
-        // Busca destaques do usuário
-        $destaques = Destaque::with(['user', 'story'])
+        $destaques = Destaque::with(['user', 'stories']) // Note o plural
             ->where('id_user', $id_user)
             ->orderBy('data_destaque', 'desc')
             ->get()
             ->map(function ($destaque) {
                 return [
-                    'id' => $destaque->id, // Garantir que está usando o nome correto do campo
+                    'id' => $destaque->id,
                     'data_destaque' => $destaque->data_destaque,
                     'foto_destaque' => $destaque->foto_destaque,
-                    'story' => $this->formatStory($destaque->story)
+                    'stories' => $destaque->stories->map(function ($story) {
+                        return $this->formatStory($story);
+                    })
                 ];
             });
 
-        // Busca stories do usuário que ainda não foram destacados
         $stories = Story::where('id_user', $id_user)
-            ->whereNotIn('id', Destaque::where('id_user', $id_user)->pluck('id_story'))
             ->get()
             ->map(function ($story) {
                 return $this->formatStory($story);
@@ -38,66 +37,65 @@ class DestaqueController extends Controller
             'success' => true,
             'data' => [
                 'destaques' => $destaques,
-                'stories_nao_destacados' => $stories
+                'stories' => $stories
             ]
         ]);
     }
 
-    public function store($id_user, $id_story)
-    {
-        try {
-            // Verifica se o story pertence ao usuário
-            $story = Story::with('user')
-                        ->where('id', $id_story)
-                        ->where('id_user', $id_user)
-                        ->firstOrFail();
+public function store(Request $request, $id_user)
+{
+    try {
+        $validator = Validator::make($request->all(), [
+            'stories' => 'required|array|min:1',
+            'stories.*' => 'integer|exists:tb_storyes,id,id_user,'.$id_user
+        ]);
 
-            // Verifica se já foi destacado
-            if (Destaque::where('id_story', $id_story)->exists()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Este story já foi destacado'
-                ], 400);
-            }
-
-            // Usa a imagem do story como foto_destaque
-            $fotoDestaque = $story->conteudo_storyes;
-            
-            // Cria o destaque com a foto definida
-            $destaque = Destaque::create([
-                'id_user' => $id_user,
-                'id_story' => $id_story,
-                'data_destaque' => Carbon::now(),
-                'foto_destaque' => $fotoDestaque,
-                'status_destaque' => 1
-            ]);
-
-            // SOLUÇÃO: Recarrega o modelo para obter o ID gerado
-            $destaque->refresh();
-            
-            // SOLUÇÃO: Carrega relacionamentos para a resposta
-            $destaque->load('story.user');
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Story destacado com sucesso!',
-                'data' => [
-                    'id' => $destaque->id, // Agora deve vir preenchido
-                    'data_destaque' => $destaque->data_destaque,
-                    'foto_destaque' => url($destaque->foto_destaque),
-                    'status_destaque' => $destaque->status_destaque,
-                    'story' => $this->formatStory($destaque->story)
-                ]
-            ], 201);
-
-        } catch (\Exception $e) {
+        if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'message' => 'Erro ao destacar story',
-                'error' => $e->getMessage()
-            ], 500);
+                'message' => 'Erro de validação',
+                'errors' => $validator->errors()
+            ], 422);
         }
+
+        // Busca o primeiro story para usar como thumbnail
+        $firstStory = Story::find($request->input('stories')[0]);
+        
+        // Cria novo destaque
+        $destaque = Destaque::create([
+            'id_user' => $id_user,
+            'data_destaque' => Carbon::now(),
+            'foto_destaque' => $firstStory->conteudo_storyes, // Usa a imagem do primeiro story
+            'status_destaque' => 1
+        ]);
+
+        // Associa os stories ao destaque
+        $destaque->stories()->attach($request->input('stories'));
+
+        // Carrega relacionamentos para a resposta
+        $destaque->load('stories.user');
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Destaque criado com sucesso!',
+            'data' => [
+                'id' => $destaque->id,
+                'data_destaque' => $destaque->data_destaque,
+                'foto_destaque' => url($destaque->foto_destaque),
+                'stories' => $destaque->stories->map(function ($story) {
+                    return $this->formatStory($story);
+                })
+            ]
+        ], 201);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Erro ao criar destaque',
+            'error' => $e->getMessage()
+        ], 500);
     }
+}
 
     public function destroy($id_user, $id)
     {
@@ -148,4 +146,77 @@ class DestaqueController extends Controller
             ]
         ];
     }
+
+public function atualizarDestaques(Request $request, $id_destaque)
+{
+    try {
+        $destaque = Destaque::with('stories')->findOrFail($id_destaque);
+        
+        $validator = Validator::make($request->all(), [
+            'stories' => 'required|array',
+            'stories.*' => [
+                'integer',
+                function ($attribute, $value, $fail) use ($destaque) {
+                    $story = Story::find($value);
+                    if (!$story || $story->id_user != $destaque->id_user) {
+                        $fail("O story #$value não existe ou não pertence ao usuário.");
+                    }
+                }
+            ]
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        // Lista de stories desejados
+        $desiredStories = $request->input('stories');
+        
+        // Stories atuais no destaque
+        $currentStories = $destaque->stories->pluck('id')->toArray();
+        
+        // Stories para adicionar
+        $storiesToAdd = array_diff($desiredStories, $currentStories);
+        
+        // Stories para remover
+        $storiesToRemove = array_diff($currentStories, $desiredStories);
+
+        // Executa as operações
+        if (!empty($storiesToAdd)) {
+            $destaque->stories()->attach($storiesToAdd);
+        }
+        
+        if (!empty($storiesToRemove)) {
+            $destaque->stories()->detach($storiesToRemove);
+        }
+
+        // Atualiza a capa se necessário
+        if (!in_array($destaque->foto_destaque, $desiredStories)) {
+            $newCoverStory = $destaque->stories()->first();
+            $destaque->foto_destaque = $newCoverStory ? $newCoverStory->conteudo_storyes : '';
+            $destaque->save();
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Destaque sincronizado com sucesso!',
+            'data' => [
+                'added' => array_values($storiesToAdd),
+                'removed' => array_values($storiesToRemove),
+                'current_stories' => $desiredStories
+            ]
+        ]);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Erro ao sincronizar destaque',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
+
 }

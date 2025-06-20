@@ -30,6 +30,17 @@ class Story extends Model
         return $this->belongsTo(User::class, 'id_user');
     }
 
+    // Relacionamento muitos-para-muitos
+    public function destaques()
+    {
+        return $this->belongsToMany(
+            Destaque::class,
+            'destaque_story',
+            'story_id',
+            'destaque_id'
+        );
+    }
+
     // Acessor para URL completa
     public function getUrlAttribute()
     {

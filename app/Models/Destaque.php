@@ -10,21 +10,20 @@ class Destaque extends Model
     use HasFactory;
 
     protected $table = 'tb_destaque';
-    protected $primaryKey = 'id_destaque';
+    protected $primaryKey = 'id'; // Garanta que está correto
+    public $incrementing = true;
+    public $timestamps = true;
 
     protected $fillable = [
-        'id_destaque',
+        'id', // Adicione esta linha
         'id_user',
         'data_destaque',
         'id_story',
         'foto_destaque',
-        'status_destaque' // Adicione esta linha
+        'status_destaque'
     ];
-    
-    protected $attributes = [
-        'status_destaque' => 1
-    ];
-    
+
+    // Relacionamentos
     public function user()
     {
         return $this->belongsTo(User::class, 'id_user');

@@ -10,6 +10,8 @@ use App\Http\Controllers\InstituicaoControllerApi;
 use App\Http\Controllers\MensagemControllerApi;
 use App\Http\Controllers\HashtagController;
 use App\Http\Controllers\CurteiController;
+use App\Http\Controllers\DestaqueController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -112,3 +114,8 @@ Route::post('/stories/upload', [StoryController::class, 'upload']);
     Route::delete('/stories/{id}', [StoryController::class, 'destroy']);
 
 
+//ROTAS DOS DESTAQUES
+
+    Route::get('/destaques', [DestaqueController::class, 'index']);
+    Route::post('/destaques', [DestaqueController::class, 'store']);
+    Route::delete('/destaques/{id}', [DestaqueController::class, 'destroy']);

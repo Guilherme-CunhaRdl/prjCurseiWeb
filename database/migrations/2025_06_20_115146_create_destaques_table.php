@@ -13,16 +13,18 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('tb_destaques', function (Blueprint $table) {
+        Schema::create('tb_destaque', function (Blueprint $table) {
             $table->id();
-            $table->date('data_destaques');
-            $table->boolean('status_destaques');
+            $table->date('data_destaque');
+            $table->string('foto_destaque');
+            $table->boolean('status_destaque');
             $table->unsignedBigInteger('id_user');
             $table->foreign('id_user')->references('id')->on('tb_user')->onDelete('cascade');
+            $table->unsignedBigInteger('id_story');
+            $table->foreign('id_story')->references('id')->on('tb_storyes')->onDelete('cascade');
             $table->timestamps();
         });
     }
-
     /**
      * Reverse the migrations.
      *
@@ -30,6 +32,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('tb_destaques');
+        Schema::dropIfExists('tb_destaque');
     }
 };

@@ -1,91 +1,3 @@
-//   axios.get('https://minhaapi.com/posts')
-//     .then(res => console.log(res.data))
-//     .catch(err => console.error(err));
-setLoading(true)
-carregarPost();
-
-async function carregarPost() {
-  try {
-    const res = await axios.get(`http://${host}/api/posts/2/0/100/0/${idInst}`);
-    const posts = res.data.data;
-    mostrarPosts(posts)
-    setLoading(false)
-  } catch (err) {
-    alert('erro ao conectar ao servidor');
-  }
-}
-const listaPosts = document.getElementById('listaPosts')
-async function mostrarPosts(posts) {
-  console.log(posts)
-  posts.forEach(post => {
-    const cardPost = `
-              <div class="card-conteudo">
-                       <div class="cont-desc-card">
-                         <p>${post.descricao_post}</p>
-                       </div>
-                        <div class="img">
-                            <img src="http://${host}/img/user/imgPosts/${post.conteudo_post}" alt="">
-                        </div>
-                        <div class="infos-conteudo">
-                            <div class="info">
-                                <i class='bx bx-heart'></i>
-                                <p>${post.curtidas}</p>
-                            </div>
-                            <div class="info">
-                                <i class='bx  bx-message-circle'></i>
-                                <p>${post.comentarios}</p>
-                            </div>
-                            <div class="info">
-                                <i class='bx bx-repeat-alt'></i>
-                                <p>${post.total_reposts}</p>
-                            </div>
-
-                        </div>
-
-                    </div>
-        `
-    listaPosts.innerHTML += cardPost;
-  });
-
-
-
-}
-const pesquisarPosts = document.getElementById('pesquisarPosts');
-
-let debounceTimeout = null;
-
-pesquisarPosts.addEventListener('input', () => {
-  clearTimeout(debounceTimeout); // Limpa o timer anterior
-
-  debounceTimeout = setTimeout(() => {
-    pesquisar();
-  }, 500); // Espera 500ms após parar de digitar
-});
-
-async function pesquisar() {
-  const termo = pesquisarPosts.value.trim(); // Remove espaços
-  listaPosts.innerHTML = '';
-
-  if (termo.length > 1) {
-    try {
-      const res = await axios.get(`http://${host}/api/posts/10/${idInst}/100/0/${termo}`);
-      setTimeout(() => {
-        listaPosts.innerHTML = '';
-        const posts = res.data.data;
-        mostrarPosts(posts);
-      }, 500);
-    } catch (err) {
-      alert('erro ao conectar ao servidor');
-    }
-  } else {
-    // Se o campo estiver vazio ou com 1 caractere
-    setTimeout(() => {
-      listaPosts.innerHTML = '';
-      carregarPost(); // Chama carregarPost() direto aqui
-    }, 200); // Pode até reduzir o delay se quiser
-  }
-}
-
 document.getElementById('imgPostinput').addEventListener('change', readImagePost, false);
 
 function readImagePost() {
@@ -162,10 +74,14 @@ document.addEventListener('DOMContentLoaded', function () {
   const buttonOpenModalLinkPost = document.getElementById('buttonOpenModalLinkPost');
   const buttonAddLinkPost = document.getElementById('buttonAddLinkPost');
   const inputUrlLinkPost = document.getElementById('inputUrlLinkPost');
-
+  const addLinkUpdateButton = document.getElementById('addLinkUpdateButton');
 
 
   buttonOpenModalLinkPost.addEventListener('click', function () {
+    modalLinkPost.style.display = 'flex';
+    inputUrlLinkPost.focus();
+  });
+  addLinkUpdateButton.addEventListener('click', function () {
     modalLinkPost.style.display = 'flex';
     inputUrlLinkPost.focus();
   });
@@ -179,6 +95,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
   buttonAddLinkPost.addEventListener('click', function () {
     document.getElementById('linkInput').value = inputUrlLinkPost.value.trim();
+        document.getElementById('linkUpdate').value = inputUrlLinkPost.value.trim();
+
     modalLinkPost.style.display = 'none';
   });
 
@@ -251,19 +169,22 @@ function fecharModal() {
 }
 
 async function postarPost() {
-  setLoading(true)
   const novoPost = new FormData(postFormulario);
-
-  try {
-    const res = await axios.post(`http://${host}/api/cursei/posts/${idInst}`, novoPost);
-    listaPosts.innerHTML = ''
-    carregarPost()
-    fecharModal()
+  if(document.getElementById('descricaoPost').value !=''){
+    setLoading(true)
+   
+    try {
+      const res = await axios.post(`http://${host}/api/cursei/posts/${idInst}`, novoPost);
+      listaPosts.innerHTML = ''
+      carregarPost()
+      fecharModal()
+      setLoading(false)
+      postFormulario.reset()
+    } catch (error) {
+alert('erro de conexão')
     setLoading(false)
-    postFormulario.reset()
-  } catch (error) {
-
-  }
+    }
+  }eç
 }
 
 const eventoFormulario = document.getElementById('evento')
@@ -281,5 +202,6 @@ async function postarEvento() {
     eventoFormulario.reset()
   } catch (error) {
     alert('erro de conexão')
+    setLoading(false)
   }
 }

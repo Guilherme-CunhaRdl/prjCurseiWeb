@@ -116,6 +116,7 @@ Route::post('/stories/upload', [StoryController::class, 'upload']);
 
 //ROTAS DOS DESTAQUES
 
-    Route::get('/destaques', [DestaqueController::class, 'index']);
-    Route::post('/destaques', [DestaqueController::class, 'store']);
-    Route::delete('/destaques/{id}', [DestaqueController::class, 'destroy']);
+    // Listar destaques de um usuário específico
+        Route::get('/destaques/{id_user}', [DestaqueController::class, 'index']);
+        Route::post('/destaques/{id_user}/{id_story}', [DestaqueController::class, 'store']);
+        Route::delete('/destaques/{id_user}/{id_destaque}', [DestaqueController::class, 'destroy']);

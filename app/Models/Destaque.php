@@ -10,6 +10,7 @@ class Destaque extends Model
     use HasFactory;
 
     protected $table = 'tb_destaque';
+    protected $primaryKey = 'id_destaque';
 
     protected $fillable = [
         'id_destaque',
@@ -17,6 +18,11 @@ class Destaque extends Model
         'data_destaque',
         'id_story',
         'foto_destaque',
+        'status_destaque' // Adicione esta linha
+    ];
+    
+    protected $attributes = [
+        'status_destaque' => 1
     ];
     
     public function user()

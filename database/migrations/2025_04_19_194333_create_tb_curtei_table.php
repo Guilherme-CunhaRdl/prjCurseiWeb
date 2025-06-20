@@ -27,7 +27,7 @@ return new class extends Migration
             $table->string('caminho_curtei');
             $table->string('caminho_curtei_thumb');
             $table->string('legenda_curtei', 220)->nullable();
-            
+            $table->unsignedBigInteger('curtidas_count')->default(0);
 
             $table->timestamps();
         });
@@ -40,6 +40,8 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('tb_curtei');
+        Schema::table('tb_curtei', function (Blueprint $table) {
+            $table->dropColumn('curtidas_count');
+        });
     }
 };

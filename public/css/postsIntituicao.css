@@ -150,6 +150,7 @@ main {
         row-gap: 20px;
 
         .card-conteudo {
+            cursor: pointer;
             background-color: var(--branco);
             box-shadow: var(--shadow);
             border-radius: 2px;
@@ -614,7 +615,7 @@ main {
   }
 }
 
-#evento {
+.evento {
   padding: 2%;
   display: none;
 
@@ -806,6 +807,7 @@ main {
     background-color: rgba(0, 0, 0, 0.5);
     justify-content: center;
     align-items: center;
+    z-index: 999;
       animation: fadeIn 0.3s forwards;
 
 }

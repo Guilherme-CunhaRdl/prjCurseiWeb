@@ -83,7 +83,7 @@
                       
                   </button>
 
-                  <button onclick="trocarCorInst(this,'roxo')" style="background-color: #9B59B6;">
+                  <button onclick="trocarCorInst(this,'roxo')" style="background-color: #6b00cf;">
                       
                   </button>
 

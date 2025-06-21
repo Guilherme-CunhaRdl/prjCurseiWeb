@@ -53,7 +53,7 @@ const cores = {
     verde: '#2ECC71',
     amarelo: '#F1C40F',
     laranja: '#FF8418',
-    roxo: '#9B59B6',
+    roxo: '#6b00cf',
     rosa: '#E91E63',
     preto: '#2F2F2F',
     verdeAqua: '#05A4B6',

@@ -20,8 +20,6 @@ return new class extends Migration
             $table->boolean('status_destaque');
             $table->unsignedBigInteger('id_user');
             $table->foreign('id_user')->references('id')->on('tb_user')->onDelete('cascade');
-            $table->unsignedBigInteger('id_story');
-            $table->foreign('id_story')->references('id')->on('tb_storyes')->onDelete('cascade');
             $table->timestamps();
         });
     }

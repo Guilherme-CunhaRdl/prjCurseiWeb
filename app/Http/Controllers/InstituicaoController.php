@@ -588,4 +588,72 @@ class InstituicaoController extends Controller
         ]);
         
     }
+       public function curteis()
+    {
+        $instituicaoId = session('instituicao_id');
+        $postCount = Post::where('id_user', $instituicaoId)->where('status_post',1)->count();
+        $repostsCount = DB::table('tb_post')
+            ->join('tb_post as reposts', 'reposts.repost_id', '=', 'tb_post.id')
+            ->where('tb_post.id_user', $instituicaoId)
+            ->where('tb_post.status_post',1)
+            ->count();
+
+        $eventoCount = Post::join('tb_evento as evento', 'evento.id_Post', '=', 'tb_post.id')
+            ->where('tb_post.id_user', $instituicaoId) ->where('tb_post.status_post',1)->count();
+
+        $mediaCurtidas = DB::table('tb_post as p')
+            ->leftJoin('tb_curtida as c', 'p.id', '=', 'c.id_post')
+            ->where('p.id_user', $instituicaoId)
+            ->where('p.status_post',1)
+            ->whereNull('p.repost_id') // opcional: considera só os posts originais
+            ->selectRaw('AVG((SELECT COUNT(*) FROM tb_curtida WHERE id_post = p.id)) as media')
+            ->value('media');
+
+        $mediaComentarios = DB::table('tb_post as p')
+            ->leftJoin('tb_comentario as cm', 'p.id', '=', 'cm.id_post')
+            ->where('p.id_user', $instituicaoId)
+            ->where('p.status_post',1)
+            ->whereNull('p.repost_id')
+            ->selectRaw('AVG((SELECT COUNT(*) FROM tb_comentario WHERE id_post = p.id)) as media')
+            ->value('media');
+
+        $mediaReposts = DB::table('tb_post as p')
+            ->where('p.id_user', $instituicaoId)
+            ->where('p.status_post',1)
+            ->whereNull('p.repost_id')
+            ->selectRaw('AVG((SELECT COUNT(*) FROM tb_post WHERE repost_id = p.id)) as media')
+            ->value('media');
+
+
+        $postsPorArea = DB::table('tb_post')
+            ->select('area_post', DB::raw('COUNT(*) as total'))
+            ->where('id_user', $instituicaoId)
+            ->where('status_post',1)
+            ->groupBy('area_post')
+            ->get();
+
+        
+        $totalPosts = $postsPorArea->sum('total');
+
+       
+        $areaMaisPostada = $postsPorArea->sortByDesc('total')->first();
+        $areaPrincipal = $areaMaisPostada?->area_post;
+        $maiorTotal = $areaMaisPostada?->total ?? 0;
+
+        $porcentagemAreaPrincipal = $totalPosts > 0 ? number_format(($maiorTotal / $totalPosts) * 100, 2) : 0;
+
+        return view('area-instituicao.curtei', [
+            'instID' => $instituicaoId,
+            'postCount' => $postCount,
+            'repostsCount' => $repostsCount,
+            'eventoCount' => $eventoCount,
+            'mediaCurtidas' => number_format($mediaCurtidas ?? 0, 2),
+            'mediaComentarios' => number_format($mediaComentarios ?? 0, 2),
+            'mediaReposts' => number_format($mediaReposts ?? 0, 2),
+            'porcentagemAreaPrincipal'=>$porcentagemAreaPrincipal,
+            'postsPorArea'=>$postsPorArea,
+            'areaPrincipal'=>$areaPrincipal,
+        ]);
+        
+    }
 }

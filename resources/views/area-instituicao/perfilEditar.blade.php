@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="{{ url('css/perfilEditar.css') }}">
     <link rel="icon" href="{{ asset('img/Icone_Logo_Cursei_Preta.png') }}" type="image/x-icon" />
-    @include('area-instituicao.componentes.padrao')
+   @include('area-instituicao.componentes.padrao')
 </head>
 <body>
     <main class="container-fluid p-0">
@@ -87,7 +87,7 @@
                 </div>
             </div>
             <!-- Coluna do preview -->
-            <div class="col-md-6 p-5" style="background-color: var(--background-preview);">
+            <div class="col-md-6 p-5" >
                 <div class="col-12 p-4">
                     <h3 class="tit-preview">Preview</h3>
                     <div class="col-12">
@@ -175,6 +175,90 @@
             </div>
         </div>
     </main>
+
+  <div class="ContmodalTema" id="ContmodalTema" style="z-index: 999;">
+      <div class="modalTema" id="modalTema">
+    <i class="bx bx-x" onclick="fecharModalTema()" style="cursor: pointer;margin: 0px;width: 100%;text-align: end;padding-right: 20px;font-size: 30px;"></i>
+          <p class="titulotema">
+              Personalize sua cursei
+          </p>
+
+          <div style="padding-inline: 5%;">
+              <p>Tema:</p>
+              <div class="buttonsTemas">
+                  <button onclick="alterarTema('claro')" id="sun">
+                      <i class='bx  bx-sun'></i>
+                  </button>
+                  <button id="moon" onclick="alterarTema('escuro')">
+                      <i class='bx  bx-moon'></i>
+                  </button>
+              </div>
+          </div>
+          <div class="cores">
+              <p>Cor Principal:</p>
+              <div class="listaCores" id="listaCores">
+
+                  <button onclick="trocarCorInst(this,'vermelho')" style="background-color:#e90013;">
+                      
+                  </button>
+
+                  <button onclick="trocarCorInst(this,'azul')" style="background-color: #448FFF;">
+                      
+                  </button>
+
+                  <button onclick="trocarCorInst(this,'verde')" style="background-color: #2ECC71;">
+                      
+                  </button>
+
+                  <button onclick="trocarCorInst(this,'amarelo')" style="background-color: #F1C40F;">
+                      
+                  </button>
+
+                  <button onclick="trocarCorInst(this,'laranja')" style="background-color: #FF8418;">
+                      
+                  </button>
+
+                  <button onclick="trocarCorInst(this,'roxo')" style="background-color: #6b00cf;">
+                      
+                  </button>
+
+                  <button onclick="trocarCorInst(this,'rosa')" style="background-color: #E91E63;">
+                      
+                  </button>
+
+                  <button onclick="trocarCorInst(this,'preto')" style="background-color: #2F2F2F;">
+                      
+                  </button>
+
+                  <button onclick="trocarCorInst(this,'verdeAqua')" style="background-color: #05A4B6;">
+                      
+                  </button>
+
+                  <button onclick="trocarCorInst(this,'azulEscuro')" style="background-color: #10009D;">
+                      
+                  </button>
+
+
+              </div>
+          </div>
+      </div>
+  </div>
+  <script>
+    if (localStorage.getItem('temaInst') == 'claro') {
+        document.getElementById('sun').classList.add('buttontemaAtivo')
+    }else{
+        document.getElementById('moon').classList.add('buttontemaAtivo')
+    }
+     document.getElementById('sun').addEventListener('click', () => {
+        document.getElementById('sun').classList.add('buttontemaAtivo')
+        document.getElementById('moon').classList.remove('buttontemaAtivo')
+     })
+        document.getElementById('moon').addEventListener('click', () => {
+        document.getElementById('sun').classList.remove('buttontemaAtivo')
+        document.getElementById('moon').classList.add('buttontemaAtivo')
+     })
+  </script>
+
     <script>
         // Preview da imagem de perfil
         document.getElementById('imgPerfil').addEventListener('change', function () {
@@ -213,6 +297,7 @@
         document.getElementById('arroba-user-preview').textContent = document.getElementById('input-contato').value;
         document.getElementById('bio-user-preview').textContent = document.getElementById('input-bio').value;
     </script>
+   @include('area-instituicao.componentes.modal-notificacao')
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"></script>
 </body>

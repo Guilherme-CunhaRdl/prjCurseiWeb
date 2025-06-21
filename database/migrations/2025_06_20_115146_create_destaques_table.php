@@ -16,8 +16,9 @@ return new class extends Migration
         Schema::create('tb_destaque', function (Blueprint $table) {
             $table->id();
             $table->date('data_destaque');
-            $table->string('foto_destaque');
+            $table->string('titulo_destaque');
             $table->boolean('status_destaque');
+            $table->string('foto_destaque');
             $table->unsignedBigInteger('id_user');
             $table->foreign('id_user')->references('id')->on('tb_user')->onDelete('cascade');
             $table->timestamps();

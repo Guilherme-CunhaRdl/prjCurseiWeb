@@ -85,7 +85,7 @@
           <i class='bx bx-link'></i>
           <input type="url" placeholder="Sua url aqui" name="link">
         </div>
-        <label for="">data inicio</label>
+        <label for="">Descrição</label>
         <textarea placeholder="Descreva seu evento" name="descEvento"></textarea>
       </div>
       <div class="rodape" style="justify-content: end;">

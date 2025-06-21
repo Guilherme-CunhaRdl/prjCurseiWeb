@@ -124,6 +124,40 @@ Route::get('/conta', function () {
         return view('area-instituicao.conta', compact('instituicao'));
     })->name('instituicao.conta');
 
+
+    Route::get('/editarPerfil', function () {
+    $instituicao = (object)[
+        'banner_user' => 'banner.png',
+        'img_user' => 'img-perfil.png',
+        'nome_user' => 'Etec de Itaquera',
+        'arroba_user' => 'etecitaquera',
+        'bio_user' => 'Mane fé filho, é suco de goiaba...',
+        'seguidores' => 1,
+        'seguindo' => 0
+    ];
+
+    // Dados de posts fictícios para o preview
+    $posts = [
+        (object)[
+            'nome_user' => 'Etec de Itaquera',
+            'arroba_user' => 'etecitaquera',
+            'img_user' => 'img-perfil.png',
+            'conteudo_post' => 'post1.png',
+            'descricao_post' => 'Nosso primeiro post!',
+            'created_at' => now()->format('d/m/Y H:i')
+        ],
+        (object)[
+            'nome_user' => 'Etec de Itaquera',
+            'arroba_user' => 'etecitaquera',
+            'img_user' => 'img-perfil.png',
+            'conteudo_post' => 'post2.png',
+            'descricao_post' => 'Nova turma aberta!',
+            'created_at' => now()->format('d/m/Y H:i')
+        ],
+    ];
+
+    return view('area-instituicao.perfilEditar', compact('instituicao', 'posts'));
+})->name('instituicao.perfilEditar');
 });
 
 

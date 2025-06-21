@@ -7,7 +7,7 @@
 
      <!-- Direita -->
      <div class="navbar-right ">
-         <div class="notification-icon">
+         <div class="notification-icon"  onclick="abrirModalNotificacoes()">
              <i class='bx  bx-bell'></i>
              <div class="notification-badge">4</div>
          </div>

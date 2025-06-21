@@ -5,7 +5,7 @@
 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Posts</title>
+    <title>Curteis</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
 
@@ -179,7 +179,28 @@
 
     </main>
 
-
+    <div class="contModalverCurtei">
+        <div class="modalCur">
+               <div class="topo">
+            <p>Seu curtei</p>
+            <i class="bx bx-x"></i>
+        </div>
+        <textarea disabled>TETESTE  TETESTETETESTE TETESTE TETETESTE TETESTE TETESTETESTE</textarea>
+        <video  controls width="600" autoplay muted loop>
+             <source src="http://localhost:8000/curtei/video/video_22_1749148462.mp4" type="video/mp4">
+            
+    </video>
+    <div class="rodape">
+        <div>
+            <button><i class="bx bx-edit"></i></button>
+        <button><i class="bx bx-backspace"></i></button>
+        </div>
+        <div>
+            <button class="sair">Sair</button>
+        </div>
+    </div>
+        </div>
+    </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -208,8 +229,8 @@
             }
         });
     </script>
-
-
+   @include('area-instituicao.componentes.modal-notificacao')
+ 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq"

@@ -46,7 +46,7 @@
             <span><b>{{ $instituicao->seguindo ?? 0 }}</b> <span class="contagem-label">Seguindo</span></span>
         </div>
     </div>
-    <button class="btn btn-primary btn-sm perfil-btn-editar">Editar perfil</button>
+    <button class="btn btn-primary btn-sm perfil-btn-editar" onclick="window.location.href='{{ url('curseiInstituicao/editarPerfil') }}'">Editar perfil</button>
 </div>
 </div>
 
@@ -171,7 +171,7 @@ document.addEventListener('click', function(e) {
     }
 });
 </script>
-
+    @include('area-instituicao.componentes.modal-notificacao')
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

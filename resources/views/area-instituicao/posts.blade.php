@@ -10,15 +10,18 @@
         integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
 
 
-    @include('area-instituicao.componentes.padrao') 
+    @include('area-instituicao.componentes.padrao')
     <link rel="stylesheet" href="{{ asset('css/postsIntituicao.css') }}">
-  
+        <link rel="stylesheet" href="{{ asset('css/modalVerPost.css') }}">
+        <link rel="stylesheet" href="{{ asset('css/modalImpulsionar.css') }}">
+
+
 </head>
 
 <body>
-     @include('area-instituicao.componentes.sidebar')
+    @include('area-instituicao.componentes.sidebar')
 
-   
+
     <main>
         @include('area-instituicao.componentes.navbar', ['titulo' => 'Posts'])
         <div class="container-fluid cont">
@@ -27,21 +30,21 @@
                     <div class="card-dados">
                         <i class='bx bx-image'></i>
                         <div class="dados-card-dados">
-                            <p class="numero">40</p>
+                            <p class="numero">{{ $postCount }}</p>
                             <p>Posts</p>
                         </div>
                     </div>
                     <div class="card-dados">
                         <i class='bx bx-repeat'></i>
                         <div class="dados-card-dados">
-                            <p class="numero">3</p>
+                            <p class="numero">{{ $repostsCount }}</p>
                             <p>Reposts</p>
                         </div>
                     </div>
                     <div class="card-dados">
-                       <i class='bxr  bx-education'  ></i> 
+                        <i class='bxr  bx-education'></i>
                         <div class="dados-card-dados">
-                            <p class="numero">5</p>
+                            <p class="numero">{{ $eventoCount }}</p>
                             <p>Eventos</p>
                         </div>
                     </div>
@@ -49,90 +52,19 @@
                 <div class="topo-catalogo">
                     <div class="">
                         <div class="inputCont">
-                            <input type="text" placeholder="Pesquise pela descrição do post">
+                            <input type="text" placeholder="Pesquise pela descrição do post" id="pesquisarPosts">
                             <i class='bx  bx-search'></i>
                         </div>
                     </div>
-                    <button>
+                    <button onclick="abrirModal()">
                         <p>Novo posts</p>
                         <i class='bx bx-plus'></i>
                     </button>
                 </div>
-              <div class="lista-catalogo-card">
-                    <div class="card-conteudo">
-                       <div class="cont-desc-card">
-                         <p>Venha para a etec de guianasses ,temos muitas opções de cursos</p>
-                       </div>
-                        <div class="img">
-                            <img src="https://etecsantosdumont.com.br/wp-content/uploads/2023/03/335588264_613348350805960_3933893113793637074_n.jpg" alt="">
-                        </div>
-                        <div class="infos-conteudo">
-                            <div class="info">
-                                <i class='bx bx-heart'></i>
-                                <p>22</p>
-                            </div>
-                            <div class="info">
-                                <i class='bx  bx-message-circle'></i>
-                                <p>6</p>
-                            </div>
-                            <div class="info">
-                                <i class='bx bx-repeat-alt'></i>
-                                <p>3</p>
-                            </div>
 
-                        </div>
-
-                    </div>
-                       <div class="card-conteudo">
-                       <div class="cont-desc-card">
-                         <p>Inscrições abertas para etec de guianasses!! corra!!</p>
-                       </div>
-                        <div class="img">
-                            <img src="https://bkpsitecpsnew.blob.core.windows.net/uploadsitecps/sites/48/2025/05/2025_posts_rede_sociais__card01_vestibulinho_2025_02sem_feed_cps_02-1-scaled.png" alt="">
-                        </div>
-                        <div class="infos-conteudo">
-                            <div class="info">
-                                <i class='bx bx-heart'></i>
-                                <p>32</p>
-                            </div>
-                            <div class="info">
-                                <i class='bx  bx-message-circle'></i>
-                                <p>12</p>
-                            </div>
-                            <div class="info">
-                                <i class='bx bx-repeat-alt'></i>
-                                <p>7</p>
-                            </div>
-
-                        </div>
-
-                    </div>
-                           <div class="card-conteudo">
-                       <div class="cont-desc-card">
-                         <p>Inscrições para processo seletivo do primeiro semestre de 2025 nas Etecs estão abertas — Prefeitura de São Vicente</p>
-                       </div>
-                        <div class="img">
-                            <img src="https://etecsantosdumont.com.br/wp-content/uploads/2024/05/Vestibulinho-20242.jpg" alt="">
-                        </div>
-                        <div class="infos-conteudo">
-                            <div class="info">
-                                <i class='bx bx-heart'></i>
-                                <p>9</p>
-                            </div>
-                            <div class="info">
-                                <i class='bx  bx-message-circle'></i>
-                                <p>3</p>
-                            </div>
-                            <div class="info">
-                                <i class='bx bx-repeat-alt'></i>
-                                <p>0</p>
-                            </div>
-
-                        </div>
-
-                    </div>
-                    </div>
+                <div class="lista-catalogo-card" id="listaPosts"></div>
             </div>
+
             <div class="direita">
                 <div class="card-direita engajamento-cont">
                     <p class="titulo-card">
@@ -140,40 +72,46 @@
                     </p>
                     <div>
                         <div class="dados-engajamento">
-                            <p class="numero">40 <i class='bx bx-heart'></i></p>
+                            <p class="numero">{{  $mediaCurtidas}} <i class='bx bx-heart'></i></p>
                             <p>Curtidas</p>
                         </div>
                         <div class="dados-engajamento">
-                            <p class="numero">40 <i class='bx bx-message-circle'></i></p>
+                            <p class="numero">{{$mediaComentarios}} <i class='bx bx-message-circle'></i></p>
                             <p>Comentarios</p>
                         </div>
                         <div class="dados-engajamento">
-                            <p class="numero">40 <i class='bx bx-repeat'></i></p>
+                            <p class="numero">{{$mediaReposts}} <i class='bx bx-repeat'></i></p>
                             <p>Reposts</p>
                         </div>
                         <div class="dados-engajamento">
-                            <p class="numero">40 <i class='bx bx-share'></i></p>
-                            <p >Compartilhamentos</p>
+                            <p class="numero">0 <i class='bx bx-share'></i></p>
+                            <p>Compartilhamentos</p>
                         </div>
                     </div>
                 </div>
-                <div class="card-direita areaposts-cont">
-                    <p class="titulo-card">
-                        Área dos posts
-                    </p>
-                    <div class="cont-grafico">
-                        <canvas id="grafico"></canvas>
-                        <div>
-                            <p>40%</p>
-                            <p class="area">Tecnologia</p>
-                        </div>
-                    </div>
-                    <div class="areas-lista">
-                        <div><span style="background: #b05fc0;"></span> Tecnologia</div>
-                        <div><span style="background: var(--inst);"></span> Saúde</div>
-                         <div><span style="background: var(--sidebar);"></span> Nutrição</div>
-                    </div>
-                </div>
+                @php
+    $cores = ['#b05fc0', '#ffa07a', '#87cefa', '#32cd32'];
+@endphp
+
+<!-- Card com gráfico e legenda -->
+<div class="card-direita areaposts-cont">
+    <p class="titulo-card">Área dos posts</p>
+    <div class="cont-grafico">
+        <canvas id="grafico"></canvas>
+        <div>
+            <p>{{ $porcentagemAreaPrincipal }}%</p>
+            <p class="area">{{ $areaPrincipal }}</p>
+        </div>
+    </div>
+ <div class="areas-lista">
+    @foreach ($postsPorArea as $index => $area)
+        <div>
+            <span style="background: {{ $cores[$index % count($cores)] }};"></span>
+            {{ $area->area_post }}
+        </div>
+    @endforeach
+     </div>
+</div>
                 <div class="card-direita diassemana-cont">
                     <p class="titulo-card">
                         Posts por dia da semana
@@ -188,35 +126,135 @@
 
     </main>
 
+    <!--------------------------------------- modal post ------------------------------------------>
+    @include('area-instituicao.componentes.modais-post')
+
+ <div class="contModalPostView" id="viewPost" >
+    <form class="modalPotsView" id="formUpdatePost" >
+      <div class="topo">
+        <p>Seu Post</p>
+        <i class="bx bx-x" id="iconeX" onclick="fecharModalVerPost()"></i>
+        <p id="editandoP">Editando</p>
+      </div>
+      <div class="conteudoPost" id="postUpdateNormal">
+        <textarea name="descricaoPost" id="descPostModal" disabled>Itaú é doidera cara, desde criancinha to usando ele cara, sério. </textarea>
+        <div class="imgConteudo" id="imgModalVerPost">
+          <img src="" alt="" id="imgPostVisualizacao">
+          <label for="imgUpdate" id="labelImgUpdate">
+             <i class='bx bx-image'></i>
+            <p>Alterar imagem</p>
+          </label>
+          <input type="file" accept="image/*" name="img" id="imgUpdate" >
+        </div>
+      </div>
+      <div class="evento" id="eventoUpdate">
+         <div class="topo-evento">
+        <div class="capa_cont">
+          <img src="" alt="" id="previewCapaUpdate">
+          <label for="inputcapaUpdate">
+            <i class='bx bx-image-plus'></i>
+            <p>Adicione uma capa</p>
+          </label>
+          <input type="file" id="inputcapaUpdate" style="display: none;" name="img">
+        </div>
+        <div class="inputData">
+          <div>
+             <label for="">data inicio</label>
+  <input type="date" placeholder="" name="inicio" id="inicioUpdate" disabled>
+  <input type="time" placeholder="" class="horas" name="hinicio" id="hinicioUpdate" disabled>
+          </div>
+          <div>
+  <label for="">data término</label>
+  <input type="date" placeholder="" name="fim" id="fimUpdate" disabled>
+  <input type="time" placeholder="" class="horas" name="hfim" id="hfimUpdate" disabled>
+</div>
+        </div>
+      </div>
+      <div class="infosEvento">
+         <label for="">Título </label>
+  <div class="inputEventoCont">
+    <img src="Icone_Logo_Cursei_Preta.png" alt="">
+    <input type="text" placeholder="Escolha o título do seu evento " name="tituloEvento" id="tituloEventoUpdate" disabled>
+        </div>
+        <label for="">Link</label>
+        <div class="inputEventoCont">
+          <i class='bx bx-link'></i>
+    <input type="url" placeholder="Sua url aqui" name="link" id="linkUpdate" disabled>
+  
+        </div>
+        <label for="">data inicio</label>
+  <textarea placeholder="Descreva seu evento" name="descEvento" id="descEventoUpdate" disabled></textarea>
+      </div>
+
+      </div>
+        <div class="rodape" id="normal">
+          <div class="action">
+            <button type="button" onclick="ativarEdicao()"><i class='bx bx-edit'></i>Editar</button>
+            <button type="button" id="openModalBtn"><i class='bx bx-star'></i>Impulsionar</button>
+            <button type="button" id="desativar" onclick="abrirModalDesativar()"><i class='bx bx-backspace'></i>Desativar</button>
+          </div>
+          <div class="button">
+             <button  type="button" onclick="fecharModalVerPost()">Sair</button>
+          </div>
+        </div>
+          <div class="rodape" id="editando">
+          <div class="action">
+            <button  type="button" class="botoes" id="addLinkUpdateButton"><i class='bx bx-link '></i>Adicionar link</button>
+            <label  class="botoes" for="imgUpdate" id="addImgLabelVerModal"><i class='bx bx-image-plus'></i>Adicionar imagem</label>
+            
+          </div>
+          <div class="button">
+             <button type="button" class="cancelar" onclick="desativarEdicao()">Cancelar</button>
+            <button type="button" onclick="salvar()">Salvar</button>
+
+          </div>
+        </div>
+        <input type="hidden" name="link" id="linkUpdate">
+</form>
+  </div>
+        @include('area-instituicao.componentes.modal-Impulsionar')
+
+
+    <script>
+        const idInst = @json($instID);
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="{{ asset('js/postsInstituicao/ModalverPost.js') }}"></script>
+    <script src="{{ asset('js/postsInstituicao/postsInstituicao.js') }}"></script>
+    <script src="{{ asset('js/postsInstituicao/modalCriarPosts.js') }}"></script>
 
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <script>
-        const ctx = document.getElementById('grafico');
+   <script>
+    const labels = @json($postsPorArea->pluck('area_post'));
+    const data = @json($postsPorArea->pluck('total'));
+    const colors = @json($cores);
 
-        new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Tecnologia', 'Saúde', 'Nutrição'],
-                datasets: [{
-                    data: [40, 30, 30],
-                    backgroundColor: ['#b05fc0', '#51b8f3', '#ff8c00'],
-                    borderWidth: 0,
-                }]
-            },
-            options: {
-                rotation: -90,
-                circumference: 180,
-                cutout: '70%',
-                plugins: {
-                    legend: { display: false },
-                    tooltip: { enabled: false }
-                }
+    const ctx = document.getElementById('grafico');
+
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: data,
+                backgroundColor: ['#b05fc0', '#ffa07a', '#87cefa', '#32cd32'],
+                borderWidth: 0,
+            }]
+        },
+        options: {
+            rotation: -90,
+            circumference: 180,
+            cutout: '70%',
+            plugins: {
+                legend: { display: false },
+                tooltip: { enabled: false }
             }
-        });
-    </script>
+        }
+    });
+</script>
 
 
 

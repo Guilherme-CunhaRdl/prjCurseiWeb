@@ -20,6 +20,8 @@ return new class extends Migration
             $table->string('img_mensagem', 300)->nullable();
             $table->unsignedBigInteger('id_user_enviador');
             $table->unsignedBigInteger('id_chat');
+            $table->unsignedBigInteger('id_post')->nullable();
+            $table->foreign('id_post')->references('id')->on('tb_post')->onDelete('cascade');
             $table->foreign('id_chat')->references('id')->on('tb_chat')->onDelete('cascade');
             $table->foreign('id_user_enviador')->references('id')->on('tb_user')->onDelete('cascade');
             $table->timestamps();

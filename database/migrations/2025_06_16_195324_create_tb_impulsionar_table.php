@@ -13,13 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('tb_destaques', function (Blueprint $table) {
-            $table->id();
-            $table->date('data_destaques');
-            $table->boolean('status_destaques');
-            $table->unsignedBigInteger('id_user');
-            $table->foreign('id_user')->references('id')->on('tb_user')->onDelete('cascade');
+         Schema::create('tb_impulsionar', function (Blueprint $table) {
+            $table->id(); 
+            $table->unsignedBigInteger('id_post');
+            $table->dateTime('data_fim');
             $table->timestamps();
+
+           
+         $table->foreign('id_post')->references('id')->on('tb_post')->onDelete('cascade');
         });
     }
 
@@ -30,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('tb_destaques');
+        Schema::dropIfExists('tb_impulsionar');
     }
 };

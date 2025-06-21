@@ -2,7 +2,7 @@
 
 * {
     font-family: 'Inter', sans-serif;
-  
+    
 }
 body{
     background-color: var(--fundo);
@@ -21,14 +21,65 @@ main{
 }
  :root{
     --inst: #FF8418;
-    --fundo:#F6F6F6;
-    --branco:#fff;
-    --preto:#2c2c2c;
-    --texto:#616161;
-    --sidebar:#1B242E;
-    --cinzaClaro:#F6F6F6;
+        --fundo:#F6F6F6;
+        --branco:#fff;
+        --preto:#2c2c2c;
+        --texto:#616161;
+        --sidebar:#1B242E;
+        --cinzaClaro:#F6F6F6;
     --shadow:0px 0px 10px 0px rgba(0, 0, 0, 0.164);
 } 
 
 
+#contLoading{
+    background-color: rgba(0, 0, 0, 0.13);
+    display: none;
+    align-items: center;
+    width: 100dvw;
+    height: 100dvh;
+    justify-content: center;
+    position: fixed;
+    z-index: 99;
+}
+.spinner-bg {
+  width: 7rem;              /* igual a w-28 */
+  height: 7rem;             /* igual a h-28 */
+  border: 5px solid #d1d5db; /* border-gray-300 */
+  border-top-color: var(--inst); /* border-t-blue-400 */
+  border-radius: 9999px;     /* rounded-full */
+  animation: spin 1s linear infinite;
+  background-image: url('../img/Icone_Logo_Cursei_Preta.png');
+  background-size: 60px;
+  background-repeat: no-repeat;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+/* From Uiverse.io by AbanoubMagdy1 */ 
+.loader {
+  --dim: 5rem;
+  width: var(--dim);
+  height: var(--dim);
+  border: 5px solid var(--inst);
+  border-top-color: transparent;
+  border-bottom-color: transparent;
+  border-radius: 50%;
+  animation: spin_51 1s infinite linear;
+}
+
+@keyframes spin_51 {
+  from {
+    transform: rotate(0)
+  }
+
+  to {
+    transform: rotate(360deg)
+  }
+}

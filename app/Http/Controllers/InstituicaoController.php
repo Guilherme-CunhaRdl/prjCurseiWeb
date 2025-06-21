@@ -128,7 +128,7 @@ class InstituicaoController extends Controller
             ->where('tb_user.id', $instituicaoId)
             ->orderBy('tb_evento.created_at', 'desc')
             ->limit(2)
-            ->select('tb_evento.desc_evento', 'tb_evento.data_inicio_evento', 'link_evento' , 'tb_evento.data_fim_evento', 'tb_evento.status_evento', 'tb_post.descricao_post', 'tb_post.conteudo_post')
+            ->select('tb_evento.desc_evento', 'tb_evento.data_inicio_evento', 'link_evento', 'tb_evento.data_fim_evento', 'tb_evento.status_evento', 'tb_post.descricao_post', 'tb_post.conteudo_post')
             ->get();
 
         //retornando tudo
@@ -221,7 +221,7 @@ class InstituicaoController extends Controller
             session(['instituicao_id' => $instituicao->id_user]);
 
             // Redirecionar para a página inicial da instituição
-            return redirect()->route('dashboard.index')
+            return redirect()->route('dashboardInst')
                 ->with('success', 'Login realizado com sucesso!');
         } else {
             return redirect()->route('login')->withErrors('Email ou senha inválidos.');
@@ -355,7 +355,8 @@ class InstituicaoController extends Controller
         return view('instituicao.biblioteca-midias.index', ['posts' => $posts, 'instituicao' => $instituicao]);
     }
 
-    public function criarPost(Request $request){
+    public function criarPost(Request $request)
+    {
         $instituicaoId = session('instituicao_id'); // Recupera o ID da instituição logada  
 
 
@@ -385,8 +386,6 @@ class InstituicaoController extends Controller
         } catch (\Exception $e) {
             return redirect()->back()->with('erro', 'erro ao criar post');
         }
-        
-
     }
 
     /**
@@ -520,5 +519,73 @@ class InstituicaoController extends Controller
     public function destroy($id)
     {
         //
+    }
+    public function posts()
+    {
+        $instituicaoId = session('instituicao_id');
+        $postCount = Post::where('id_user', $instituicaoId)->where('status_post',1)->count();
+        $repostsCount = DB::table('tb_post')
+            ->join('tb_post as reposts', 'reposts.repost_id', '=', 'tb_post.id')
+            ->where('tb_post.id_user', $instituicaoId)
+            ->where('tb_post.status_post',1)
+            ->count();
+
+        $eventoCount = Post::join('tb_evento as evento', 'evento.id_Post', '=', 'tb_post.id')
+            ->where('tb_post.id_user', $instituicaoId) ->where('tb_post.status_post',1)->count();
+
+        $mediaCurtidas = DB::table('tb_post as p')
+            ->leftJoin('tb_curtida as c', 'p.id', '=', 'c.id_post')
+            ->where('p.id_user', $instituicaoId)
+            ->where('p.status_post',1)
+            ->whereNull('p.repost_id') // opcional: considera só os posts originais
+            ->selectRaw('AVG((SELECT COUNT(*) FROM tb_curtida WHERE id_post = p.id)) as media')
+            ->value('media');
+
+        $mediaComentarios = DB::table('tb_post as p')
+            ->leftJoin('tb_comentario as cm', 'p.id', '=', 'cm.id_post')
+            ->where('p.id_user', $instituicaoId)
+            ->where('p.status_post',1)
+            ->whereNull('p.repost_id')
+            ->selectRaw('AVG((SELECT COUNT(*) FROM tb_comentario WHERE id_post = p.id)) as media')
+            ->value('media');
+
+        $mediaReposts = DB::table('tb_post as p')
+            ->where('p.id_user', $instituicaoId)
+            ->where('p.status_post',1)
+            ->whereNull('p.repost_id')
+            ->selectRaw('AVG((SELECT COUNT(*) FROM tb_post WHERE repost_id = p.id)) as media')
+            ->value('media');
+
+
+        $postsPorArea = DB::table('tb_post')
+            ->select('area_post', DB::raw('COUNT(*) as total'))
+            ->where('id_user', $instituicaoId)
+            ->where('status_post',1)
+            ->groupBy('area_post')
+            ->get();
+
+        
+        $totalPosts = $postsPorArea->sum('total');
+
+       
+        $areaMaisPostada = $postsPorArea->sortByDesc('total')->first();
+        $areaPrincipal = $areaMaisPostada?->area_post;
+        $maiorTotal = $areaMaisPostada?->total ?? 0;
+
+        $porcentagemAreaPrincipal = $totalPosts > 0 ? number_format(($maiorTotal / $totalPosts) * 100, 2) : 0;
+
+        return view('area-instituicao.posts', [
+            'instID' => $instituicaoId,
+            'postCount' => $postCount,
+            'repostsCount' => $repostsCount,
+            'eventoCount' => $eventoCount,
+            'mediaCurtidas' => number_format($mediaCurtidas ?? 0, 2),
+            'mediaComentarios' => number_format($mediaComentarios ?? 0, 2),
+            'mediaReposts' => number_format($mediaReposts ?? 0, 2),
+            'porcentagemAreaPrincipal'=>$porcentagemAreaPrincipal,
+            'postsPorArea'=>$postsPorArea,
+            'areaPrincipal'=>$areaPrincipal,
+        ]);
+        
     }
 }

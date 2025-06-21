@@ -10,6 +10,8 @@ use App\Http\Controllers\InstituicaoControllerApi;
 use App\Http\Controllers\MensagemControllerApi;
 use App\Http\Controllers\HashtagController;
 use App\Http\Controllers\CurteiController;
+use App\Http\Controllers\DestaqueController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -38,6 +40,7 @@ Route::post('/cursei/postsUpdate/{id}', [PostControllerApi::class, 'updateApi'])
  Route::get('/cursei/evento/{id}', [PostControllerApi::class, 'showEvento'])->name('posts.verEvento');
  Route::post('/cursei/eventoUpdate', [PostControllerApi::class, 'editEvento'])->name('posts.editEvento');
  Route::get('/cursei/lembreteEvento/{idEvento}/{idUser}', [UserControllerApi::class, 'lembreteEvento'])->name('user.lembreteEvento');
+ Route::post('/cursei/posts/impulsionar', [PostControllerApi::class, 'impulsionar'])->name('posts.impulsionar');
 
  Route::post('/cursei/posts/{idUser}', [PostControllerApi::class, 'storeApi'])->name('posts.store');
  Route::get('/cursei/posts/user/{idUser}', [PostControllerApi::class, 'getPostsByUser'])->name('posts.byUser');
@@ -68,20 +71,26 @@ Route::post('/cursei/user/logar/', [UserControllerApi::class, 'selectUserLogin']
 
 //rotas do chat
 Route::get('/cursei/chat/mensagens/{idChat}', [MensagemControllerApi::class, 'selectMensagensApi'])->name('chat.todosChats');
-Route::get('/cursei/chat/mensagensCanal/{idCanal}', [MensagemControllerApi::class, 'selectMensagensCanalApi'])->name('chat.todosChats');
+Route::get('/cursei/chat/mensagensCanal/{idEnviador}/{idCanal}', [MensagemControllerApi::class, 'selectMensagensCanalApi'])->name('chat.todosChats');
 Route::get('/cursei/chat/recebidor/{idUserRecebidor}/{tipo}/{pesquisa}', [MensagemControllerApi::class, 'selectChatApi'])->name('chat.todosChats');
 Route::get('/cursei/chat/adicionarChat/{idUserLogado}', [MensagemControllerApi::class, 'selectSeguidoresSugestoes'])->name('chat.telaSeguidores');
 Route::get('/cursei/chat/adicionarChat/conexoes/{idUserLogado}', [MensagemControllerApi::class, 'selectSeguidoresConexoes'])->name('chat.cconexoes');
 Route::get('/cursei/chat/adicionarChat/sugestoes/{idUserLogado}', [MensagemControllerApi::class, 'selectAddChatSugestoes'])->name('chats.sugestoes');
 Route::post('/cursei/chat/adicionarChat/', [MensagemControllerApi::class, 'criarChat'])->name('chat.criarChat');
 Route::post('/cursei/chat/enviarMensagem/{tipoMensagem}', [MensagemControllerApi::class, 'enviarMensagem'])->name('chat.enviarMensagem');
+Route::post('/cursei/chat/enviarMensagem/canal/{tipoMensagem}', [MensagemControllerApi::class, 'enviarMensagemCanal'])->name('chat.enviarMensagem');
 Route::get('/cursei/chat/adicionarChat/{idUserLogado}/{idSeguidor}', [MensagemControllerApi::class, 'selectSeguidor'])->name('chat.seguidor');
 Route::post('/cursei/chat/criarCanal', [MensagemControllerApi::class, 'criarCanal'])->name('chat.criarCanal');
+Route::get('/cursei/chat/selecionarCanais/{id}', [MensagemControllerApi::class, 'selectCanaisApi']); 
+Route::post('/cursei/chat/seguirCanal', [MensagemControllerApi::class, 'seguirCanal']); 
+Route::delete('/cursei/chat/deixarSeguir/{id}', [MensagemControllerApi::class, 'deixarSeguir']); 
 
-Route::post('cursei/user/{userId}', [UserControllerApi::class, 'alterarUser']); 
+Route::post('cursei/user/atualizar/{userId}', [UserControllerApi::class, 'alterarUser']); 
+Route::post('cursei/user/alterarSenha/{userId}', [UserControllerApi::class, 'alterarSenha']);
+
 Route::post('cursei/user/autenticacao/{userId}', [UserControllerApi::class, 'atualizarDoisFatores']);
 
-Route::get('/cursei/user/selecionarUser/{id}', [UserControllerApi::class, 'selectUser']);
+Route::post('/cursei/user/selecionarUser/{id}', [UserControllerApi::class, 'selectUser']);
 
 //ROTAS DO CURTEI
 Route::group(['middleware' => ['cors']], function() {
@@ -97,6 +106,18 @@ Route::get('/cursei/explorar/recomendarHashtags/{id}',[HashtagController::class,
 //ROTAS DO CURTEI
 Route::post('/curtei/upload', [CurteiController::class, 'storeCurtei']);
 Route::get('/curtei/videos', [CurteiController::class, 'mostrarVideos']);
+Route::delete('/curtei/deletar/{id}', [CurteiController::class, 'destroy']);
+Route::post('/curtei/update/{id}', [CurteiController::class, 'updateCurtei']);
+
+
+Route::post('/curtei/{curtei}/curtir', [CurteiController::class, 'curtir']);
+Route::post('/curtei/{curtei}/descurtir', [CurteiController::class, 'descurtir']);
+Route::get('/curtidas/usuario/{userId}', [CurteiController::class, 'curtidasPorUsuario']);
+Route::post('/curtei/comentarios', [CurteiController::class, 'comentarios']);
+Route::post('/curtei/comentarios/adicionar', [CurteiController::class, 'adicionarComentario']);
+Route::post('/curtei/comentarios/curtir', [CurteiController::class, 'curtirComentario']);
+
+
 
 
 //ROTAS DOS STORYES
@@ -105,10 +126,10 @@ Route::post('/stories/upload', [StoryController::class, 'upload']);
     Route::delete('/stories/{id}', [StoryController::class, 'destroy']);
 
 
-    Route::get('/ping', function () {
-        return response()->json(['pong' => true]);
-    });
- 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+//ROTAS DOS DESTAQUES
+
+    // Listar destaques de um usuário específico
+        Route::get('/destaques/{id_user}', [DestaqueController::class, 'index']);
+        Route::post('/destaques/{id_user}', [DestaqueController::class, 'store']);
+        Route::delete('/destaques/{id_user}/{id}', [DestaqueController::class, 'destroy']);
+        Route::put('/destaques/{id_destaque}/stories', [DestaqueController::class, 'atualizarDestaques']);

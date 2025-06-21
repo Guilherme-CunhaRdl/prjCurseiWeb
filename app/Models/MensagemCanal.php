@@ -9,7 +9,7 @@ class MensagemCanal extends Model
 {
     use HasFactory;
 
-    public $table = 'tb_membros_canal';
+    public $table = 'tb_mensagem_canal';
 
-    public $fillable = ['id','conteudo_mensagem_canal', 'id_canal',  'id_user_enviador', 'created_at', 'updated_at'];
+    public $fillable = ['id','conteudo_mensagem_canal','img_mensagem_canal', 'id_canal',  'id_user_enviador', 'created_at', 'updated_at'];
 }

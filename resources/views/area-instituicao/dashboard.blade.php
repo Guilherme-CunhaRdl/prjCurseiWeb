@@ -226,6 +226,9 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
+        
+
+       
         const pizza = document.getElementById('pizza')
         new Chart(pizza, {
             type: 'doughnut',
@@ -308,7 +311,7 @@
                 datasets: [{
                         label: 'Usuarios',
                         data: [5, 2, 5, 2, 4, 5, 5],
-                        backgroundColor: '#FF8418   ',
+                        backgroundColor: getComputedStyle(root).getPropertyValue('--inst').trim(),
                         borderRadius: 2,
                         yAxisID: 'y',
 

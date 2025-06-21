@@ -357,15 +357,44 @@ class UserControllerApi extends Controller
             'resultado' => $resultado
         ]);
     }
+    public function alterarSenha(Request $request, $userId)
+{
+    $usuario = User::findOrFail($userId);
+
+    $request->validate([
+        'senha_atual' => 'required',
+        'nova_senha' => 'required',
+    ]);
+
+    // Verificar se a senha atual bate
+    if (!Hash::check($request->input('senha_atual'), $usuario->senha_user)) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Senha atual incorreta.'
+        ]);
+    }
+
+    // Atualizar a senha
+    $usuario->senha_user = Hash::make($request->input('nova_senha'));
+    $usuario->save();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Senha alterada com sucesso!'
+    ]);
+}
     public function alterarUser(Request $request, $userId)
     {
         $usuario = User::findOrFail($userId);
+    
         $usuario->fill($request->only([
-            'nome_user',
+            'email_user',
             'arroba_user',
-            'email_user'
         ]));
+    
+    
         $usuario->save();
+    
         return response()->json(['message' => 'Atualizado com sucesso']);
     }
     public function atualizarDoisFatores(Request $request, $userId)

@@ -19,6 +19,9 @@ class Curtei extends Model
         //'id_conteudo_curtei',
         'created_at',
         'updated_at',
+        'status_curtei',
+        'curtidas_count',
+        'comentarios_count',
     ];
 
     public function usuario()
@@ -32,7 +35,24 @@ class Curtei extends Model
     }
     public function curtidas()
     {
-        return $this->hasMany(Curtida::class, 'id_curtei', 'id');
+        return $this->hasMany(CurtidaCurtei::class, 'id_curtei');
     }
+
+    public function comentarios()
+{
+    return $this->hasMany(ComentarioCurtei::class, 'id_curtei');
+}
+
+    public function comentariosCount()
+    {
+        return $this->hasMany(ComentarioCurtei::class, 'id_curtei')->count();
+    }
+
+
+    public function curtidasPorUsuario()
+{
+    return $this->hasMany(CurtidaCurtei::class, 'id_curtei')
+                ->where('id_user', auth()->id());
+}
 
 }

@@ -19,6 +19,9 @@ class Curtei extends Model
         //'id_conteudo_curtei',
         'created_at',
         'updated_at',
+        'status_curtei',
+        'curtidas_count',
+        'comentarios_count',
     ];
 
     public function usuario()

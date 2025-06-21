@@ -28,6 +28,8 @@ return new class extends Migration
             $table->string('caminho_curtei_thumb');
             $table->string('legenda_curtei', 220)->nullable();
             $table->unsignedBigInteger('curtidas_count')->default(0);
+            $table->unsignedBigInteger('comentarios_count')->default(0);
+            $table->boolean('status_curtei')->default(true);
 
             $table->timestamps();
         });

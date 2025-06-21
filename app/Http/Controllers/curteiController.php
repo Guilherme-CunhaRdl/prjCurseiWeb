@@ -159,6 +159,9 @@ class curteiController extends Controller
         }
     }
 
+
+
+       //PARTE DO ADM
     public function index()
     {
         try {
@@ -210,7 +213,10 @@ class curteiController extends Controller
             return back()->with('error', 'Erro ao carregar estatísticas');
         }
     }
+//-------------------------//
 
+//VOU COMENTAR PRA NINGUEM SE PERDER NESSA BUDEGA
+ //CRUD BASICO 
     public function storeCurtei(Request $request)
     {
         header('Access-Control-Allow-Origin: *');
@@ -278,7 +284,8 @@ class curteiController extends Controller
                 'caminho_curtei' => 'curtei/video/'.$videoNome,
                 'caminho_curtei_thumb' => 'curtei/thumb/'.$thumbNome,
                 'legenda_curtei' => $validated['legenda_curtei'],
-                'id_user' => $validated['id_user'] 
+                'id_user' => $validated['id_user'],
+                'status_curtei' => '1'
             ]);
         
             return response()->json([
@@ -305,47 +312,152 @@ class curteiController extends Controller
             ], 500);
         }
     }
-    // Método para mostrar vídeos com informações do usuário e contagem de curtidas
+ 
     public function mostrarVideos()
     {
         try {
-            $videos = Curtei::with(['usuario'])
-                ->withCount('curtidas')
-                ->orderBy('created_at', 'desc')
+            $curteis = Curtei::with(['usuario'])
+                ->withCount(['curtidas', 'comentarios'])
+                ->where('status_curtei', '1')
+                ->latest()
                 ->get()
-                ->map(function ($video) {
+                ->map(function ($item) {
                     return [
-                        'id' => $video->id,
-                        'video_url' => asset($video->caminho_curtei),
-                        'thumb_url' => asset($video->caminho_curtei_thumb),
-                        'legenda' => $video->legenda_curtei,
-                        'curtidas_count' => $video->curtidas_count,
+                        'id' => $item->id,
+                        'video_url' => asset($item->caminho_curtei),
+                        'thumb_url' => asset($item->caminho_curtei_thumb),
+                        'legenda' => $item->legenda_curtei,
+                        'curtidas_count' => $item->curtidas_count,
+                        'comentarios_count' => $item->comentarios_count,
                         'usuario' => [
-                            'id' => $video->usuario->id,
-                            'nome' => $video->usuario->nome_user,
-                            'foto' => $video->usuario->img_user ? asset('img/user/fotoPerfil/'.$video->usuario->img_user) : null,
-                            'arroba' => $video->usuario->arroba_user
+                            'id' => $item->usuario->id,
+                            'nome' => $item->usuario->nome_user,
+                            'foto' => $item->usuario->img_user 
+                                ? asset('img/user/fotoPerfil/' . $item->usuario->img_user) 
+                                : null,
+                            'arroba' => $item->usuario->arroba_user
                         ],
-                        'data_postagem' => $video->created_at->format('d/m/Y H:i')
+                        'created_at' => $item->created_at->format('d/m/Y H:i')
                     ];
                 });
     
-            return response()->json([
-                'success' => true,
-                'videos' => $videos
-            ]);
-    
+            return response()->json(['success' => true, 'videos' => $curteis]);
         } catch (\Exception $e) {
-            Log::error("Erro em mostrarVideos: " . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Erro ao carregar vídeos',
-                'error' => $e->getMessage()
-            ], 500);
+            return response()->json(['success' => false, 'message' => 'Erro ao listar curteis', 'error' => $e->getMessage()], 500);
         }
     }
 
+    
+    public function updateCurtei(Request $request, $id)
+    {
+        try {
+            $curtei = Curtei::findOrFail($id);
+    
+            // Validação básica
+            $validated = $request->validate([
+                'legenda_curtei' => 'nullable|string|max:220',
+                'caminho_curtei' => [
+                    'nullable',
+                    'file',
+                    function ($attribute, $value, $fail) {
+                        $allowed = ['video/mp4', 'video/quicktime', 'video/x-msvideo'];
+                        if (!in_array($value->getMimeType(), $allowed)) {
+                            $fail("O vídeo deve ser do tipo: mp4, mov, avi.");
+                        }
+                    },
+                    'max:25600' // 25MB
+                ],
+                'caminho_curtei_thumb' => [
+                    'nullable',
+                    'image',
+                    'mimes:jpeg,png,jpg,gif',
+                    'max:2048' // 2MB
+                ]
+            ]);
+    
+            // Atualiza legenda se enviada
+            if (isset($validated['legenda_curtei'])) {
+                $curtei->legenda_curtei = $validated['legenda_curtei'];
+            }
+    
+            // Atualiza vídeo se enviado
+            if ($request->hasFile('caminho_curtei')) {
+                // Remove arquivo antigo se quiser (opcional)
+                if (file_exists(public_path($curtei->caminho_curtei))) {
+                    unlink(public_path($curtei->caminho_curtei));
+                }
+                $videoNome = 'video_'.$curtei->id.'_'.time().'.'.$request->file('caminho_curtei')->extension();
+                $request->file('caminho_curtei')->move(public_path('curtei/video'), $videoNome);
+                $curtei->caminho_curtei = 'curtei/video/'.$videoNome;
+            }
+    
+            // Atualiza thumb se enviado
+            if ($request->hasFile('caminho_curtei_thumb')) {
+                if (file_exists(public_path($curtei->caminho_curtei_thumb))) {
+                    unlink(public_path($curtei->caminho_curtei_thumb));
+                }
+                $thumbNome = 'thumb_'.$curtei->id.'_'.time().'.'.$request->file('caminho_curtei_thumb')->extension();
+                $request->file('caminho_curtei_thumb')->move(public_path('curtei/thumb'), $thumbNome);
+                $curtei->caminho_curtei_thumb = 'curtei/thumb/'.$thumbNome;
+            }
+    
+            $curtei->save();
+    
+            return response()->json([
+                'success' => true,
+                'message' => 'Curtei atualizado com sucesso',
+                'curtei' => $curtei
+            ]);
+    
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erro de validação',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            \Log::error('Erro ao atualizar curtei: '.$e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Erro no servidor'
+            ], 500);
+        }
+    }
+    
 
+
+public function destroy($id)
+{
+    try {
+        $curtei = Curtei::findOrFail($id);
+
+      
+        $curtei->status_curtei = '0'; 
+        $curtei->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Curtei inativado com sucesso'
+        ]);
+    } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Curtei não encontrado'
+        ], 404);
+    } catch (\Exception $e) {
+        \Log::error("Erro ao inativar curtei: " . $e->getMessage());
+        return response()->json([
+            'success' => false,
+            'message' => 'Erro ao inativar curtei',
+            'error' => env('APP_DEBUG') ? $e->getMessage() : null
+        ], 500);
+    }
+}
+
+
+
+
+//-------------------------//
 
     public function comentarios(Request $request)
     {
@@ -419,31 +531,32 @@ class curteiController extends Controller
         
     
         DB::beginTransaction();
+
+        try {
+            $comentario = ComentarioCurtei::create([
+                'id_curtei' => $validated['id_curtei'],
+                'id_user' => $validated['id_user'],
+                'comentario' => $comentarioLimpo
+            ]);
         
-    try {
-        $comentario = ComentarioCurtei::create([
-            'id_curtei' => $validated['id_curtei'],
-            'id_user' => $validated['id_user'],
-            'comentario' => $comentarioLimpo
-        ]);
-
-        // Carrega os dados do usuário
-        $comentario->load(['usuario' => function($query) {
-            $query->select('id', 'nome_user', 'arroba_user', 'img_user');
-        }]);
-
-        return response()->json([
-            'success' => true,
-            'data' => [
-                'id' => $comentario->id,
-                'comentario' => $comentario->comentario,
-                'created_at' => $comentario->created_at,
-                'usuario' => [
-                    'arroba_user' => $comentario->usuario->arroba_user,
-                    'img_user' => $comentario->usuario->img_user
+            DB::commit(); 
+        
+            $comentario->load(['usuario' => function($query) {
+                $query->select('id', 'nome_user', 'arroba_user', 'img_user');
+            }]);
+        
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'id' => $comentario->id,
+                    'comentario' => $comentario->comentario,
+                    'created_at' => $comentario->created_at,
+                    'usuario' => [
+                        'arroba_user' => $comentario->usuario->arroba_user,
+                        'img_user' => $comentario->usuario->img_user
+                    ]
                 ]
-            ]
-        ]);
+            ]);
 
     } catch (\Exception $e) {
             DB::rollBack();

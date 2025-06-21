@@ -106,6 +106,10 @@ Route::get('/cursei/explorar/recomendarHashtags/{id}',[HashtagController::class,
 //ROTAS DO CURTEI
 Route::post('/curtei/upload', [CurteiController::class, 'storeCurtei']);
 Route::get('/curtei/videos', [CurteiController::class, 'mostrarVideos']);
+Route::delete('/curtei/deletar/{id}', [CurteiController::class, 'destroy']);
+Route::post('/curtei/update/{id}', [CurteiController::class, 'updateCurtei']);
+
+
 Route::post('/curtei/{curtei}/curtir', [CurteiController::class, 'curtir']);
 Route::post('/curtei/{curtei}/descurtir', [CurteiController::class, 'descurtir']);
 Route::get('/curtidas/usuario/{userId}', [CurteiController::class, 'curtidasPorUsuario']);

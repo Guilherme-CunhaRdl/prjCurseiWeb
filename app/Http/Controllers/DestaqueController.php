@@ -35,6 +35,38 @@ class DestaqueController extends Controller
         ]);
     }
 
+    public function listStories($id_user)
+    {
+        try {
+            $stories = Story::where('id_user', $id_user)
+                ->orderBy('data_inicio', 'desc')
+                ->get()
+                ->map(function ($story) {
+                    return [
+                        'id' => $story->id,
+                        'conteudo_storyes' => $this->getFullUrl($story->conteudo_storyes),
+                        'tipo_midia' => $story->tipo_midia,
+                        'data_inicio' => $story->data_inicio,
+                        'legenda' => $story->legenda,
+                    ];
+                });
+
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'stories' => $stories
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erro ao carregar stories',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function store(Request $request, $id_user)
     {
         try {
@@ -212,6 +244,33 @@ class DestaqueController extends Controller
                 'message' => 'Erro ao sincronizar destaque',
                 'error' => $e->getMessage()
             ], 500);
+        }
+    }
+
+    public function show($id)
+    {
+        try {
+            $destaque = Destaque::with(['stories.user'])
+                ->findOrFail($id);
+
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'id' => $destaque->id,
+                    'titulo_destaque' => $destaque->titulo_destaque,
+                    'data_destaque' => $destaque->data_destaque,
+                    'foto_destaque' => $this->getFullUrl($destaque->foto_destaque),
+                    'stories' => $destaque->stories->map(function ($story) {
+                        return $this->formatStory($story);
+                    })
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Destaque não encontrado',
+                'error' => $e->getMessage()
+            ], 404);
         }
     }
 }

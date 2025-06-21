@@ -133,3 +133,5 @@ Route::post('/stories/upload', [StoryController::class, 'upload']);
         Route::post('/destaques/{id_user}', [DestaqueController::class, 'store']);
         Route::delete('/destaques/{id_user}/{id}', [DestaqueController::class, 'destroy']);
         Route::put('/destaques/{id_destaque}/stories', [DestaqueController::class, 'atualizarDestaques']);
+        Route::get('/destaqueEspecifico/{id}', [DestaqueController::class, 'show']);
+        Route::get('/stories/{id_user}', [DestaqueController::class, 'listStories']);

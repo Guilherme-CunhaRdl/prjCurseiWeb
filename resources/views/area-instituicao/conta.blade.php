@@ -46,7 +46,7 @@
             <span><b>{{ $instituicao->seguindo ?? 0 }}</b> <span class="contagem-label">Seguindo</span></span>
         </div>
     </div>
-    <button class="btn btn-primary btn-sm perfil-btn-editar">Editar perfil</button>
+    <button class="btn btn-primary btn-sm perfil-btn-editar" onclick="window.location.href='{{ url('curseiInstituicao/editarPerfil') }}'">Editar perfil</button>
 </div>
 </div>
 

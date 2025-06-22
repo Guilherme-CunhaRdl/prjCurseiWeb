@@ -7,7 +7,7 @@
 
      <!-- Direita -->
      <div class="navbar-right ">
-         <div class="notification-icon">
+         <div class="notification-icon"  onclick="abrirModalNotificacoes()">
              <i class='bx  bx-bell'></i>
              <div class="notification-badge">4</div>
          </div>
@@ -15,11 +15,11 @@
          <div class="dropdown">
              <div class="d-flex align-items-center gap-2 dropdown-toggle" data-bs-toggle="dropdown" role="button"
                  aria-expanded="false">
-                 <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRLlEbcdOHQQz51aAgsC6hIzwpRqTZxVxQCdC-DvkU-jG2_GQ3VbNDNz-1H3aL3USxZRF4&usqp=CAU" class="profile-img"
+                 <img src="{{asset('img/user/fotoPerfil/' . (auth()->user()->img_user ?? 'default-banner.jpg'))}}"  class="profile-img"
                      alt="Perfil">
                  <div class="profile-info">
-                     <span>Etec de Itaquera</span>
-                     <p class="small mb-0">@etecitaquera</p>
+                     <span>{{ auth()->user()->nome_user }}</span>
+                     <p class="small mb-0"> {{'@'. auth()->user()->arroba_user }}</p>
                  </div>
              </div>
 
@@ -29,7 +29,7 @@
                  <li>
                      <hr class="dropdown-divider">
                  </li>
-                 <li><a class="dropdown-item text-danger" href="#">Sair</a></li>
+                 <li><a class="dropdown-item text-danger" href="{{ route('fazerLogoff')}}">Sair</a></li>
              </ul>
          </div>
      </div>

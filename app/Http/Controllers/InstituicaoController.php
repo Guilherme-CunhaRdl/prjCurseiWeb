@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 //carbon é um modelo de data do laravel, usei ele pra criar as datas
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 //to chamando o carbon e definindo como estilo brasileiro
 Carbon::setLocale('pt-BR');
@@ -112,7 +113,7 @@ class InstituicaoController extends Controller
         }
 
 
-        //selecionando o ultimo post editado    
+        //selecionando o ultimo post editado
         $ultimoPostEditado = DB::table('tb_post')
             ->join('tb_user', 'tb_post.id_user', '=', 'tb_user.id')
             ->where('tb_user.id', $instituicaoId)
@@ -202,30 +203,199 @@ class InstituicaoController extends Controller
         ]);
     }
 
-    public function fazerLoginInstituicao(Request $request)
-    {
-        $request->validate([
-            'email' => 'required|email',
-            'senha' => 'required'
-        ]);
+// public function curteis()
+//     {
+//         $instituicaoId = session('instituicao_id');
+//         $postCount = Post::where('id_user', $instituicaoId)->where('status_post',1)->count();
+//         $repostsCount = DB::table('tb_post')
+//             ->join('tb_post as reposts', 'reposts.repost_id', '=', 'tb_post.id')
+//             ->where('tb_post.id_user', $instituicaoId)
+//             ->where('tb_post.status_post',1)
+//             ->count();
 
-        $instituicao = DB::table('tb_user')
-            ->join('tb_instituicao', 'tb_user.id', '=', 'tb_instituicao.id_user')
-            ->where('tb_user.email_user', $request->email)
-            ->where('tb_instituicao.verificado_instituicao', true)
-            ->first();
+//         $eventoCount = Post::join('tb_evento as evento', 'evento.id_Post', '=', 'tb_post.id')
+//             ->where('tb_post.id_user', $instituicaoId) ->where('tb_post.status_post',1)->count();
 
-        if ($instituicao && Hash::check($request->senha, $instituicao->senha_user)) {
-            // Se a senha estiver correta
-            // Autenticar o usuário
-            session(['instituicao_id' => $instituicao->id_user]);
+//         $mediaCurtidas = DB::table('tb_post as p')
+//             ->leftJoin('tb_curtida as c', 'p.id', '=', 'c.id_post')
+//             ->where('p.id_user', $instituicaoId)
+//             ->where('p.status_post',1)
+//             ->whereNull('p.repost_id') // opcional: considera só os posts originais
+//             ->selectRaw('AVG((SELECT COUNT(*) FROM tb_curtida WHERE id_post = p.id)) as media')
+//             ->value('media');
 
-            // Redirecionar para a página inicial da instituição
+//         $mediaComentarios = DB::table('tb_post as p')
+//             ->leftJoin('tb_comentario as cm', 'p.id', '=', 'cm.id_post')
+//             ->where('p.id_user', $instituicaoId)
+//             ->where('p.status_post',1)
+//             ->whereNull('p.repost_id')
+//             ->selectRaw('AVG((SELECT COUNT(*) FROM tb_comentario WHERE id_post = p.id)) as media')
+//             ->value('media');
+
+//         $mediaReposts = DB::table('tb_post as p')
+//             ->where('p.id_user', $instituicaoId)
+//             ->where('p.status_post',1)
+//             ->whereNull('p.repost_id')
+//             ->selectRaw('AVG((SELECT COUNT(*) FROM tb_post WHERE repost_id = p.id)) as media')
+//             ->value('media');
+
+
+//         $postsPorArea = DB::table('tb_post')
+//             ->select('area_post', DB::raw('COUNT(*) as total'))
+//             ->where('id_user', $instituicaoId)
+//             ->where('status_post',1)
+//             ->groupBy('area_post')
+//             ->get();
+
+
+//         $totalPosts = $postsPorArea->sum('total');
+
+
+//         $areaMaisPostada = $postsPorArea->sortByDesc('total')->first();
+//         $areaPrincipal = $areaMaisPostada?->area_post;
+//         $maiorTotal = $areaMaisPostada?->total ?? 0;
+
+//         $porcentagemAreaPrincipal = $totalPosts > 0 ? number_format(($maiorTotal / $totalPosts) * 100, 2) : 0;
+
+//         return view('area-instituicao.curtei', [
+//             'instID' => $instituicaoId,
+//             'postCount' => $postCount,
+//             'repostsCount' => $repostsCount,
+//             'eventoCount' => $eventoCount,
+//             'mediaCurtidas' => number_format($mediaCurtidas ?? 0, 2),
+//             'mediaComentarios' => number_format($mediaComentarios ?? 0, 2),
+//             'mediaReposts' => number_format($mediaReposts ?? 0, 2),
+//             'porcentagemAreaPrincipal'=>$porcentagemAreaPrincipal,
+//             'postsPorArea'=>$postsPorArea,
+//             'areaPrincipal'=>$areaPrincipal,
+//         ]);
+
+//     }
+
+    //LOGIN INSTITUICAO ANTIGa
+    // public function fazerLoginInstituicao(Request $request)
+    // {
+    //     $request->validate([
+    //         'email' => 'required|email',
+    //         'senha' => 'required'
+    //     ]);
+
+    //     $instituicao = DB::table('tb_user')
+    //         ->join('tb_instituicao', 'tb_user.id', '=', 'tb_instituicao.id_user')
+    //         ->where('tb_user.email_user', $request->email)
+    //         ->where('tb_instituicao.verificado_instituicao', true)
+    //         ->first();
+
+    //     if ($instituicao && Hash::check($request->senha, $instituicao->senha_user)) {
+    //         // Se a senha estiver correta
+    //         // Autenticar o usuário
+    //         session(['instituicao_id' => $instituicao->id_user]);
+
+    //         // Redirecionar para a página inicial da instituição
+    //         return redirect()->route('dashboardInst')
+    //             ->with('success', 'Login realizado com sucesso!');
+    //     } else {
+    //         return redirect()->route('login')->withErrors('Email ou senha inválidos.');
+    //     }
+
+public function fazerLoginInstituicao(Request $request)
+{
+    $request->validate([
+        'email' => 'required|email',
+        'senha' => 'required'
+    ]);
+
+    // Forma correta de usar o attempt com campos customizados
+    if (Auth::attempt([
+        'email_user' => $request->email,
+        'password' => $request->senha // Laravel usará getAuthPassword()
+    ])) {
+        $user = Auth::user();
+
+        // Verifica se é instituição verificada
+        if ($user->instituicao && $user->instituicao->verificado_instituicao) {
             return redirect()->route('dashboardInst')
                 ->with('success', 'Login realizado com sucesso!');
-        } else {
-            return redirect()->route('login')->withErrors('Email ou senha inválidos.');
         }
+
+        Auth::logout();
+        return redirect()->route('login')
+            ->withErrors(['email' => 'Instituição não verificada']);
+    }
+
+    return redirect()->route('login')
+        ->withErrors(['email' => 'Email ou senha inválidos.']);
+}
+
+public function fazerLogoffInstituicao(Request $request) {
+        Auth::logout();
+        $request->session()->invalidate(); // Invalida a sessão atual
+        $request->session()->regenerateToken(); // Gera novo token CSRF
+
+        return redirect('curseiInstituicao/login');
+}
+
+  public function dashboard()
+    {
+        // Debug no controller (aparece antes da view carregar)
+        if (config('app.debug')) {
+            $user = auth()->user();
+            // Ou para ver imediatamente (remove em produção):
+            // dump($user);
+        }
+
+        return view('area-instituicao.dashboard', [
+            'user' => auth()->user()
+        ]);
+    }
+
+    // Outros métodos convertidos de closures para métodos do controller
+    public function curteis()
+    {
+        return view('area-instituicao.curtei', [
+            'user' => auth()->user()
+        ]);
+    }
+
+    public function seguidores()
+    {
+        // Substitua pelos dados reais do banco
+        $seguidores = [
+            (object)[
+                'id' => 1,
+                'nome' => auth()->user()->nome_user,
+                'nome_usuario' => auth()->user()->arroba_user,
+                'email' => auth()->user()->email_user,
+                'foto_perfil' => auth()->user()->img_user
+            ]
+        ];
+
+        return view('area-instituicao.seguidores', [
+            'seguidores' => $seguidores,
+            'user' => auth()->user()
+        ]);
+    }
+
+    public function conta()
+    {
+        $user = auth()->user();
+        return view('area-instituicao.conta', [
+            'instituicao' => (object)[
+                'banner_user' => $user->banner_user,
+                'img_user' => $user->img_user,
+                'nome_user' => $user->nome_user,
+                // ... outros campos
+            ]
+        ]);
+    }
+
+    public function editarPerfil()
+    {
+        $user = auth()->user();
+        return view('area-instituicao.perfilEditar', [
+            'instituicao' => $user,
+            'posts' => Post::where('id_user', $user->id)->limit(2)->get()
+        ]);
     }
 
     public function logoutInstituicao()
@@ -357,7 +527,7 @@ class InstituicaoController extends Controller
 
     public function criarPost(Request $request)
     {
-        $instituicaoId = session('instituicao_id'); // Recupera o ID da instituição logada  
+        $instituicaoId = session('instituicao_id'); // Recupera o ID da instituição logada
 
 
 
@@ -520,9 +690,10 @@ class InstituicaoController extends Controller
     {
         //
     }
-    public function posts()
+
+     public function posts()
     {
-        $instituicaoId = session('instituicao_id');
+        $instituicaoId = auth()->id(); // Usar o ID do usuário autenticado
         $postCount = Post::where('id_user', $instituicaoId)->where('status_post',1)->count();
         $repostsCount = DB::table('tb_post')
             ->join('tb_post as reposts', 'reposts.repost_id', '=', 'tb_post.id')
@@ -564,10 +735,10 @@ class InstituicaoController extends Controller
             ->groupBy('area_post')
             ->get();
 
-        
+
         $totalPosts = $postsPorArea->sum('total');
 
-       
+
         $areaMaisPostada = $postsPorArea->sortByDesc('total')->first();
         $areaPrincipal = $areaMaisPostada?->area_post;
         $maiorTotal = $areaMaisPostada?->total ?? 0;
@@ -586,6 +757,6 @@ class InstituicaoController extends Controller
             'postsPorArea'=>$postsPorArea,
             'areaPrincipal'=>$areaPrincipal,
         ]);
-        
+
     }
 }

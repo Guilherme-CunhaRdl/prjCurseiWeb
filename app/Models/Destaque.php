@@ -16,6 +16,7 @@ class Destaque extends Model
 
     protected $fillable = [
         'id_user',
+        'titulo_destaque',
         'data_destaque',
         'foto_destaque',
         'status_destaque'

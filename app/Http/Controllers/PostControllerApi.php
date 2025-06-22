@@ -642,8 +642,8 @@ IF(
             $evento->update([
                 'desc_evento' => $request->descEvento,
                 'link_evento' => $request->link,
-                'data_inicio_evento' => $request->inicio,
-                'data_fim_evento' => $request->fim,
+                'data_inicio_evento' => "$request->inicio $request->hinicio",
+                'data_fim_evento' => "$request->fim $request->hfim",
                 'status_evento' => 1,
                 'updated_at' => now(),
             ]);
@@ -1002,18 +1002,18 @@ IF(
     {
 
 
-       try {
-   
-    Impulsionar::where('id_post', $request->idPost)->delete();
+        try {
 
-   
-    Impulsionar::create([
-        'id_post' => $request->idPost,
-        'data_fim' => now()->addDays($request->dias),
-    ]);
-    return "Sucesso";
-} catch (\Throwable $e) {
-    return "Erro";
-}
+            Impulsionar::where('id_post', $request->idPost)->delete();
+
+
+            Impulsionar::create([
+                'id_post' => $request->idPost,
+                'data_fim' => now()->addDays($request->dias),
+            ]);
+            return "Sucesso";
+        } catch (\Throwable $e) {
+            return "Erro";
+        }
     }
 }

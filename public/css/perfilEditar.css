@@ -1,0 +1,260 @@
+@import url(style.css);
+
+.div-img-alterar{
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background-color: var(--preto);
+    position: relative;
+}
+
+.img-alterar{
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+}
+
+.conteudo-img-perfil{
+    opacity: 0;
+    z-index: 999;
+    top: 0;
+    right: 0;
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(44, 44, 44, 0.15); /* var(--preto) com opacidade */
+    border-radius: 50%;
+    transition: 0.4s;
+    color: var(--branco);
+    font-size: 1.4rem;
+}
+.conteudo-img-perfil:hover{
+    opacity: 1;
+    cursor: pointer;
+}
+
+.span-foto-perfil{
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--preto);
+}
+.span-frase-banner{
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--preto);
+}
+
+.div-img-banner{
+    width: 97%;
+    height: 300px;
+    background-color: var(--preto);
+    border-radius: 25px;
+    object-fit: cover;
+    position: relative;
+}
+
+.img-banner{
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+    border-radius: 25px;
+}
+
+.conteudo-banner{
+    opacity: 0;
+    z-index: 999;
+    top: 0;
+    right: 0;
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    border-radius: 25px;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(44, 44, 44, 0.15); /* var(--preto) com opacidade */
+    transition: 0.4s;
+    color: var(--branco);
+    font-size: 1.4rem;
+}
+.conteudo-banner i{
+    font-size: 4rem;
+}
+.conteudo-banner:hover{
+    opacity: 1;
+    cursor: pointer;
+}
+.span-alterar{
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--preto);
+}
+
+.input-alterar{
+    width: 99%;
+    height: 100%;
+    box-shadow: 0 0 3px rgba(44, 44, 44, 0.4); /* var(--preto) com opacidade */
+    border: none;
+    border-radius: 5px;
+    padding: 20px;
+    background: var(--branco);
+    color: var(--preto);
+}
+
+.input-alterar:focus{
+    outline: none;
+}
+
+.botao-salvar{
+    background-color: var(--inst);
+    border: none;
+    color: var(--branco);
+    width: 140px;
+    height: 50px;
+    border-radius: 5px;
+    font-weight: 600;
+    margin-right: 20px;
+}
+
+.botao-cancelar{
+    background-color: var(--branco);
+    border: none;
+    color: var(--preto);
+    box-shadow: 0 0 3px rgba(44, 44, 44, 0.4); /* var(--preto) com opacidade */
+    width: 140px;
+    height: 50px;
+    border-radius: 5px;
+    font-weight: 600;
+}
+
+.box-preview-perfil{
+    width: 90%;
+    height: 770px;
+    background-color: var(--branco);
+    border: 1px solid var(--cinzaClaro);
+    border-radius: 25px;
+    overflow: scroll;
+    overflow-x: hidden;
+}
+.box-preview-perfil::-webkit-scrollbar {
+    width: 0; 
+}
+
+.box-preview-perfil::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.box-preview-perfil::-webkit-scrollbar-thumb {
+    background-color: var(--inst); 
+    border-radius: 30px;
+}
+
+.tit-preview{
+    color: var(--texto);
+    font-weight: bold;
+}
+.banner-preview{
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    border-top-right-radius: 24px;
+    border-top-left-radius: 24px;
+}
+
+.div-img-preview-perfil{
+    position: absolute;
+    bottom: -50px;
+    left: 40px;
+    border-radius: 50%;
+    width: 130px;
+    height: 130px;
+    background-color: var(--branco);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.img-preview-perfil{
+    width: 96%;
+    height: 96%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.button-editar-preview{
+    width: 206px;
+    height: 30px;
+    background-color: var(--azul);
+    border-radius: 10px;
+    border: none;
+    color: var(--branco);
+}
+
+.button-editar-preview:focus{
+    outline: none;
+}
+
+.nome-usuario-preview{
+    font-weight: bold;
+    font-size: 1.5rem;
+    color: var(--preto);
+}
+
+.arroba-usuario-preview{
+    font-weight: 600;
+    font-size: 1.0rem;
+    color: var(--texto);
+}
+
+.span-seguidores{
+    color: var(--texto);
+    font-weight: 500;
+}
+
+.botao-seguindo{
+    background-color: var(--azul);
+    width: 200px;
+    height: 35px;
+    border-radius: 10px;
+    color: var(--branco);
+    border: none;
+}
+
+.botao-mensagem{
+    background-color: var(--branco);
+    width: 200px;
+    height: 35px;
+    border-radius: 10px;
+    color: var(--preto);
+    border: var(--cinzaClaro) 1px solid;
+}
+
+.box-post-perfil-preview{
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: var(--branco);
+}
+
+.box-post-perfil-preview img{
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.box-post-conteudo-preview{
+    background-color: var(--texto);
+    width: 80%; 
+    height: auto;
+}
+.box-post-conteudo-preview img{
+    width: 100%; 
+    object-fit: cover;
+}
+

@@ -130,13 +130,13 @@
     @include('area-instituicao.componentes.modais-post')
 
  <div class="contModalPostView" id="viewPost" >
-    <form class="modalPotsView" id="formUpdatePost" >
+    <div class="modalPotsView" id="modalPotsView" >
       <div class="topo">
         <p>Seu Post</p>
         <i class="bx bx-x" id="iconeX" onclick="fecharModalVerPost()"></i>
         <p id="editandoP">Editando</p>
       </div>
-      <div class="conteudoPost" id="postUpdateNormal">
+      <form class="conteudoPost" id="postUpdateNormal" >
         <textarea name="descricaoPost" id="descPostModal" disabled>Itaú é doidera cara, desde criancinha to usando ele cara, sério. </textarea>
         <div class="imgConteudo" id="imgModalVerPost">
           <img src="" alt="" id="imgPostVisualizacao">
@@ -146,27 +146,31 @@
           </label>
           <input type="file" accept="image/*" name="img" id="imgUpdate" >
         </div>
-      </div>
-      <div class="evento" id="eventoUpdate">
+</form>
+      <form class="evento" id="eventoUpdate">
          <div class="topo-evento">
         <div class="capa_cont">
           <img src="" alt="" id="previewCapaUpdate">
-          <label for="inputcapaUpdate">
+          <label for="inputcapaUpdate" id="labelAlterCapa" style="display: none;">
             <i class='bx bx-image-plus'></i>
-            <p>Adicione uma capa</p>
+            <p>Alterar capa</p>
           </label>
           <input type="file" id="inputcapaUpdate" style="display: none;" name="img">
         </div>
         <div class="inputData">
           <div>
              <label for="">data inicio</label>
-  <input type="date" placeholder="" name="inicio" id="inicioUpdate" disabled>
-  <input type="time" placeholder="" class="horas" name="hinicio" id="hinicioUpdate" disabled>
+                <div class="d-flex">
+                      <input type="date" placeholder="" name="inicio" id="inicioUpdate" disabled>
+  <input type="time" placeholder="" class="hinicio" name="hinicio" id="hinicioUpdate" disabled>
+                </div>
           </div>
           <div>
   <label for="">data término</label>
-  <input type="date" placeholder="" name="fim" id="fimUpdate" disabled>
-  <input type="time" placeholder="" class="horas" name="hfim" id="hfimUpdate" disabled>
+    <div class="d-flex">
+          <input type="date" placeholder="" name="fim" id="fimUpdate" disabled>
+  <input type="time" placeholder="" class="hfim" name="hfim" id="hfimUpdate" disabled>
+    </div>
 </div>
         </div>
       </div>
@@ -182,11 +186,11 @@
     <input type="url" placeholder="Sua url aqui" name="link" id="linkUpdate" disabled>
   
         </div>
-        <label for="">data inicio</label>
+        <label for="">Descrição</label>
   <textarea placeholder="Descreva seu evento" name="descEvento" id="descEventoUpdate" disabled></textarea>
       </div>
-
-      </div>
+    <input type="hidden" name="idEvento" id="idEvendoInputHiddenUpdate">
+</form>
         <div class="rodape" id="normal">
           <div class="action">
             <button type="button" onclick="ativarEdicao()"><i class='bx bx-edit'></i>Editar</button>
@@ -198,7 +202,7 @@
           </div>
         </div>
           <div class="rodape" id="editando">
-          <div class="action">
+          <div class="action" id="actions">
             <button  type="button" class="botoes" id="addLinkUpdateButton"><i class='bx bx-link '></i>Adicionar link</button>
             <label  class="botoes" for="imgUpdate" id="addImgLabelVerModal"><i class='bx bx-image-plus'></i>Adicionar imagem</label>
             
@@ -210,7 +214,7 @@
           </div>
         </div>
         <input type="hidden" name="link" id="linkUpdate">
-</form>
+</div>
   </div>
         @include('area-instituicao.componentes.modal-Impulsionar')
 
@@ -256,7 +260,7 @@
     });
 </script>
 
-
+    @include('area-instituicao.componentes.modal-notificacao')
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq"

@@ -21,7 +21,7 @@ class User extends Authenticatable
     //     'name',
     //     'email',
     //     'password',
-        
+
     // ];
     protected $table ='tb_user';
     protected $fillable = [
@@ -67,25 +67,30 @@ class User extends Authenticatable
     {
         return $this->hasOne(Instituicao::class, 'id_user');
     }
-    
+
     public function posts()
     {
         return $this->hasMany(Post::class, 'id_user');
     }
-    
+
     public function seguidor()
     {
-        return $this->hasMany(Seguidores::class, 'id_user_seguido'); 
+        return $this->hasMany(Seguidores::class, 'id_user_seguido');
     }
 
     public function seguindo()
     {
-        return $this->hasMany(Seguidores::class, 'id_user_seguidor'); 
+        return $this->hasMany(Seguidores::class, 'id_user_seguidor');
     }
     public function mensagem(){
         return $this->hasOne(Mensagem::class, 'id_user_enviador');
     }
     public function chat(){
         return $this->hasMany(Chat::class);
+    }
+
+        public function getAuthPassword()
+    {
+        return $this->senha_user; // Campo correto da senha
     }
 }

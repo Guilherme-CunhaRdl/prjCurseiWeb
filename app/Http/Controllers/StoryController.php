@@ -15,7 +15,7 @@ class StoryController extends Controller
     /**
      * Exibe todos os stories ativos
      */
-    public function index(Request $request)
+    public function indexStatus(Request $request)
     {
         header('Access-Control-Allow-Origin: *');
         header('Access-Control-Allow-Methods: GET, OPTIONS');
@@ -60,7 +60,7 @@ class StoryController extends Controller
     /**
      * Publica um novo story
      */
-    public function upload(Request $request)
+    public function uploadStatus(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'conteudo_storyes' => 'required|file',
@@ -81,18 +81,21 @@ class StoryController extends Controller
             $extension = strtolower($file->getClientOriginalExtension());
 
             $mediaType = in_array($extension, ['jpg', 'jpeg', 'png']) ? 'image' : 'video';
-            $directory = 'storys/' . ($mediaType === 'image' ? 'img' : 'videos');
-
+            $directory = "storys/" . ($mediaType === 'image' ? 'img' : 'videos');
+            
+            // Nome único para o arquivo
             $fileName = Str::random(20) . '_' . time() . '.' . $extension;
+            
+            // Mover arquivo para o public
             $file->move(public_path($directory), $fileName);
             $relativePath = $directory . '/' . $fileName;
-
+            
+            // Criar registro no banco
             $story = Story::create([
                 'conteudo_storyes' => $relativePath,
                 'data_inicio' => Carbon::now(),
                 'status_storyes' => true,
                 'id_user' => $request->id_user,
-                'legenda' => $request->legenda,
                 'tipo_midia' => $mediaType
             ]);
 
@@ -101,7 +104,7 @@ class StoryController extends Controller
                 'message' => 'Story publicado com sucesso!',
                 'data' => [
                     'id' => $story->id,
-                    'url' => url($relativePath),
+                    
                     'tipo_midia' => $story->tipo_midia,
                     'data_inicio' => $story->data_inicio->format('Y-m-d H:i:s')
                 ]
@@ -117,10 +120,11 @@ class StoryController extends Controller
         }
     }
 
+
     /**
      * Deleta um story por ID
      */
-    public function destroy($id)
+    public function destroyStatus($id)
     {
         try {
             $story = Story::findOrFail($id);

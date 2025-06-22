@@ -31,22 +31,22 @@
         <span class="titulo">Perfil no Cursei</span>
     </div>
     <div class="perfil-banner-box">
-        <img src="{{ asset('img/img-instituicao/banners/' . ($instituicao->banner_user ?? 'banner.png')) }}" alt="Banner" class="perfil-banner-img">
+        <img src="{{asset('img/user/bannerPerfil/' . (auth()->user()->banner_user ?? 'default-banner.jpg'))}}" alt="Banner" class="perfil-banner-img">
         <div class="perfil-foto-box">
-            <img src="{{ asset('img/img-instituicao/img-perfil/' . ($instituicao->img_user ?? 'img-perfil.png')) }}" alt="Foto" class="perfil-foto-img">
+            <img src="{{asset('img/user/fotoPerfil/' . (auth()->user()->img_user ?? 'default-banner.jpg'))}}" alt="Foto" class="perfil-foto-img">
         </div>
     </div>
 <div class="perfil-info-box">
     <div class="perfil-nome-arroba-box">
-        <span class="perfil-nome">{{ $instituicao->nome_user ?? 'Nome da Instituição' }}</span>
-        <span class="perfil-arroba">@ {{ $instituicao->arroba_user ?? 'usuario' }}</span>
-        <span class="perfil-bio-box">{{ $instituicao->bio_user ?? 'Sua bio aqui...' }}</span>
+        <span class="perfil-nome">{{ auth()->user()->nome_user }}</span>
+        <span class="perfil-arroba">{{'@'. auth()->user()->arroba_user }}</span>
+        <span class="perfil-bio-box">{{ auth()->user()->bio_user }}</span>
         <div class="perfil-contagem-box">
             <span><b>{{ $instituicao->seguidores ?? 1 }}</b> <span class="contagem-label">Seguidores</span></span>
             <span><b>{{ $instituicao->seguindo ?? 0 }}</b> <span class="contagem-label">Seguindo</span></span>
         </div>
     </div>
-    <button class="btn btn-primary btn-sm perfil-btn-editar">Editar perfil</button>
+    <button class="btn btn-primary btn-sm perfil-btn-editar" onclick="window.location.href='{{ url('curseiInstituicao/editarPerfil') }}'">Editar perfil</button>
 </div>
 </div>
 
@@ -59,22 +59,22 @@
     <div class="institucional-info">
         <div class="institucional-topo">
             <div>
-                <span class="nome-inst">Etec de itaquera</span>
-                <span class="cidade">Cidade/Estado</span><br>
-                <span class="arroba-inst">@etecitaquera</span>
+                <span class="nome-inst">{{ auth()->user()->nome_user }}</span>
+                <span class="cidade">{{auth()->user()->instituicao->estado_instituicao}}</span><br>
+                <span class="arroba-inst">{{'@'. auth()->user()->arroba_user }}</span>
             </div>
             <button class="btn btn-primary btn-sm btn-editar-conta" onclick="abrirModalEditarConta()">Editar conta</button>
         </div>
         <div class="institucional-dados">
             <div>
                 <div class="dado-label">CNPJ:</div>
-                <div class="dado-valor">12.345.678/0001-90</div>
+                <div class="dado-valor">{{auth()->user()->instituicao->cnpj_instituicao}}</div>
                 <div class="dado-label">Telefone:</div>
-                <div class="dado-valor">(11) 91234-5678</div>
+                <div class="dado-valor">{{auth()->user()->instituicao->telefone}}</div>
             </div>
             <div>
                 <div class="dado-label">Email:</div>
-                <div class="dado-valor">etecitaquera@gmail.com</div>
+                <div class="dado-valor">{{auth()->user()->email_user}}</div>
                 <div class="dado-label">Senha:</div>
                 <div class="dado-valor">*********</div>
             </div>
@@ -171,7 +171,7 @@ document.addEventListener('click', function(e) {
     }
 });
 </script>
-
+    @include('area-instituicao.componentes.modal-notificacao')
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

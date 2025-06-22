@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 
 class DestaqueController extends Controller
 {
@@ -203,94 +205,109 @@ class DestaqueController extends Controller
         return $base . '/' . ltrim($path, '/');
     }
 
-    public function atualizarDestaques(Request $request, $id_destaque)
-    {
-        try {
-            $destaque = Destaque::with('stories')->findOrFail($id_destaque);
-            
-            $validator = Validator::make($request->all(), [
-                'stories' => 'required|array',
-                'stories.*' => [
-                    'integer',
-                    function ($attribute, $value, $fail) use ($destaque) {
-                        $story = Story::find($value);
-                        if (!$story || $story->id_user != $destaque->id_user) {
-                            $fail("O story #$value não existe ou não pertence ao usuário.");
-                        }
-                    }
-                ],
-                'titulo_destaque' => 'sometimes|string|max:255'
-            ]);
+    
+public function atualizarDestaques(Request $request, $id_destaque)
+{
+    try {
+        $destaque = Destaque::findOrFail($id_destaque);
+        $id_user = $destaque->id_user;
+        
+        $validator = Validator::make($request->all(), [
+            'stories' => 'required|array',
+            'stories.*' => [
+                'integer',
+                Rule::exists('tb_storyes', 'id')->where('id_user', $id_user)
+            ],
+            'titulo_destaque' => 'required|string|max:255',
+            'foto_destaque' => 'sometimes|image|mimes:jpg,jpeg,png|max:2048'
+        ]);
 
-            if ($validator->fails()) {
-                return response()->json([
-                    'success' => false,
-                    'errors' => $validator->errors()
-                ], 422);
-            }
-
-            // Atualizar título
-            $destaque->titulo_destaque = $request->titulo_destaque;
-            $destaque->save();
-
-            // Sincronizar stories
-            $destaque->stories()->sync($request->input('stories'));
-            
-            // Atualizar foto de capa se necessário
-            $firstStory = $destaque->stories()->first();
-            if ($firstStory) {
-                $destaque->foto_destaque = $firstStory->conteudo_storyes;
-                $destaque->save();
-            }
-
-            // Carregar relações atualizadas
-            $destaque->load('stories.user');
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Destaque atualizado com sucesso!',
-                'data' => [
-                    'titulo_destaque' => $destaque->titulo_destaque,
-                    'foto_destaque' => $this->getFullUrl($destaque->foto_destaque),
-                    'stories' => $destaque->stories->map(function ($story) {
-                        return $this->formatStory($story);
-                    })
-                ]
-            ]);
-
-        } catch (\Exception $e) {
+        if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'message' => 'Erro ao sincronizar destaque',
-                'error' => $e->getMessage()
-            ], 500);
+                'message' => 'Erro de validação',
+                'errors' => $validator->errors()
+            ], 422);
         }
+
+        // Atualizar título
+        $destaque->titulo_destaque = $request->titulo_destaque;
+
+        // Processar nova imagem se foi enviada
+        if ($request->hasFile('foto_destaque')) {
+            // Remover imagem antiga se existir
+            if ($destaque->foto_destaque && file_exists(public_path($destaque->foto_destaque))) {
+                unlink(public_path($destaque->foto_destaque));
+            }
+            
+            $file = $request->file('foto_destaque');
+            $extension = strtolower($file->getClientOriginalExtension());
+            $fileName = Str::random(20) . '_' . time() . '.' . $extension;
+            $directory = public_path('img/destaques');
+            
+            if (!file_exists($directory)) {
+                mkdir($directory, 0755, true);
+            }
+
+            $file->move($directory, $fileName);
+            $destaque->foto_destaque = 'img/destaques/' . $fileName;
+        }
+
+        $destaque->save();
+
+        // Sincronizar stories
+        $destaque->stories()->sync($request->input('stories'));
+
+        $destaque->load('stories.user');
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Destaque atualizado com sucesso!',
+            'data' => [
+                'id' => $destaque->id,
+                'titulo_destaque' => $destaque->titulo_destaque,
+                'data_destaque' => $destaque->data_destaque,
+                'foto_destaque' => $this->getFullUrl($destaque->foto_destaque),
+                'stories' => $destaque->stories->map(function ($story) {
+                    return $this->formatStory($story);
+                })
+            ]
+        ]);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Erro ao atualizar destaque',
+            'error' => $e->getMessage()
+        ], 500);
     }
+}
 
     public function show($id)
-    {
-        try {
-            $destaque = Destaque::with(['stories.user'])
-                ->findOrFail($id);
+{
+    try {
+        $destaque = Destaque::with(['stories.user'])
+            ->findOrFail($id);
 
-            return response()->json([
-                'success' => true,
-                'data' => [
-                    'id' => $destaque->id,
-                    'titulo_destaque' => $destaque->titulo_destaque,
-                    'data_destaque' => $destaque->data_destaque,
-                    'foto_destaque' => $this->getFullUrl($destaque->foto_destaque),
-                    'stories' => $destaque->stories->map(function ($story) {
-                        return $this->formatStory($story);
-                    })
-                ]
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Destaque não encontrado',
-                'error' => $e->getMessage()
-            ], 404);
-        }
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'id' => $destaque->id,
+                'titulo_destaque' => $destaque->titulo_destaque,
+                'data_destaque' => $destaque->data_destaque,
+                'foto_destaque' => $this->getFullUrl($destaque->foto_destaque),
+                'stories' => $destaque->stories->map(function ($story) {
+                    return $this->formatStory($story);
+                })
+            ]
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Erro ao buscar destaque',
+            'error' => $e->getMessage()
+        ], 500); // Alterado para 500 para erros internos
     }
+}
+
 }

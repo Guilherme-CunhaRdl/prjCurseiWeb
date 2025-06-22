@@ -121,9 +121,9 @@ Route::post('/curtei/comentarios/curtir', [CurteiController::class, 'curtirComen
 
 
 //ROTAS DOS status
-        Route::post('/status/upload', [StoryController::class, 'upload']);
-        Route::get('/status', [StoryController::class, 'index']);
-        Route::delete('/status/{id}', [StoryController::class, 'destroy']);
+        Route::post('/status/upload', [StoryController::class, 'uploadStatus']);
+        Route::get('/status', [StoryController::class, 'indexStatus']);
+        Route::delete('/status/{id}', [StoryController::class, 'destroyStatus']);
         Route::post('/status/like', [StoryController::class, 'toggleLike']);
         Route::get('/status/is-liked', [StoryController::class, 'isLiked']);
 //ROTAS DOS DESTAQUES

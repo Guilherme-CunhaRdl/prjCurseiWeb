@@ -12,14 +12,10 @@ class StoryController extends Controller
 {
     public function upload(Request $request)
     {
-
-        
-        // Validação
         $validator = Validator::make($request->all(), [
             'conteudo_storyes' => 'required|file',
             'id_user' => 'required|integer|exists:tb_user,id'
         ]);
-
 
         if ($validator->fails()) {
             return response()->json([
@@ -33,32 +29,41 @@ class StoryController extends Controller
             $file = $request->file('conteudo_storyes');
             $extension = strtolower($file->getClientOriginalExtension());
 
-            \Log::info('Upload recebido', [
-                'original_name' => $file->getClientOriginalName(),
-                'mime_type' => $file->getClientMimeType(),
-                'size' => $file->getSize()
-            ]);
-            
-            // Determinar tipo de mídia e diretório
             $mediaType = in_array($extension, ['jpg', 'jpeg', 'png']) ? 'image' : 'video';
             $directory = "storys/" . ($mediaType === 'image' ? 'img' : 'videos');
-            
-            // Nome único para o arquivo
             $fileName = Str::random(20) . '_' . time() . '.' . $extension;
-            
-            // Mover arquivo para o public
+
             $file->move(public_path($directory), $fileName);
-            
-            // Caminho relativo para salvar no banco
             $relativePath = $directory . '/' . $fileName;
-            
-            // Criar registro no banco
+
+            $thumbnailPath = null;
+
+            // Se for vídeo, gerar thumbnail
+            if ($mediaType === 'video') {
+                $thumbnailDir = 'storys/thumbnails';
+                if (!file_exists(public_path($thumbnailDir))) {
+                    mkdir(public_path($thumbnailDir), 0755, true);
+                }
+
+                $thumbnailName = Str::random(20) . '_thumb.jpg';
+                $fullVideoPath = public_path($relativePath);
+                $fullThumbnailPath = public_path($thumbnailDir . '/' . $thumbnailName);
+
+                // Gerar thumbnail usando FFmpeg
+                $cmd = "ffmpeg -i \"$fullVideoPath\" -ss 00:00:01.000 -vframes 1 \"$fullThumbnailPath\"";
+                exec($cmd);
+
+                $thumbnailPath = file_exists($fullThumbnailPath) ? $thumbnailDir . '/' . $thumbnailName : null;
+            }
+
+            // Criar story
             $story = Story::create([
                 'conteudo_storyes' => $relativePath,
                 'data_inicio' => Carbon::now(),
                 'status_storyes' => true,
                 'id_user' => $request->id_user,
-                'tipo_midia' => $mediaType
+                'tipo_midia' => $mediaType,
+                'thumbnail' => $thumbnailPath // NOVO campo
             ]);
 
             return response()->json([
@@ -66,7 +71,8 @@ class StoryController extends Controller
                 'message' => 'Story publicado com sucesso!',
                 'data' => [
                     'id' => $story->id,
-                    'url' => url($relativePath), // URL completa
+                    'url' => url($relativePath),
+                    'thumbnail' => $thumbnailPath ? url($thumbnailPath) : null,
                     'tipo_midia' => $story->tipo_midia,
                     'data_inicio' => $story->data_inicio->format('Y-m-d H:i:s')
                 ]
@@ -79,10 +85,9 @@ class StoryController extends Controller
                 'message' => 'Erro ao processar o story',
                 'error' => $e->getMessage()
             ], 500);
-
-            
         }
     }
+
 
     public function index(Request $request)
     {

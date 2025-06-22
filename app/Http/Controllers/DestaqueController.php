@@ -7,6 +7,7 @@ use App\Models\Story;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
+use Illuminate\Support\Str;
 
 class DestaqueController extends Controller
 {
@@ -67,13 +68,14 @@ class DestaqueController extends Controller
         }
     }
 
-    public function store(Request $request, $id_user)
+     public function store(Request $request, $id_user)
     {
         try {
             $validator = Validator::make($request->all(), [
                 'stories' => 'required|array|min:1',
-                'stories.*' => 'integer|exists:tb_storyes,id,id_user,'.$id_user,
-                'titulo_destaque' => 'required|string|max:255'
+                'stories.*' => 'integer|exists:tb_storyes,id,id_user,' . $id_user,
+                'titulo_destaque' => 'required|string|max:255',
+                'foto_destaque' => 'nullable|file|mimes:jpg,jpeg,png|max:2048'
             ]);
 
             if ($validator->fails()) {
@@ -84,19 +86,37 @@ class DestaqueController extends Controller
                 ], 422);
             }
 
-            $firstStory = Story::find($request->input('stories')[0]);
-            
+            $fotoPath = null;
+
+            if ($request->hasFile('foto_destaque')) {
+                $file = $request->file('foto_destaque');
+                $extension = strtolower($file->getClientOriginalExtension());
+                $fileName = Str::random(20) . '_' . time() . '.' . $extension;
+
+                // Criar diretório se não existir
+                $directory = public_path('img/destaques');
+                if (!file_exists($directory)) {
+                    mkdir($directory, 0755, true);
+                }
+
+                $file->move($directory, $fileName);
+
+                $fotoPath = 'img/destaques/' . $fileName;
+            } else {
+                $firstStory = Story::find($request->input('stories')[0]);
+                $fotoPath = $firstStory ? $firstStory->conteudo_storyes : null;
+            }
+
             $destaque = Destaque::create([
                 'id_user' => $id_user,
                 'titulo_destaque' => $request->titulo_destaque,
                 'data_destaque' => Carbon::now(),
-                'foto_destaque' => $firstStory->conteudo_storyes,
+                'foto_destaque' => $fotoPath,
                 'status_destaque' => 1
             ]);
 
             $destaque->stories()->attach($request->input('stories'));
-            
-            // Carregar relações para resposta
+
             $destaque->load('stories.user');
 
             return response()->json([
@@ -112,8 +132,8 @@ class DestaqueController extends Controller
                     })
                 ]
             ], 201);
-
         } catch (\Exception $e) {
+            \Log::error('Erro ao criar destaque:', ['exception' => $e]);
             return response()->json([
                 'success' => false,
                 'message' => 'Erro ao criar destaque',
@@ -121,7 +141,7 @@ class DestaqueController extends Controller
             ], 500);
         }
     }
-
+        
     public function destroy($id_user, $id)
     {
         try {

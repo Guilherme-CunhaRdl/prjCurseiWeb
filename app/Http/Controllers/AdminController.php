@@ -175,6 +175,7 @@ class AdminController extends Controller
 
         return redirect('curseiAdm/login');
     }
+    
     public function nome()
     {
         $nome = Adm::pluck('nome_admin');

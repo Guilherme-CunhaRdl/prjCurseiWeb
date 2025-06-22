@@ -10,7 +10,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
 
-    
+
     <link rel="stylesheet" href="{{ asset('css/dashboardInst.css') }}">
             @include('area-instituicao.componentes.padrao')
 
@@ -21,7 +21,7 @@
 
     <main>
 @include('area-instituicao.componentes.navbar', ['titulo' => 'Dashboard'])
-       
+
         <div class="container-fluid cont">
             <div class="esquerda">
                 <div class="TopDados">
@@ -225,11 +225,11 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
-    <script>
-        
 
-       
+    <script>
+
+
+
         const pizza = document.getElementById('pizza')
         new Chart(pizza, {
             type: 'doughnut',
@@ -352,7 +352,7 @@
             }
         });
     </script>
- 
+
 
 
 

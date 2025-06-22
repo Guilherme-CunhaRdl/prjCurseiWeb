@@ -16,11 +16,11 @@ Route::get('/', function () {
 // prefixo da area adm ---------------------------------------------------------------------------------------------------------
 
 route::prefix('curseiAdm')->group(function(){
-    
-    // rotas de views
+
+    // rotas de v    iews
     Route::get('/','App\Http\Controllers\AdminController@index')->middleware('auth:adm');
-    
-    Route::get('/login', function () {
+
+    Route::get('/log    in', function () {
         return view('area-adm.login');
     })->name('login');
     Route::get('/usuarios','App\Http\Controllers\userController@usuariosAdm')->middleware('auth:adm')->name('usuario');
@@ -34,10 +34,10 @@ route::prefix('curseiAdm')->group(function(){
     Route::get('/tdRellsInst','App\http\Controllers\AdminController@selectAllRellsAdm');
     Route::get('/dashUsuarioAdm/{id}','App\http\Controllers\AdminController@DashDoUserAdm');
     Route::get('/dashInstituicaoAdm/{id}','App\http\Controllers\AdminController@DashDaInstAdm');
-    
-    
+
+
     // funcões
-    Route::get('/deslogar','App\Http\Controllers\AdminController@deslogar');
+    Route::get('/de    sl    ogar','App\Http\Controllers\AdminController@deslogar');
     Route::post('/logar','App\Http\Controllers\AdminController@logar');
     Route::get('/novoadm','App\Http\Controllers\AdminController@store');
     Route::get('/buscarUsuarios','App\Http\Controllers\userController@buscarUsuarios')->middleware('auth:adm');
@@ -50,12 +50,12 @@ route::prefix('curseiAdm')->group(function(){
     Route::put('/instituicao/{id}/atualizarInst', [AdminController::class, 'atualizarInst'])->name('instituicao.atualizarDados');
     Route::put('/instituicao/{id}/atualizarEndereco', [AdminController::class, 'atualizarInstDados'])->name('instituicao.atualizarEndereco');
     Route::get('/verificarInts/{id}/{acao}', 'App\Http\Controllers\AdminController@verificarInst');
-    
+
 });
 
 
 
-// fim da area adm ---------------------------------------------------------------------------------------------------------
+// fim da area adm -------------------------    --------------------------------------------------------------------------------
 
 // inicio da area instituicao ---------------------------------------------------------------------------------------------------------
 
@@ -63,8 +63,8 @@ route::prefix('curseiAdm')->group(function(){
 // route::prefix('curseiInstituicao')->group( function(){
 // //rotas
 // Route::get('/dashboard', [InstituicaoController::class, 'index'])->name('dashboard.index');
- 
-// Route::get('/analiseConteudo', [InstituicaoController::class, 'analiseConteudoInstituicao'])->name('analiseConteudo');
+
+// Route::get('/analiseConteudo', [InstituicaoController::class,  'analiseConteudoInstituicao'])->name('analiseConteudo');
 // Route::get('/bibliotecaMidias', [InstituicaoController::class, 'bibliotecaMidiaIndex'])->name('biblioteca.index');
 // Route::get('/personalizacaoPagina', [InstituicaoController::class, 'personalizacaoIndex'])->name('personalizacao.index');
 
@@ -74,19 +74,25 @@ route::prefix('curseiAdm')->group(function(){
 // Route::post('/bibliotecaMidia/criarPost', [InstituicaoController::class, 'criarPost'])->name('biblioteca.criarPost');
 // });
 Route::prefix('curseiInstituicao')->group(function () {
-     Route::post('/fazerLogin', [InstituicaoController::class, 'fazerLoginInstituicao'])->name('fazerLogin');
-    Route::get('/logoffInstituicao', [InstituicaoController::class, 'logoutInstituicao'])->name('logout');
+    // Rotas públicas
     Route::get('/login', [InstituicaoController::class, 'loginInstituicao'])->name('login');
-    Route::get('/dashboard', function () {
-        return view('area-instituicao.dashboard');
-    })->name('dashboardInst');
+    Route::post('/fazerLogin', [InstituicaoController::class, 'fazerLoginInstituicao'])->name('fazerLogin');
 
-   Route::get('/posts', [InstituicaoController::class, 'posts'])->name('posts.index');
+    // Rotas protegidas (requerem autenticação)
+    Route::middleware(['auth'])->group(function () {
+        // Logout
+        Route::get('/fazer', [InstituicaoController::class, 'fazerLogoffInstituicao'])->name('fazerLogoff');
 
-            Route::get('/curteis', function () {
-        return view('area-instituicao.curtei');
-    })->name('curteiInst');
-    
+        // Dashboard (agora usando o controller)
+        Route::get('/dashboard', [InstituicaoController::class, 'dashboard'])->name('dashboardInst');
+
+        // Posts
+        Route::get('/posts', [InstituicaoController::class, 'posts'])->name('posts.index');
+
+        // Curtidas
+        Route::get('/curteis', [InstituicaoController::class, 'curteis'])->name('curteiInst');
+
+        // Seguidores
 Route::get('/seguidores', function () {
     $seguidores = [
         (object)[
@@ -107,57 +113,12 @@ Route::get('/seguidores', function () {
     return view('area-instituicao.seguidores', compact('seguidores'));
 })->name('instituicao.seguidores');
 
-Route::get('/conta', function () {  
-        // Exemplo de dados fictícios para exibir na tela
-        $instituicao = (object)[
-            'banner_user' => 'banner.png',
-            'img_user' => 'img-perfil.png',
-            'nome_user' => 'Etec de itaquera',
-            'arroba_user' => 'etecitaquera',
-            'bio_user' => 'Mane fé filho, é suco de goiaba...',
-            'seguidores' => 1,
-            'seguindo' => 0,
-            'cnpj' => '12.345.678/0001-90',
-            'telefone' => '(11) 91234-5678',
-            'email' => 'etecitaquera@gmail.com'
-        ];
-        return view('area-instituicao.conta', compact('instituicao'));
-    })->name('instituicao.conta');
+        // Conta
+        Route::get('/conta', [InstituicaoController::class, 'conta'])->name('instituicao.conta');
 
-
-    Route::get('/editarPerfil', function () {
-    $instituicao = (object)[
-        'banner_user' => 'banner.png',
-        'img_user' => 'img-perfil.png',
-        'nome_user' => 'Etec de Itaquera',
-        'arroba_user' => 'etecitaquera',
-        'bio_user' => 'Mane fé filho, é suco de goiaba...',
-        'seguidores' => 1,
-        'seguindo' => 0
-    ];
-
-    // Dados de posts fictícios para o preview
-    $posts = [
-        (object)[
-            'nome_user' => 'Etec de Itaquera',
-            'arroba_user' => 'etecitaquera',
-            'img_user' => 'img-perfil.png',
-            'conteudo_post' => 'post1.png',
-            'descricao_post' => 'Nosso primeiro post!',
-            'created_at' => now()->format('d/m/Y H:i')
-        ],
-        (object)[
-            'nome_user' => 'Etec de Itaquera',
-            'arroba_user' => 'etecitaquera',
-            'img_user' => 'img-perfil.png',
-            'conteudo_post' => 'post2.png',
-            'descricao_post' => 'Nova turma aberta!',
-            'created_at' => now()->format('d/m/Y H:i')
-        ],
-    ];
-
-    return view('area-instituicao.perfilEditar', compact('instituicao', 'posts'));
-})->name('instituicao.perfilEditar');
+        // Editar Perfil
+        Route::get('/editarPerfil', [InstituicaoController::class, 'editarPerfil'])->name('instituicao.perfilEditar');
+    });
 });
 
 

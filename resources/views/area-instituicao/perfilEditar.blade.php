@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editando Perfil</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -38,7 +38,7 @@
                             <span class="span-foto-perfil">Foto de Perfil</span>
                         </div>
                     </div>
-                    
+
                     <div class="col-12 ps-2 my-2">
                         <span class="span-frase-banner">Imagem do banner</span>
                     </div>
@@ -53,7 +53,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="div-forms col-12">
                         <div class="col-12 d-flex flex-row my-3" style="height: 50px;">
                             <div class="col-3 d-flex align-items-center">
@@ -131,7 +131,7 @@
                                         <div class="col-11">
                                             <div class="col-12 h-50 d-flex align-items-center">
                                                 <span>Etec de Itaquera</span>
-                                                . 1h 
+                                                . 1h
                                             </div>
                                             <div class="col-12 h-50">
                                                 <span>@etecitaquera</span>
@@ -153,7 +153,7 @@
                                         <div class="col-11">
                                             <div class="col-12 h-50 d-flex align-items-center">
                                                 <span>Etec de Itaquera</span>
-                                                . 2h  
+                                                . 2h
                                             </div>
                                             <div class="col-12 h-50">
                                                 <span>@etecitaquera</span>
@@ -199,43 +199,43 @@
               <div class="listaCores" id="listaCores">
 
                   <button onclick="trocarCorInst(this,'vermelho')" style="background-color:#e90013;">
-                      
+
                   </button>
 
                   <button onclick="trocarCorInst(this,'azul')" style="background-color: #448FFF;">
-                      
+
                   </button>
 
                   <button onclick="trocarCorInst(this,'verde')" style="background-color: #2ECC71;">
-                      
+
                   </button>
 
                   <button onclick="trocarCorInst(this,'amarelo')" style="background-color: #F1C40F;">
-                      
+
                   </button>
 
                   <button onclick="trocarCorInst(this,'laranja')" style="background-color: #FF8418;">
-                      
+
                   </button>
 
                   <button onclick="trocarCorInst(this,'roxo')" style="background-color: #6b00cf;">
-                      
+
                   </button>
 
                   <button onclick="trocarCorInst(this,'rosa')" style="background-color: #E91E63;">
-                      
+
                   </button>
 
                   <button onclick="trocarCorInst(this,'preto')" style="background-color: #2F2F2F;">
-                      
+
                   </button>
 
                   <button onclick="trocarCorInst(this,'verdeAqua')" style="background-color: #05A4B6;">
-                      
+
                   </button>
 
                   <button onclick="trocarCorInst(this,'azulEscuro')" style="background-color: #10009D;">
-                      
+
                   </button>
 
 

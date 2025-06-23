@@ -19,11 +19,15 @@
 </head>
 
 <body>
+
     @include('area-instituicao.componentes.sidebar')
 
-
     <main>
-        @include('area-instituicao.componentes.navbar', ['titulo' => 'Posts'])
+            @include('area-instituicao.componentes.navbar', [
+            'navbarIcon' => 'bx-image',
+            'titulo' => 'Posts'
+        ])
+
         <div class="container-fluid cont">
             <div class="esquerda">
                 <div class="lista-dados-topo">
@@ -84,7 +88,7 @@
                             <p>Reposts</p>
                         </div>
                         <div class="dados-engajamento">
-                            <p class="numero">0 <i class='bx bx-share'></i></p>
+                            <p class="numero">{{$mediaCompartilhamento }} <i class='bx bx-share'></i></p>
                             <p>Compartilhamentos</p>
                         </div>
                     </div>
@@ -107,7 +111,7 @@
     @foreach ($postsPorArea as $index => $area)
         <div>
             <span style="background: {{ $cores[$index % count($cores)] }};"></span>
-            {{ $area->area_post }}
+            {{ $area->area_post }} ({{ $area->total }})
         </div>
     @endforeach
      </div>
@@ -129,98 +133,11 @@
     <!--------------------------------------- modal post ------------------------------------------>
     @include('area-instituicao.componentes.modais-post')
 
- <div class="contModalPostView" id="viewPost" >
-    <div class="modalPotsView" id="modalPotsView" >
-      <div class="topo">
-        <p>Seu Post</p>
-        <i class="bx bx-x" id="iconeX" onclick="fecharModalVerPost()"></i>
-        <p id="editandoP">Editando</p>
-      </div>
-      <form class="conteudoPost" id="postUpdateNormal" >
-        <textarea name="descricaoPost" id="descPostModal" disabled>Itaú é doidera cara, desde criancinha to usando ele cara, sério. </textarea>
-        <div class="imgConteudo" id="imgModalVerPost">
-          <img src="" alt="" id="imgPostVisualizacao">
-          <label for="imgUpdate" id="labelImgUpdate">
-             <i class='bx bx-image'></i>
-            <p>Alterar imagem</p>
-          </label>
-          <input type="file" accept="image/*" name="img" id="imgUpdate" >
-        </div>
-</form>
-      <form class="evento" id="eventoUpdate">
-         <div class="topo-evento">
-        <div class="capa_cont">
-          <img src="" alt="" id="previewCapaUpdate">
-          <label for="inputcapaUpdate" id="labelAlterCapa" style="display: none;">
-            <i class='bx bx-image-plus'></i>
-            <p>Alterar capa</p>
-          </label>
-          <input type="file" id="inputcapaUpdate" style="display: none;" name="img">
-        </div>
-        <div class="inputData">
-          <div>
-             <label for="">data inicio</label>
-                <div class="d-flex">
-                      <input type="date" placeholder="" name="inicio" id="inicioUpdate" disabled>
-  <input type="time" placeholder="" class="hinicio" name="hinicio" id="hinicioUpdate" disabled>
-                </div>
-          </div>
-          <div>
-  <label for="">data término</label>
-    <div class="d-flex">
-          <input type="date" placeholder="" name="fim" id="fimUpdate" disabled>
-  <input type="time" placeholder="" class="hfim" name="hfim" id="hfimUpdate" disabled>
-    </div>
-</div>
-        </div>
-      </div>
-      <div class="infosEvento">
-         <label for="">Título </label>
-  <div class="inputEventoCont">
-    <img src="Icone_Logo_Cursei_Preta.png" alt="">
-    <input type="text" placeholder="Escolha o título do seu evento " name="tituloEvento" id="tituloEventoUpdate" disabled>
-        </div>
-        <label for="">Link</label>
-        <div class="inputEventoCont">
-          <i class='bx bx-link'></i>
-    <input type="url" placeholder="Sua url aqui" name="link" id="linkUpdate" disabled>
-  
-        </div>
-        <label for="">Descrição</label>
-  <textarea placeholder="Descreva seu evento" name="descEvento" id="descEventoUpdate" disabled></textarea>
-      </div>
-    <input type="hidden" name="idEvento" id="idEvendoInputHiddenUpdate">
-</form>
-        <div class="rodape" id="normal">
-          <div class="action">
-            <button type="button" onclick="ativarEdicao()"><i class='bx bx-edit'></i>Editar</button>
-            <button type="button" id="openModalBtn"><i class='bx bx-star'></i>Impulsionar</button>
-            <button type="button" id="desativar" onclick="abrirModalDesativar()"><i class='bx bx-backspace'></i>Desativar</button>
-          </div>
-          <div class="button">
-             <button  type="button" onclick="fecharModalVerPost()">Sair</button>
-          </div>
-        </div>
-          <div class="rodape" id="editando">
-          <div class="action" id="actions">
-            <button  type="button" class="botoes" id="addLinkUpdateButton"><i class='bx bx-link '></i>Adicionar link</button>
-            <label  class="botoes" for="imgUpdate" id="addImgLabelVerModal"><i class='bx bx-image-plus'></i>Adicionar imagem</label>
-            
-          </div>
-          <div class="button">
-             <button type="button" class="cancelar" onclick="desativarEdicao()">Cancelar</button>
-            <button type="button" onclick="salvar()">Salvar</button>
 
-          </div>
-        </div>
-        <input type="hidden" name="link" id="linkUpdate">
-</div>
-  </div>
         @include('area-instituicao.componentes.modal-Impulsionar')
 
 
     <script>
-        const idInst = @json($instID);
     </script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="{{ asset('js/postsInstituicao/ModalverPost.js') }}"></script>

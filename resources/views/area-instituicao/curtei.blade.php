@@ -10,38 +10,41 @@
         integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
 
 
-    @include('area-instituicao.componentes.padrao') 
+    @include('area-instituicao.componentes.padrao')
     <link rel="stylesheet" href="{{ asset('css/curteiIntituicao.css') }}">
-  
+
 </head>
 
 <body>
-     @include('area-instituicao.componentes.sidebar')
+    @include('area-instituicao.componentes.sidebar')
 
-   
+
     <main>
-        @include('area-instituicao.componentes.navbar', ['titulo' => 'Curteis'])
+        @include('area-instituicao.componentes.navbar', [
+        'navbarIcon' => 'bxs-videos',
+        'titulo' => 'Posts'
+        ])
         <div class="container-fluid cont">
             <div class="esquerda">
                 <div class="lista-dados-topo">
                     <div class="card-dados">
                         <i class='bx bxs-videos'></i>
                         <div class="dados-card-dados">
-                            <p class="numero">40</p>
+                            <p class="numero">{{ $totalCurteis }}</p>
                             <p>Curteis</p>
                         </div>
                     </div>
                     <div class="card-dados">
                         <i class='bx bx-message-circle'></i>
                         <div class="dados-card-dados">
-                            <p class="numero">3</p>
+                            <p class="numero">{{ $totalComentarios }}</p>
                             <p>Comentarios</p>
                         </div>
                     </div>
                     <div class="card-dados">
-                       <i class='bxr  bx-heart'  ></i> 
+                        <i class='bxr  bx-heart'></i>
                         <div class="dados-card-dados">
-                            <p class="numero">5</p>
+                            <p class="numero">{{ $totalCurtidas }}</p>
                             <p>Curtidas</p>
                         </div>
                     </div>
@@ -49,7 +52,7 @@
                 <div class="topo-catalogo">
                     <div class="">
                         <div class="inputCont">
-                            <input type="text" placeholder="Pesquise pela descrição do curtei">
+                            <input type="text" placeholder="Pesquise pela descrição do curtei" id="pesquisarCurtei">
                             <i class='bx  bx-search'></i>
                         </div>
                     </div>
@@ -58,74 +61,10 @@
                         <i class='bx bx-plus'></i>
                     </button>
                 </div>
-              <div class="lista-catalogo-card">
-                    <div class="card-conteudo">
-                       
-                        <div class="img">
-                            <img src="https://etecsantosdumont.com.br/wp-content/uploads/2023/03/335588264_613348350805960_3933893113793637074_n.jpg" alt="">
-                        </div>
-                        <div class="infos-conteudo">
-                            <div class="info">
-                                <i class='bx bx-heart'></i>
-                                <p>22</p>
-                            </div>
-                            <div class="info">
-                                <i class='bx  bx-message-circle'></i>
-                                <p>6</p>
-                            </div>
-                            <div class="info">
-                                <i class='bx bx-repeat-alt'></i>
-                                <p>3</p>
-                            </div>
+                <div class="lista-catalogo-card" id="listaCurteis">
 
-                        </div>
 
-                    </div>
-                       <div class="card-conteudo">
-                      
-                        <div class="img">
-                            <img src="https://bkpsitecpsnew.blob.core.windows.net/uploadsitecps/sites/48/2025/05/2025_posts_rede_sociais__card01_vestibulinho_2025_02sem_feed_cps_02-1-scaled.png" alt="">
-                        </div>
-                        <div class="infos-conteudo">
-                            <div class="info">
-                                <i class='bx bx-heart'></i>
-                                <p>32</p>
-                            </div>
-                            <div class="info">
-                                <i class='bx  bx-message-circle'></i>
-                                <p>12</p>
-                            </div>
-                            <div class="info">
-                                <i class='bx bx-repeat-alt'></i>
-                                <p>7</p>
-                            </div>
-
-                        </div>
-
-                    </div>
-                           <div class="card-conteudo">
-                       
-                        <div class="img">
-                            <img src="https://etecsantosdumont.com.br/wp-content/uploads/2024/05/Vestibulinho-20242.jpg" alt="">
-                        </div>
-                        <div class="infos-conteudo">
-                            <div class="info">
-                                <i class='bx bx-heart'></i>
-                                <p>9</p>
-                            </div>
-                            <div class="info">
-                                <i class='bx  bx-message-circle'></i>
-                                <p>3</p>
-                            </div>
-                            <div class="info">
-                                <i class='bx bx-repeat-alt'></i>
-                                <p>0</p>
-                            </div>
-
-                        </div>
-
-                    </div>
-                    </div>
+                </div>
             </div>
             <div class="direita">
                 <div class="card-direita engajamento-cont">
@@ -134,35 +73,42 @@
                     </p>
                     <div>
                         <div class="dados-engajamento">
-                            <p class="numero">40 <i class='bx bx-heart'></i></p>
+                            <p class="numero">{{ $mediaCurtidasPorCurtei }} <i class='bx bx-heart'></i></p>
                             <p>Curtidas</p>
                         </div>
                         <div class="dados-engajamento">
-                            <p class="numero">40 <i class='bx bx-message-circle'></i></p>
+                            <p class="numero">{{ $mediaComentariosPorCurtei }} <i class='bx bx-message-circle'></i></p>
                             <p>Comentarios</p>
-                        </div>
-                        
-                        <div class="dados-engajamento">
-                            <p class="numero">40 <i class='bx bx-share'></i></p>
-                            <p >Compartilhamentos</p>
                         </div>
                     </div>
                 </div>
                 <div class="card-direita areaposts-cont">
-                    <p class="titulo-card">
-                       Interesses de quem curti
-                    </p>
+                    <p class="titulo-card">Interesses de quem curti</p>
+
                     <div class="cont-grafico">
                         <canvas id="grafico"></canvas>
+
+                        {{-- Centro do gráfico com % e nome --}}
                         <div>
-                            <p>40%</p>
-                            <p class="area">Tecnologia</p>
+                            <p>{{ $porcentagemMaisPresente }}%</p>
+                            <p class="area">{{ ucfirst($interesseMaisPresente ?? 'Nenhum') }}</p>
                         </div>
                     </div>
+
+                    {{-- Lista de interesses (cores dinâmicas) --}}
                     <div class="areas-lista">
-                        <div><span style="background: #b05fc0;"></span> Tecnologia</div>
-                        <div><span style="background: var(--inst);"></span> Saúde</div>
-                         <div><span style="background: var(--sidebar);"></span> Nutrição</div>
+                        @php
+                        $cores = ['#b05fc0', '#51b8f3', '#ff8c00', '#00c896', '#fc636b', '#6f42c1'];
+                        $index = 0;
+                        @endphp
+
+                        @foreach($interesses as $interesse => $total)
+                        <div>
+                            <span style="background: {{ $cores[$index % count($cores)] }}"></span>
+                            {{ ucfirst($interesse) }} ({{ $total }})
+                        </div>
+                        @php $index++; @endphp
+                        @endforeach
                     </div>
                 </div>
                 <div class="card-direita diassemana-cont">
@@ -179,42 +125,70 @@
 
     </main>
 
-    <div class="contModalverCurtei">
-        <div class="modalCur">
-               <div class="topo">
-            <p>Seu curtei</p>
-            <i class="bx bx-x"></i>
-        </div>
-        <textarea disabled>TETESTE  TETESTETETESTE TETESTE TETETESTE TETESTE TETESTETESTE</textarea>
-        <video  controls width="600" autoplay muted loop>
-             <source src="http://localhost:8000/curtei/video/video_22_1749148462.mp4" type="video/mp4">
-            
-    </video>
-    <div class="rodape">
-        <div>
-            <button><i class="bx bx-edit"></i></button>
-        <button><i class="bx bx-backspace"></i></button>
-        </div>
-        <div>
-            <button class="sair">Sair</button>
-        </div>
-    </div>
-        </div>
+    <div class="contModalverCurtei" id="contModalverCurtei">
+        <form class="modalCur" id="formUpdate">
+            <div class="topo">
+                <p>Seu curtei</p>
+                <i class="bx bx-x" onclick="fecharCurtei()"></i>
+                <p style="font-weight: 600;font: 19px;color: var(--inst); display: none;" id="editandoP">Editando</p>
+            </div>
+            <textarea disabled name="legenda_curtei"></textarea>
+            <div style="padding-inline: 4%;">
+                <div class="video">
+                    <video controls width="600" src="" autoplay muted loop id="source">
+
+                    </video>
+                    <label for="inputVideoEdit" id="labelEditVideo">
+                        <i class='bx  bx-pencil'></i>
+                    </label>
+                    <input type="file" id="inputVideoEdit" style="display: none;" accept="video/*" name="caminho_curtei">
+
+                </div>
+                <div id="imgModalVerPost">
+                    <img src="" alt="" id="imgEditCurtei">
+                    <label for="inputcapa">
+                        <i class='bx bx-image-plus'></i>
+                        <p>Altere a thumbnail</p>
+                    </label>
+                    <input type="file" id="inputcapa" style="display: none;" name="caminho_curtei_thumb" accept="image/*">
+                </div>
+            </div>
+            <div class="rodape">
+                <div>
+                    <button type="button" onclick="ativarEdit()"><i class="bx bx-edit" id="editBtn"></i></button>
+                    <button type="button"><i class="bx bx-backspace" id="backBtn" onclick="abrirModalDesativar()"></i></button>
+                    <button type="button"><i class="bx bx-image" id="imgBtn" style="display: none;" onclick="editarThumb()"></i></button>
+                    <button type="button"><i class="bx bx-video" id="videoBtn" style="display: none;" onclick="editarVideo()"></i></button>
+
+                </div>
+                <div style="display: flex;gap:20px">
+                    <button type="button" class="sair" id="sairBtn" onclick="fecharCurtei()">Sair</button>
+                    <button type="button" class="sair" style="display: none;" id="cancelarBtn" onclick="desativarEdit()">Cancelar</button>
+                    <button type="button" class="sair" style="display: none;" id="salvaBtn" onclick="salvar()">Salvar</button>
+
+                </div>
+            </div>
+        </form>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script>
+        
+        const labels = @json(array_keys($interesses));
+        const data = @json(array_values($interesses));
+
         const ctx = document.getElementById('grafico');
 
         new Chart(ctx, {
             type: 'doughnut',
             data: {
-                labels: ['Tecnologia', 'Saúde', 'Nutrição'],
+                labels: labels,
                 datasets: [{
-                    data: [40, 30, 30],
-                    backgroundColor: ['#b05fc0', '#51b8f3', '#ff8c00'],
+                    data: data,
+                    backgroundColor: ['#b05fc0', '#51b8f3', '#ff8c00', '#00c896', '#fc636b', '#6f42c1'],
                     borderWidth: 0,
                 }]
             },
@@ -223,14 +197,20 @@
                 circumference: 180,
                 cutout: '70%',
                 plugins: {
-                    legend: { display: false },
-                    tooltip: { enabled: false }
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        enabled: true
+                    }
                 }
             }
         });
     </script>
-   @include('area-instituicao.componentes.modal-notificacao')
- 
+    @include('area-instituicao.componentes.modal-notificacao')
+    <script src="{{ asset('js/curtei/puxarCurtei.js') }}"></script>
+    <script src="{{ asset('js/curtei/modalVerCurtei.js') }}"></script>
+
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq"

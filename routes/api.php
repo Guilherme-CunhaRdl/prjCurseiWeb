@@ -12,6 +12,8 @@ use App\Http\Controllers\HashtagController;
 use App\Http\Controllers\CurteiController;
 use App\Http\Controllers\DestaqueController;
 use App\Http\Controllers\DoisFatoresController;
+use App\Http\Controllers\InstituicaoController;
+use App\Models\Instituicao;
 
 /*
 |--------------------------------------------------------------------------
@@ -121,6 +123,9 @@ Route::post('/curtei/comentarios', [CurteiController::class, 'comentarios']);
 Route::post('/curtei/comentarios/adicionar', [CurteiController::class, 'adicionarComentario']);
 Route::post('/curtei/comentarios/curtir', [CurteiController::class, 'curtirComentario']);
 
+// fiz essa rota para usar na intituicao pq preciso pra conseguir puxar ,pq eu acho melhor do que pelo laravel (deixa mais dinamico o site😭)
+Route::get('/curtei/IntituicaoWeb/{id}', [InstituicaoControllerApi::class, 'curteisIntituicaoWeb']);
+Route::get('/curtei/IntituicaoWeb/{id}/{pesquisa}', [InstituicaoControllerApi::class, 'curteisIntituicaoWebPesquisa']);
 
 
 

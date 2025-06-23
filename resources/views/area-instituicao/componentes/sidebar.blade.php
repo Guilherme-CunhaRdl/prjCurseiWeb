@@ -109,6 +109,7 @@
       </div>
   </div>
   <script>
+    const idInst = @json($user->id  );
     if (localStorage.getItem('temaInst') == 'claro') {
         document.getElementById('sun').classList.add('buttontemaAtivo')
     }else{

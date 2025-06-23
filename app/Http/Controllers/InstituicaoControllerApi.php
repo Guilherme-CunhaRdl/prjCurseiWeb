@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Models\Instituicao;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\Curtei;
 class instituicaoControllerApi extends Controller
 {
     public function cadastrarInstituicao(Request $request)
@@ -79,4 +80,73 @@ class instituicaoControllerApi extends Controller
             ]);
         }
     }
+    public function curteisIntituicaoWeb($id){
+         try {
+            $curteis = Curtei::with(['usuario'])
+                ->withCount(['curtidas', 'comentarios'])
+                ->where('status_curtei', '1')
+                ->where('id_user',$id)
+                ->latest()
+                ->get()
+                ->map(function ($item) {
+                    return [
+                        'id' => $item->id,
+                        'video_url' => asset($item->caminho_curtei),
+                        'thumb_url' => asset($item->caminho_curtei_thumb),
+                        'legenda' => $item->legenda_curtei,
+                        'curtidas_count' => $item->curtidas_count,
+                        'comentarios_count' => $item->comentarios_count,
+                        'usuario' => [
+                            'id' => $item->usuario->id,
+                            'nome' => $item->usuario->nome_user,
+                            'foto' => $item->usuario->img_user 
+                                ? asset('img/user/fotoPerfil/' . $item->usuario->img_user) 
+                                : null,
+                            'arroba' => $item->usuario->arroba_user
+                        ],
+                        'created_at' => $item->created_at->format('d/m/Y H:i')
+                    ];
+                });
+    
+            return response()->json(['success' => true, 'videos' => $curteis]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Erro ao listar curteis', 'error' => $e->getMessage()], 500);
+        }
+    }
+     public function curteisIntituicaoWebPesquisa($id,$pesquisa){
+         try {
+            $curteis = Curtei::with(['usuario'])
+                ->withCount(['curtidas', 'comentarios'])
+                ->where('status_curtei', '1')
+                ->where('id_user',$id)
+                ->where('legenda_curtei','like',"%$pesquisa%")
+                ->latest()
+                ->get()
+                ->map(function ($item) {
+                    return [
+                        'id' => $item->id,
+                        'video_url' => asset($item->caminho_curtei),
+                        'thumb_url' => asset($item->caminho_curtei_thumb),
+                        'legenda' => $item->legenda_curtei,
+                        'curtidas_count' => $item->curtidas_count,
+                        'comentarios_count' => $item->comentarios_count,
+                        'usuario' => [
+                            'id' => $item->usuario->id,
+                            'nome' => $item->usuario->nome_user,
+                            'foto' => $item->usuario->img_user 
+                                ? asset('img/user/fotoPerfil/' . $item->usuario->img_user) 
+                                : null,
+                            'arroba' => $item->usuario->arroba_user
+                        ],
+                        'created_at' => $item->created_at->format('d/m/Y H:i')
+                    ];
+                });
+    
+            return response()->json(['success' => true, 'videos' => $curteis]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Erro ao listar curteis', 'error' => $e->getMessage()], 500);
+        }
+    }
 }
+
+

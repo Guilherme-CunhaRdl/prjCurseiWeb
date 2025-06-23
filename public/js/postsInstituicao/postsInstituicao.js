@@ -17,7 +17,6 @@ async function carregarPost() {
 const listaPosts = document.getElementById('listaPosts')
 async function mostrarPosts(posts) {
   listaPosts.innerHTML = '';
-  console.log(posts)
   posts.forEach(post => {
  
     const cardPost = `

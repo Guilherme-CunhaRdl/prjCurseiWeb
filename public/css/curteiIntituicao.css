@@ -32,6 +32,7 @@ main {
     margin-top: 3%;
     display: flex;
     gap: 30px;
+    margin-bottom: 2%;
 }
 
 .esquerda {
@@ -154,7 +155,7 @@ main {
             border-radius: 2px;
             padding: 2%;
             width: 32%;
-          
+
 
 
             p {
@@ -171,7 +172,7 @@ main {
             .img {
                 width: 100%;
                 height: 330px;
-            
+
 
                 img {
                     border-radius: 5px;
@@ -186,7 +187,7 @@ main {
                 display: flex;
                 align-items: center;
                 justify-content: space-between;
-                width: 43%;
+                width: 25%;
                 margin-top: 2%;
 
                 .info {
@@ -230,7 +231,7 @@ main {
 
     .engajamento-cont {
 
-
+        height: 200px;
         .titulo-card {
             font-size: 22px;
             font-weight: 500;
@@ -278,6 +279,7 @@ main {
     .areaposts-cont {
         height: 323px;
         padding-block: 5%;
+
         .titulo-card {
             font-size: 22px;
             font-weight: 500;
@@ -357,8 +359,9 @@ main {
     }
 
 }
-.contModalverCurtei{
-    
+
+.contModalverCurtei {
+
     position: fixed;
     top: 0;
     left: 0;
@@ -370,27 +373,32 @@ main {
     align-items: center;
     z-index: 90;
     opacity: 1;
-    animation: slideIn 0.5s;
-    .modalCur{
+    animation: fadeIn 0.5s;
+
+    .modalCur {
         width: 400px;
         background-color: var(--branco);
-        padding-top:1%;
-        .topo{
+        padding-top: 1%;
+
+        .topo {
             display: flex;
             align-items: center;
             justify-content: space-between;
             font-size: 24px;
             padding-inline: 4%;
-            p{
+
+            p {
                 margin: 0PX;
             }
-            i{
+
+            i {
                 font-size: 30px;
                 cursor: pointer;
             }
-            
+
         }
-        textarea{
+
+        textarea {
             outline: none;
             border: none;
             width: 100%;
@@ -399,16 +407,91 @@ main {
             margin-top: 5%;
             color: var(--texto);
             padding-inline: 4%;
-
+            background-color: transparent;
         }
-        video{
-                        padding-inline: 4%;
 
+        .video {
+            position: relative;
+            video {
+
+                width: 100%;
+                height: 500px;
+                object-fit: cover;
+            }
+
+            label {
+                position: absolute;
+                top: 0;
+                right: 0;
+                cursor: pointer;
+                display: none;
+                padding: 2%;
+                font-size: 30px;
+                z-index: 99;
+                i{
+                    color: var(--inst);
+                    border-radius: 100px;
+                    background-color: rgba(0, 0, 0, 0.801);
+                    padding: 5px;
+                }
+            }
+        }
+
+        #imgModalVerPost {
             width: 100%;
             height: 500px;
-              object-fit: cover;
+            display: none;
+            position: relative;
+
+            &:hover {
+                label {
+                    opacity: 1;
+                }
+            }
+
+            img {
+                border-radius: 2px;
+                object-fit: cover;
+                width: 100%;
+                height: 100%;
+
+            }
+
+            label {
+                background-color: rgba(0, 0, 0, 0.274);
+                z-index: 1;
+                width: 100%;
+                height: 100%;
+                position: absolute;
+                top: 0px;
+                left: 0px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                color: var(--inst);
+                cursor: pointer;
+                opacity: 0;
+                transition: 200ms;
+
+
+                i {
+                    font-size: 45px;
+                }
+
+                p {
+                    font-size: 20px;
+                    font-weight: 500;
+                    margin: 0px;
+                }
+            }
+
+            input {
+                display: none;
+            }
         }
-        .rodape{
+
+        .rodape {
             margin-top: 4%;
             border-top: 2px solid rgba(0, 0, 0, 0.089);
             display: flex;
@@ -416,19 +499,21 @@ main {
             justify-content: space-between;
             padding-inline: 4%;
             padding-block: 1%;
-            button{
+
+            button {
                 border: none;
                 background-color: transparent;
                 margin: 0px;
-                
-                i{
+
+                i {
                     font-size: 25px;
                     margin: 0px;
                     color: var(--texto);
                     opacity: 0.7;
                 }
             }
-            .sair{
+
+            .sair {
                 background-color: var(--inst);
                 color: white;
                 border-radius: 2px;
@@ -439,23 +524,109 @@ main {
     }
 }
 
+#cancelarBtn {
+    border: 2px solid var(--inst);
+    background-color: transparent;
+    color: var(--inst);
+    border-radius: 2px;
+}
 
 @keyframes fadeIn {
-  from { opacity: 0 }
-  to { opacity: 1 }
+    from {
+        opacity: 0
+    }
+
+    to {
+        opacity: 1
+    }
 }
 
 @keyframes fadeOut {
-  from { opacity: 1 }
-  to { opacity: 0 }
+    from {
+        opacity: 1
+    }
+
+    to {
+        opacity: 0
+    }
 }
 
 @keyframes slideIn {
-  from { transform: translateY(-20px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
 }
 
 @keyframes slideOut {
-  from { transform: translateY(0); opacity: 1; }
-  to { transform: translateY(-20px); opacity: 0; }
+    from {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    to {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
 }
+  .overlay-modal {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background-color: rgba(0,0,0,0.3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 90;
+  }
+
+ .modal-box {
+    background-color:var(--branco);
+    padding: 20px 30px;
+    border-radius: 5px;
+    text-align: center;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    max-width: 400px;
+    width: 90%;
+  }
+
+  .modal-box h3 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: bold;
+  }
+
+  .modal-box p {
+    color:var(--texto);
+    font-size: 17px;
+    margin: 10px 0 20px;
+  }
+
+  .modal-buttons {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .modal-buttons button {
+    padding: 10px 25px;
+    border: none;
+    font-weight: bold;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 17px;
+  }
+
+  .cancel-btn {
+    background-color: transparent;
+    color: var(--inst);
+  }
+
+  .deactivate-btn {
+    background-color: var(--inst);
+    color: white;
+  }

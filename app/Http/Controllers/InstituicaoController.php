@@ -449,54 +449,54 @@ class InstituicaoController extends Controller
                 'valor' => $valor ?? 0,
                 'porcentagem' => round(($valor / $totalAreasCurtidas) * 100, 1) . '%',
 
-            ] ;
+            ];
         }
-        $excluir = [$top3AreasInteresse[0]['area']??0, $top3AreasInteresse[1]['area']??0, $top3AreasInteresse[2]['area']??0];
+        $excluir = [$top3AreasInteresse[0]['area'] ?? 0, $top3AreasInteresse[1]['area'] ?? 0, $top3AreasInteresse[2]['area'] ?? 0];
         $outrasAreas = array_diff_key($areas, array_flip($excluir));
         $somaOutrasAreas = array_sum($outrasAreas);
         if ($areaPostsCurtidos->isEmpty()) {
-    $top3AreasInteresse = [];
-    $outrasAreasPorcentagem = '0%';
-    $totalAreasCurtidas = 0;
-} else {
-        $outrasAreasPorcentagem =  round(($somaOutrasAreas/$totalAreasCurtidas) * 100,1) .'%' ;
-}
+            $top3AreasInteresse = [];
+            $outrasAreasPorcentagem = '0%';
+            $totalAreasCurtidas = 0;
+        } else {
+            $outrasAreasPorcentagem =  round(($somaOutrasAreas / $totalAreasCurtidas) * 100, 1) . '%';
+        }
 
 
-    $engajamento = [
-        'curtidasPorMes' => Curtida::whereIn('id_post', $posts)
-        ->selectRaw('MONTH(created_at) as mes, COUNT(*) as total')
-        ->groupBy('mes')
-        ->orderBy('mes')
-        ->pluck('total', 'mes')
-        ->toArray(),
-        'comentariosPorMes'=> Comentario::whereIn('id_post',$posts)
-        ->selectRaw('MONTH(created_at) as mes, COUNT(*) as total')
-        ->groupBy('mes')
-        ->orderBy('mes')
-        ->pluck('total', 'mes')
-        ->toArray(),
-        'repostsPorMes'=> Post::whereIn('repost_id',$posts)
-        ->selectRaw('MONTH(created_at) as mes, COUNT(*) as total')
-        ->groupBy('mes')
-        ->orderBy('mes')
-        ->pluck('total', 'mes')
-        ->toArray(),
-    ];
+        $engajamento = [
+            'curtidasPorMes' => Curtida::whereIn('id_post', $posts)
+                ->selectRaw('MONTH(created_at) as mes, COUNT(*) as total')
+                ->groupBy('mes')
+                ->orderBy('mes')
+                ->pluck('total', 'mes')
+                ->toArray(),
+            'comentariosPorMes' => Comentario::whereIn('id_post', $posts)
+                ->selectRaw('MONTH(created_at) as mes, COUNT(*) as total')
+                ->groupBy('mes')
+                ->orderBy('mes')
+                ->pluck('total', 'mes')
+                ->toArray(),
+            'repostsPorMes' => Post::whereIn('repost_id', $posts)
+                ->selectRaw('MONTH(created_at) as mes, COUNT(*) as total')
+                ->groupBy('mes')
+                ->orderBy('mes')
+                ->pluck('total', 'mes')
+                ->toArray(),
+        ];
 
-$engajamentoPorMes = [];
-for ($i = 1;$i <=12; $i++){
-    $engajamentoPorMes[$i] = 0;
-}
-
-
-foreach ($engajamento as $tipo) {
-    foreach ($tipo as $mes => $valor) {
+        $engajamentoPorMes = [];
+        for ($i = 1; $i <= 12; $i++) {
+            $engajamentoPorMes[$i] = 0;
+        }
 
 
-        $engajamentoPorMes[$mes] += $valor;
-    }
-}
+        foreach ($engajamento as $tipo) {
+            foreach ($tipo as $mes => $valor) {
+
+
+                $engajamentoPorMes[$mes] += $valor;
+            }
+        }
 
 
         return view('area-instituicao.dashboard', [
@@ -517,16 +517,81 @@ foreach ($engajamento as $tipo) {
             'top3AreasInteresse' => $top3AreasInteresse,
             'somaOutrasAreas' => $somaOutrasAreas,
             'outrasAreasPorcentagem' => $outrasAreasPorcentagem,
-            'todasAsInteracoes'=>$todasAsInteracoes,
-            'engajamento'=>$engajamentoPorMes
+            'todasAsInteracoes' => $todasAsInteracoes,
+            'engajamento' => $engajamentoPorMes
 
         ]);
     }
 
     public function curteis()
+
     {
+        $user = auth()->user();
+        $idUser = $user->id;
+        // Total de curteis
+        $totalCurteis = DB::table('tb_curtei')
+            ->where('id_user', $idUser)
+            ->where('status_curtei', 1)
+            ->count();
+
+        // Total de curtidas nos curteis do usuário
+        $totalCurtidas = DB::table('tb_curtida_curtei')
+            ->whereIn('id_curtei', function ($query) use ($idUser) {
+                $query->select('id')
+                    ->from('tb_curtei')
+                    ->where('id_user', $idUser)
+                    ->where('status_curtei', 1);
+            })->count();
+
+        // Total de comentários nos curteis do usuário
+        $totalComentarios = DB::table('comentario_curteis')
+            ->whereIn('id_curtei', function ($query) use ($idUser) {
+                $query->select('id')
+                    ->from('tb_curtei')
+                    ->where('status_curtei', 1)
+                    ->where('id_user', $idUser);
+            })->count();
+
+       
+        // Médias
+        $mediaCurtidasPorCurtei = $totalCurteis > 0 ? round($totalCurtidas / $totalCurteis, 2) : 0;
+        $mediaComentariosPorCurtei = $totalCurteis > 0 ? round($totalComentarios / $totalCurteis, 2) : 0;
+       
+
+        $interesses = DB::table('tb_curtida_curtei as cc')
+            ->join('tb_curtei as c', 'cc.id_curtei', '=', 'c.id')
+            ->join('tb_user_preferencia as up', 'cc.id_user', '=', 'up.id_user')
+            ->where('c.id_user', $idUser)
+            ->where('c.status_curtei', 1)
+            ->select('up.preferencia', DB::raw('COUNT(*) as total'))
+            ->groupBy('up.preferencia')
+            ->pluck('total', 'up.preferencia')
+            ->toArray();
+
+        // Interesse mais presente
+        $interesseMaisPresente = null;
+        $porcentagemMaisPresente = 0;
+
+        $totalCurtidasValidas = array_sum($interesses);
+
+        if ($totalCurtidasValidas > 0) {
+            arsort($interesses);
+            $interesseMaisPresente = array_key_first($interesses);
+            $porcentagemMaisPresente = round(($interesses[$interesseMaisPresente] / $totalCurtidasValidas) * 100, 2);
+        }
+
+
+
         return view('area-instituicao.curtei', [
-            'user' => auth()->user()
+            'user' => auth()->user(),
+            'totalCurtidas' => $totalCurtidas,
+            'totalComentarios' => $totalComentarios,
+            'totalCurteis' => $totalCurteis,
+            'mediaCurtidasPorCurtei' => $mediaCurtidasPorCurtei,
+            'mediaComentariosPorCurtei' => $mediaComentariosPorCurtei,
+            'interesses' => $interesses,
+            'interesseMaisPresente' => $interesseMaisPresente,
+            'porcentagemMaisPresente' => $porcentagemMaisPresente,
         ]);
     }
 
@@ -552,15 +617,15 @@ foreach ($engajamento as $tipo) {
     {
         $user = auth()->user();
 
-            $seguidores = DB::table('tb_seguidores')
-                ->where('id_user_seguido', $user->id)
-                ->count();
+        $seguidores = DB::table('tb_seguidores')
+            ->where('id_user_seguido', $user->id)
+            ->count();
 
-            $seguidos = DB::table('tb_seguidores')
-                ->where('id_user_seguidor', $user->id)
-                ->count();
+        $seguidos = DB::table('tb_seguidores')
+            ->where('id_user_seguidor', $user->id)
+            ->count();
 
-            $instituicao = Instituicao::where('id_user', $user->id)->first();
+        $instituicao = Instituicao::where('id_user', $user->id)->first();
         return view('area-instituicao.conta', [
             'user' => (object)[
                 'banner_user' => $user->banner_user,
@@ -578,7 +643,7 @@ foreach ($engajamento as $tipo) {
                 'bairro' => $instituicao->bairro_instituicao,
                 'numero_logradouro' => $instituicao->num_logradouro_instituicao,
                 'complemento' => $instituicao->complemento_instituicao
-                ],
+            ],
             'seguidores' => $seguidores,
             'seguidos' => $seguidos
 
@@ -596,30 +661,30 @@ foreach ($engajamento as $tipo) {
         $instituicao = User::where('id', $user->id)->first();
 
         $posts = DB::table('tb_post')
-    ->join('tb_user', 'tb_post.id_user', '=', 'tb_user.id')
-    ->leftJoin('tb_curtida', 'tb_curtida.id_post', '=', 'tb_post.id')
-    ->select(
-        'tb_post.id as post_id',
-        'tb_user.img_user',
-        'tb_user.arroba_user',
-        'tb_user.nome_user',
-        'tb_post.titulo_post',
-        'tb_post.descricao_post',
-        'tb_post.conteudo_post',
-        'tb_post.status_post',
-        'tb_post.created_at',
-    )
-    ->where('tb_user.id', $user->id)
-    ->distinct()
-    ->get();
+            ->join('tb_user', 'tb_post.id_user', '=', 'tb_user.id')
+            ->leftJoin('tb_curtida', 'tb_curtida.id_post', '=', 'tb_post.id')
+            ->select(
+                'tb_post.id as post_id',
+                'tb_user.img_user',
+                'tb_user.arroba_user',
+                'tb_user.nome_user',
+                'tb_post.titulo_post',
+                'tb_post.descricao_post',
+                'tb_post.conteudo_post',
+                'tb_post.status_post',
+                'tb_post.created_at',
+            )
+            ->where('tb_user.id', $user->id)
+            ->distinct()
+            ->get();
 
-    $seguidores = DB::table('tb_seguidores')
-    ->where('id_user_seguido', $user->id)
-    ->count();
+        $seguidores = DB::table('tb_seguidores')
+            ->where('id_user_seguido', $user->id)
+            ->count();
 
-    $seguidos = DB::table('tb_seguidores')
-        ->where('id_user_seguidor', $user->id)
-        ->count();
+        $seguidos = DB::table('tb_seguidores')
+            ->where('id_user_seguidor', $user->id)
+            ->count();
 
         $postsT = Post::where('id_user', $user->id)->limit(2)->get();
         return view('area-instituicao.perfilEditar', [
@@ -629,11 +694,6 @@ foreach ($engajamento as $tipo) {
             'seguidores' => $seguidores,
             'seguidos' => $seguidos
         ]);
-
-
-
-
-
     }
 
     public function logoutInstituicao()
@@ -975,7 +1035,15 @@ foreach ($engajamento as $tipo) {
 
 
         $totalPosts = $postsPorArea->sum('total');
-
+ $compartilhamentos = DB::table('tb_mensagem')
+            ->whereIn('id_post', function ($query) use ($instituicaoId) {
+                $query->select('id')
+                    ->from('tb_post')
+                    ->where('id_user', $instituicaoId);
+            })
+            ->whereNotNull('id_post') 
+            ->count();
+        $mediaCompartilhamento = $postCount > 0 ? round($compartilhamentos / $postCount, 2) : 0;
 
         $areaMaisPostada = $postsPorArea->sortByDesc('total')->first();
         $areaPrincipal = $areaMaisPostada?->area_post;
@@ -995,7 +1063,7 @@ foreach ($engajamento as $tipo) {
             'porcentagemAreaPrincipal' => $porcentagemAreaPrincipal,
             'postsPorArea' => $postsPorArea,
             'areaPrincipal' => $areaPrincipal,
+            'mediaCompartilhamento'=>$mediaCompartilhamento
         ]);
     }
-
 }

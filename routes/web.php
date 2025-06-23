@@ -118,6 +118,8 @@ Route::get('/seguidores', function () {
 
         // Editar Perfil
         Route::get('/editarPerfil', [InstituicaoController::class, 'editarPerfil'])->name('instituicao.perfilEditar');
+
+        
     });
 });
 

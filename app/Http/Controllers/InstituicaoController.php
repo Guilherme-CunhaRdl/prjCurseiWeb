@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Storage;
 //carbon é um modelo de data do laravel, usei ele pra criar as datas
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Symfony\Component\VarDumper\VarDumper;
 
 //to chamando o carbon e definindo como estilo brasileiro
 Carbon::setLocale('pt-BR');
@@ -379,23 +380,88 @@ public function fazerLogoffInstituicao(Request $request) {
     public function conta()
     {
         $user = auth()->user();
+
+            $seguidores = DB::table('tb_seguidores')
+                ->where('id_user_seguido', $user->id)
+                ->count();
+
+            $seguidos = DB::table('tb_seguidores')
+                ->where('id_user_seguidor', $user->id)
+                ->count();
+
+            $instituicao = Instituicao::where('id_user', $user->id)->first();
         return view('area-instituicao.conta', [
-            'instituicao' => (object)[
+            'user' => (object)[
                 'banner_user' => $user->banner_user,
                 'img_user' => $user->img_user,
                 'nome_user' => $user->nome_user,
-                // ... outros campos
-            ]
+                'email' => $user->email_user,
+                'senha' => $user->senha_user,
+                'cnpj' => $instituicao->cnpj_instituicao,
+                'telefone' => $instituicao->telefone,
+                'cep' => $instituicao->cep_instituicao,
+                'logradouro' => $instituicao->logradouro_instituicao,
+                'estado' => $instituicao->estado_instituicao,
+                'cidade' => $instituicao->cidade_instituicao,
+                'bairro' => $instituicao->bairro_instituicao,
+                'numero_logradouro' => $instituicao->num_logradouro_instituicao,
+                'complemento' => $instituicao->complemento_instituicao
+                ],
+            'seguidores' => $seguidores,
+            'seguidos' => $seguidos
+            
         ]);
     }
 
     public function editarPerfil()
     {
         $user = auth()->user();
+
+
+        $instituicaoId = session('instituicao_id'); // Recupera o ID da instituição logada
+
+
+        $instituicao = User::where('id', $user->id)->first();
+
+        $posts = DB::table('tb_post')
+    ->join('tb_user', 'tb_post.id_user', '=', 'tb_user.id')
+    ->leftJoin('tb_curtida', 'tb_curtida.id_post', '=', 'tb_post.id')
+    ->select(
+        'tb_post.id as post_id',
+        'tb_user.img_user',
+        'tb_user.arroba_user',
+        'tb_user.nome_user',
+        'tb_post.titulo_post',
+        'tb_post.descricao_post',
+        'tb_post.conteudo_post',
+        'tb_post.status_post',
+        'tb_post.created_at',
+    )
+    ->where('tb_user.id', $user->id)
+    ->distinct()
+    ->get();
+
+    $seguidores = DB::table('tb_seguidores')
+    ->where('id_user_seguido', $user->id)
+    ->count();
+
+    $seguidos = DB::table('tb_seguidores')
+        ->where('id_user_seguidor', $user->id)
+        ->count();
+
+        $postsT = Post::where('id_user', $user->id)->limit(2)->get();
         return view('area-instituicao.perfilEditar', [
-            'instituicao' => $user,
-            'posts' => Post::where('id_user', $user->id)->limit(2)->get()
+            'instituicao' => $instituicao, 
+            'posts' => $postsT, 
+            'user' => $user,
+            'seguidores' => $seguidores,
+            'seguidos' => $seguidos
         ]);
+
+
+
+
+     
     }
 
     public function logoutInstituicao()
@@ -759,4 +825,5 @@ public function fazerLogoffInstituicao(Request $request) {
         ]);
 
     }
+
 }

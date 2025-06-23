@@ -26,7 +26,7 @@
                     <div class="col-12 d-flex flex-row my-3">
                         <div style="width: 90px">
                             <div class="div-img-alterar">
-                                <img class="img-alterar img-fluid carregarImgPerfil" src="{{ asset('img/img-instituicao/img-perfil/img-perfil.png') }}" alt="">
+                                <img class="img-alterar img-fluid carregarImgPerfil" src="{{ asset("img/user/fotoPerfil/$user->img_user") }}" alt="">
                                 <div class="conteudo-img-perfil">
                                     <i class="bi bi-camera"></i>
                                     <label for="imgPerfil" class="h-100 w-100 position-absolute"></label>
@@ -45,7 +45,7 @@
 
                     <div class="col-12 d-flex justify-content-center align-items-center">
                         <div class="div-img-banner">
-                            <img class="img-banner img-fluid bannerPreview" src="{{ asset('img/img-instituicao/banners/banner.png') }}" alt="">
+                            <img class="img-banner img-fluid bannerPreview" src="{{ asset("img/user/bannerPerfil/$user->banner_user") }}" alt="">
                             <div class="conteudo-banner">
                                 <i class="bi bi-camera"></i>
                                 <label class="w-100 h-100 position-absolute" style="opacity: 0;" for="bannerImg">Clique Para Alterar Seu Banner!</label>
@@ -60,7 +60,7 @@
                                 <span class="span-alterar">Nome</span>
                             </div>
                             <div class="col-9">
-                                <input class="input-alterar" type="text" value="Etec de Itaquera" id="input-nome">
+                                <input class="input-alterar" type="text" value="{{ $user->nome_user }}" id="input-nome">
                             </div>
                         </div>
                         <div class="col-12 d-flex flex-row my-3">
@@ -68,7 +68,7 @@
                                 <span class="span-alterar">Descrição</span>
                             </div>
                             <div class="col-9">
-                                <textarea rows="4" class="input-alterar" id="input-bio">Mane fé filho, é suco de goiaba...</textarea>
+                                <textarea rows="4" class="input-alterar" id="input-bio">{{ $user->bio_user }}</textarea>
                             </div>
                         </div>
                         <div class="col-12 d-flex flex-row my-3" style="height: 50px;">
@@ -76,7 +76,7 @@
                                 <span class="span-alterar">Usuário</span>
                             </div>
                             <div class="col-9">
-                                <input class="input-alterar" value="etecitaquera" type="text" id="input-contato">
+                                <input class="input-alterar" value="{{ $user->arroba_user }}" type="text" id="input-contato">
                             </div>
                         </div>
                     </div>
@@ -95,7 +95,7 @@
                             <div class="col-12 position-relative">
                                 <img class="banner-preview bannerPreview" src="{{ asset('img/img-instituicao/banners/banner.png') }}" alt="">
                                 <div class="div-img-preview-perfil">
-                                    <img class="img-preview-perfil carregarImgPerfil" src="{{ asset('img/img-instituicao/img-perfil/img-perfil.png') }}" alt="">
+                                    <img class="img-preview-perfil carregarImgPerfil" src="{{ asset("img/user/fotoPerfil/$user->img_user") }}" alt="">
                                 </div>
                             </div>
                             <div class="col-12 mt-3 d-flex justify-content-end">
@@ -112,8 +112,8 @@
                                     <p id="bio-user-preview">Mane fé filho, é suco de goiaba...</p>
                                 </div>
                                 <div>
-                                    <span><b>1</b> <span class="span-seguidores me-3">Seguidores</span></span>
-                                    <span><b>0</b> <span class="span-seguidores">Seguindo</span></span>
+                                    <span><b>{{ $seguidores }}</b> <span class="span-seguidores me-3">Seguidores</span></span>
+                                    <span><b> {{ $seguidos }} </b> <span class="span-seguidores">Seguindo</span></span>
                                 </div>
                                 <div class="col-12 mt-3">
                                     <button class="botao-seguindo">Seguindo</button>
@@ -123,50 +123,32 @@
                             <hr>
                             <div class="col-12 mt-3 ms-5" style="overflow-y: auto;">
                                 <!-- Exemplo de post preview -->
+                                @foreach ($posts as $item)
+                                    
                                 <div class="col-12 my-3 mb-5" style="overflow-x: hidden;">
                                     <div class="col-12 d-flex flex-row ms-5 pt-2">
                                         <div class="box-post-perfil-preview col-1">
-                                            <img src="{{ asset('img/img-instituicao/img-perfil/img-perfil.png') }}" alt="">
+                                            <img src="{{ asset("img/user/fotoPerfil/$user->img_user") }}" alt="">
                                         </div>
                                         <div class="col-11">
                                             <div class="col-12 h-50 d-flex align-items-center">
-                                                <span>Etec de Itaquera</span>
-                                                . 1h
+                                                <span>{{ $user->nome_user}}</span>
+                                                . {{ $item->created_at }}
                                             </div>
                                             <div class="col-12 h-50">
-                                                <span>@etecitaquera</span>
+                                                <span>@ {{ $user->arroba_user }}</span>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col-12 ms-5">
-                                        <p>Nosso primeiro post!</p>
+                                        <p>{{ $item->descricao_post }}</p>
                                         <div class="box-post-conteudo-preview" style="overflow-x: hidden;">
-                                            <img src="{{ asset('img/img-instituicao/posts/post1.png') }}" alt="">
+                                            <img src="{{ asset("img/user/imgPosts/$item->conteudo_post") }}" alt="">
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-12 my-3 mb-5" style="overflow-x: hidden;">
-                                    <div class="col-12 d-flex flex-row ms-5 pt-2">
-                                        <div class="box-post-perfil-preview col-1">
-                                            <img src="{{ asset('img/img-instituicao/img-perfil/img-perfil.png') }}" alt="">
-                                        </div>
-                                        <div class="col-11">
-                                            <div class="col-12 h-50 d-flex align-items-center">
-                                                <span>Etec de Itaquera</span>
-                                                . 2h
-                                            </div>
-                                            <div class="col-12 h-50">
-                                                <span>@etecitaquera</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-12 ms-5">
-                                        <p>Nova turma aberta!</p>
-                                        <div class="box-post-conteudo-preview" style="overflow-x: hidden;">
-                                            <img src="{{ asset('img/img-instituicao/posts/post2.png') }}" alt="">
-                                        </div>
-                                    </div>
-                                </div>
+                                                               @endforeach
+
                                 <!-- Fim exemplo post -->
                             </div>
                         </div>

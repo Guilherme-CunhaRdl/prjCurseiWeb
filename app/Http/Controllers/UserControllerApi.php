@@ -13,6 +13,9 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use App\Mail\TwoFactorAuthCode;
+use Carbon\Carbon;
+use Illuminate\Support\Str;
 
 class UserControllerApi extends Controller
 {
@@ -26,6 +29,52 @@ class UserControllerApi extends Controller
         $users = User::all();
 
         return $users;
+    }
+    public function gerarCodigo(Request $request)
+    {
+        $user = User::where('email_user', $request->email)->first();
+
+        
+        $code = Str::random(6);
+        
+        
+        $user->codigo_2fa = $code;
+        $user->codigo_2fa_expira_em = Carbon::now()->addMinutes(15);
+        $user->save();
+
+        
+        Mail::to($user->email_user)->send(new TwoFactorAuthCode($code));
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Código 2FA enviado para seu e-mail'
+        ]);
+    }
+
+    
+    public function verificarCodigo(Request $request)
+    {
+        $user = User::where('email_user', $request->email)
+                   ->where('codigo_2fa', $request->code)
+                   ->where('codigo_2fa_expira_em', '>', Carbon::now())
+                   ->first();
+
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Código inválido ou expirado'
+            ], 401);
+        }
+
+        
+        $user->codigo_2fa = null;
+        $user->codigo_2fa_expira_em = null;
+        $user->save();
+
+        return response()->json([
+            'success' => true,
+            'user' => $user
+        ]);
     }
 
     /**
@@ -397,6 +446,7 @@ class UserControllerApi extends Controller
     
         return response()->json(['message' => 'Atualizado com sucesso']);
     }
+    
     public function atualizarDoisFatores(Request $request, $userId)
     {
         \Log::info('Requisição recebida', [

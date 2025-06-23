@@ -11,6 +11,7 @@ use App\Http\Controllers\MensagemControllerApi;
 use App\Http\Controllers\HashtagController;
 use App\Http\Controllers\CurteiController;
 use App\Http\Controllers\DestaqueController;
+use App\Http\Controllers\DoisFatoresController;
 
 /*
 |--------------------------------------------------------------------------
@@ -91,6 +92,9 @@ Route::post('cursei/user/alterarSenha/{userId}', [UserControllerApi::class, 'alt
 Route::post('cursei/user/autenticacao/{userId}', [UserControllerApi::class, 'atualizarDoisFatores']);
 
 Route::post('/cursei/user/selecionarUser/{id}', [UserControllerApi::class, 'selectUser']);
+Route::post('/2fa/enviarCodigo', [UserControllerApi::class, 'gerarCodigo']);
+Route::post('/2fa/verificarCodigo', [UserControllerApi::class, 'verificarCodigo']);
+
 
 //ROTAS DO CURTEI
 Route::group(['middleware' => ['cors']], function() {

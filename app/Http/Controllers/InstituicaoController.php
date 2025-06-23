@@ -529,6 +529,7 @@ class InstituicaoController extends Controller
             'user' => (object)[
                 'banner_user' => $user->banner_user,
                 'img_user' => $user->img_user,
+                'arroba_user' => $user->arroba_user,
                 'nome_user' => $user->nome_user,
                 'email' => $user->email_user,
                 'senha' => $user->senha_user,

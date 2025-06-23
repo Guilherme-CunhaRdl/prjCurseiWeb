@@ -28,35 +28,35 @@
                     <div class="cardDados">
                         <i class='bx bx-user'></i>
                         <div>
-                            <p class="numero">24</p>
+                            <p class="numero">{{$todosSeguidores}}</p>
                             <p>Seguidores</p>
                         </div>
                     </div>
                     <div class="cardDados">
                         <i class='bx bx-image'></i>
                         <div>
-                            <p class="numero">22</p>
+                            <p class="numero">{{$todosPosts}}</p>
                             <p>Posts</p>
                         </div>
                     </div>
                     <div class="cardDados">
                         <i class='bx bxs-videos'></i>
                         <div>
-                            <p class="numero">20</p>
+                            <p class="numero">{{$todosCurteis}}</p>
                             <p>Curteis</p>
                         </div>
                     </div>
                     <div class="cardDados">
                         <i class='bx bx-heart'></i>
                         <div>
-                            <p class="numero">52</p>
+                            <p class="numero">{{$curtidasConteudo}}</p>
                             <p>Curtidas</p>
                         </div>
                     </div>
                     <div class="cardDados">
                         <i class='bx bxs-repeat'></i>
                         <div>
-                            <p class="numero">5</p>
+                            <p class="numero">{{$quantidadePostsRepostados}}</p>
                             <p>Reposts</p>
                         </div>
                     </div>
@@ -71,7 +71,7 @@
                 <div class="graficos">
 
                     <div class="grafico_pizza">
-                        <p>Interações por periódo</p>
+                        <p>Interações por período</p>
                         <div class="pizza">
                             <canvas id="pizza"></canvas>
                         </div>
@@ -82,7 +82,15 @@
                                     </div>
                                     <p>Manhã</p>
                                 </div>
-                                <span>30%</span>
+                                <span>{{$porcentagemManha}}</span>
+                            </div>
+                                <div class="info">
+                                <div>
+                                    <div class="bola tarde">
+                                    </div>
+                                    <p>Tarde</p>
+                                </div>
+                                <span>{{$porcentagemTarde}}</span>
                             </div>
                             <div class="info">
                                 <div>
@@ -90,7 +98,7 @@
                                     </div>
                                     <p>Noite</p>
                                 </div>
-                                <span>20%</span>
+                                <span>{{$porcentagemNoite}}</span>
                             </div>
 
 
@@ -108,25 +116,25 @@
                                 <div>
                                     <div class="bola manha">
                                     </div>
-                                    <p>Tecnologia</p>
+                                    <p>{{$top3AreasInteresse[0]['area']??'Ainda não definido'}}</p>
                                 </div>
-                                <span>30%</span>
+                                <span>{{$top3AreasInteresse[0]['porcentagem'] ?? '0%'}}</span>
                             </div>
                             <div class="info2">
                                 <div>
                                     <div class="bola manha">
                                     </div>
-                                    <p>Saúde</p>
+                                    <p>{{$top3AreasInteresse[1]['area']??'Ainda não definido'}}</p>
                                 </div>
-                                <span>20%</span>
+                                <span>{{$top3AreasInteresse[1]['porcentagem'] ?? '0%'}}</span>
                             </div>
                             <div class="info2">
                                 <div>
                                     <div class="bola manha">
                                     </div>
-                                    <p>Nutrição</p>
+                                    <p>{{$top3AreasInteresse[2]['area']??'Ainda não definido'}}</p>
                                 </div>
-                                <span>23.5%</span>
+                                <span>{{$top3AreasInteresse[2]['porcentagem'] ?? '0%'}}</span>
                             </div>
                             <div class="info2">
                                 <div>
@@ -134,7 +142,7 @@
                                     </div>
                                     <p>Outros</p>
                                 </div>
-                                <span>15%</span>
+                                <span>{{$outrasAreasPorcentagem}}</span>
                             </div>
 
 
@@ -234,14 +242,15 @@
         new Chart(pizza, {
             type: 'doughnut',
             data: {
-                labels: ['Noite', 'Manhã', ],
+                labels: ['Noite', 'Manhã', 'Tarde'],
                 datasets: [{
-                    data: [38, 27],
-                    backgroundColor: ['#1B242E', '#448FFF'],
+                    data: [{{$interacoesNoite}}, {{$interacoesManha}}, {{$interacoesTarde}}],
+                    backgroundColor: ['#1B242E', '#448FFF', '#be780e'],
                     borderWidth: 0,
                 }]
             },
             options: {
+
                 cutout: '50%',
                 plugins: {
                     legend: {
@@ -254,9 +263,9 @@
         new Chart(pizza2, {
             type: 'doughnut',
             data: {
-                labels: ['Tecnologia', 'Saúde', 'nutrição', 'Outros'],
+                labels: [@json($top3AreasInteresse[0]['area'] ?? 'Sem dados'), @json($top3AreasInteresse[1]['area'] ?? 'Sem dados'), @json($top3AreasInteresse[2]['area'] ?? 'Sem dados'), 'Outros'],
                 datasets: [{
-                    data: [38, 27, 30, 25],
+                    data: [{{$top3AreasInteresse[0]['valor']??0}}, {{$top3AreasInteresse[1]['valor']??0}}, {{$top3AreasInteresse[2]['valor']??0}}, {{$somaOutrasAreas??0}}],
                     backgroundColor: ['#616161', '#448FFF', '#BA68C8', '#FF8418'],
                     borderWidth: 0,
                 }]

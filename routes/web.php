@@ -15,42 +15,41 @@ Route::get('/', function () {
 
 // prefixo da area adm ---------------------------------------------------------------------------------------------------------
 
-route::prefix('curseiAdm')->group(function(){
+route::prefix('curseiAdm')->group(function () {
 
     // rotas de v    iews
-    Route::get('/','App\Http\Controllers\AdminController@index')->middleware('auth:adm');
+    Route::get('/', 'App\Http\Controllers\AdminController@index')->middleware('auth:adm');
 
     Route::get('/log    in', function () {
         return view('area-adm.login');
     })->name('login');
-    Route::get('/usuarios','App\Http\Controllers\userController@usuariosAdm')->middleware('auth:adm')->name('usuario');
-    Route::get('/denuncias','App\Http\Controllers\denunciaController@index')->middleware('auth:adm');
-    route::get('/posts','\App\Http\Controllers\postController@index')->middleware('auth:adm');
-    route::get('/curtai','\App\Http\Controllers\curteiController@index')->middleware('auth:adm');
-    route::get('/configuracoes','\App\Http\Controllers\AdminController@edit')->middleware('auth:adm');
-    Route::get('/instituicao','App\http\Controllers\AdminController@instituicoesAdm')->name('instituicao');
-    Route::get('/tdPostInst','App\http\Controllers\AdminController@selectAllPostAdm');
+    Route::get('/usuarios', 'App\Http\Controllers\userController@usuariosAdm')->middleware('auth:adm')->name('usuario');
+    Route::get('/denuncias', 'App\Http\Controllers\denunciaController@index')->middleware('auth:adm');
+    route::get('/posts', '\App\Http\Controllers\postController@index')->middleware('auth:adm');
+    route::get('/curtai', '\App\Http\Controllers\curteiController@index')->middleware('auth:adm');
+    route::get('/configuracoes', '\App\Http\Controllers\AdminController@edit')->middleware('auth:adm');
+    Route::get('/instituicao', 'App\http\Controllers\AdminController@instituicoesAdm')->name('instituicao');
+    Route::get('/tdPostInst', 'App\http\Controllers\AdminController@selectAllPostAdm');
     Route::post('/tdPostInst/filter', [PostController::class, 'filter'])->name('posts.filter');
-    Route::get('/tdRellsInst','App\http\Controllers\AdminController@selectAllRellsAdm');
-    Route::get('/dashUsuarioAdm/{id}','App\http\Controllers\AdminController@DashDoUserAdm');
-    Route::get('/dashInstituicaoAdm/{id}','App\http\Controllers\AdminController@DashDaInstAdm');
+    Route::get('/tdRellsInst', 'App\http\Controllers\AdminController@selectAllRellsAdm');
+    Route::get('/dashUsuarioAdm/{id}', 'App\http\Controllers\AdminController@DashDoUserAdm');
+    Route::get('/dashInstituicaoAdm/{id}', 'App\http\Controllers\AdminController@DashDaInstAdm');
 
 
     // funcões
-    Route::get('/de    sl    ogar','App\Http\Controllers\AdminController@deslogar');
-    Route::post('/logar','App\Http\Controllers\AdminController@logar');
-    Route::get('/novoadm','App\Http\Controllers\AdminController@store');
-    Route::get('/buscarUsuarios','App\Http\Controllers\userController@buscarUsuarios')->middleware('auth:adm');
-    Route::get('/nomedoadm','App\Http\Controllers\AdminController@nome')->middleware('auth:adm');
-    Route::get('/desativarUsuarios/{id}','App\Http\Controllers\userController@desativarUsuarios')->middleware('auth:adm');
-    Route::get('/ativarUsuarios/{id}','App\Http\Controllers\userController@ativarUsuarios')->middleware('auth:adm');
+    Route::get('/de    sl    ogar', 'App\Http\Controllers\AdminController@deslogar');
+    Route::post('/logar', 'App\Http\Controllers\AdminController@logar');
+    Route::get('/novoadm', 'App\Http\Controllers\AdminController@store');
+    Route::get('/buscarUsuarios', 'App\Http\Controllers\userController@buscarUsuarios')->middleware('auth:adm');
+    Route::get('/nomedoadm', 'App\Http\Controllers\AdminController@nome')->middleware('auth:adm');
+    Route::get('/desativarUsuarios/{id}', 'App\Http\Controllers\userController@desativarUsuarios')->middleware('auth:adm');
+    Route::get('/ativarUsuarios/{id}', 'App\Http\Controllers\userController@ativarUsuarios')->middleware('auth:adm');
 
-    Route::get('/alterarAdm/{id}','App\Http\Controllers\AdminController@update')->middleware('auth:adm');
+    Route::get('/alterarAdm/{id}', 'App\Http\Controllers\AdminController@update')->middleware('auth:adm');
     Route::put('/usuario/{id}', [AdminController::class, 'atualizar'])->name('usuario.atualizar');
     Route::put('/instituicao/{id}/atualizarInst', [AdminController::class, 'atualizarInst'])->name('instituicao.atualizarDados');
     Route::put('/instituicao/{id}/atualizarEndereco', [AdminController::class, 'atualizarInstDados'])->name('instituicao.atualizarEndereco');
     Route::get('/verificarInts/{id}/{acao}', 'App\Http\Controllers\AdminController@verificarInst');
-
 });
 
 
@@ -77,46 +76,13 @@ Route::prefix('curseiInstituicao')->group(function () {
     // Rotas públicas
     Route::get('/login', [InstituicaoController::class, 'loginInstituicao'])->name('login');
     Route::post('/fazerLogin', [InstituicaoController::class, 'fazerLoginInstituicao'])->name('fazerLogin');
-
-    // Rotas protegidas (requerem autenticação)
     Route::middleware(['auth'])->group(function () {
-        // Logout
         Route::get('/fazer', [InstituicaoController::class, 'fazerLogoffInstituicao'])->name('fazerLogoff');
-
-        // Dashboard (agora usando o controller)
         Route::get('/dashboard', [InstituicaoController::class, 'dashboard'])->name('dashboardInst');
-
-        // Posts
         Route::get('/posts', [InstituicaoController::class, 'posts'])->name('posts.index');
-
-        // Curtidas
         Route::get('/curteis', [InstituicaoController::class, 'curteis'])->name('curteiInst');
-
-        // Seguidores
-Route::get('/seguidores', function () {
-    $seguidores = [
-        (object)[
-            'id' => 1,
-            'nome' => 'Fulano da Silva',
-            'nome_usuario' => 'fulano123',
-            'email' => 'fulano@email.com',
-            'foto_perfil' => null
-        ],
-        (object)[
-            'id' => 2,
-            'nome' => 'Beltrano Souza',
-            'nome_usuario' => 'beltrano456',
-            'email' => 'beltrano@email.com',
-            'foto_perfil' => null
-        ]
-    ];
-    return view('area-instituicao.seguidores', compact('seguidores'));
-})->name('instituicao.seguidores');
-
-        // Conta
+        Route::get('/seguidores', [InstituicaoController::class,'seguidores'])->name('seguidoresInst');
         Route::get('/conta', [InstituicaoController::class, 'conta'])->name('instituicao.conta');
-
-        // Editar Perfil
         Route::get('/editarPerfil', [InstituicaoController::class, 'editarPerfil'])->name('instituicao.perfilEditar');
     });
 });
@@ -124,5 +90,3 @@ Route::get('/seguidores', function () {
 
 
 // fim da area instituicao ---------------------------------------------------------------------------------------------------------
-
-

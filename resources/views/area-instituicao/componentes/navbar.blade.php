@@ -15,11 +15,11 @@
          <div class="dropdown">
              <div class="d-flex align-items-center gap-2 dropdown-toggle" data-bs-toggle="dropdown" role="button"
                  aria-expanded="false">
-                 <img src="{{asset('img/user/fotoPerfil/' . (auth()->user()->img_user ?? 'default-banner.jpg'))}}"  class="profile-img"
+                 <img src="{{asset('img/user/fotoPerfil/' . ($user->img_user ?? 'default-banner.jpg'))}}"  class="profile-img"
                      alt="Perfil">
                  <div class="profile-info">
-                     <span>{{ auth()->user()->nome_user }}</span>
-                     <p class="small mb-0"> {{'@'. auth()->user()->arroba_user }}</p>
+                     <span>{{$user->nome_user }}  </span>
+                     <p class="small mb-0"> {{'@'. $user->arroba_user }}</p>
                  </div>
              </div>
 

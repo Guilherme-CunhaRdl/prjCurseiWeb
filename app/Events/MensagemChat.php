@@ -49,7 +49,8 @@ class MensagemChat implements ShouldBroadcast
             'id_enviador' => $this->mensagem->id_user_enviador,
             'foto_enviada' => $this->mensagem->img_mensagem,
             'created_at' => $this->mensagem->created_at,
-            'id_post' => $this->mensagem->id_post
+            'id_post' => $this->mensagem->id_post,
+            
 
         ]
     ];

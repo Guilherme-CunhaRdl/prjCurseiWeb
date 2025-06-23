@@ -57,6 +57,8 @@ $privadasQuery = DB::table('tb_mensagem')
     })
    ->selectRaw("
     c.id as id_conversa,
+    user1.id AS idUser1,
+    user2.id AS idUser2,
     IF(user1.id = ?, user2.nome_user, user1.nome_user) AS nome,
     IF(user1.id = ?, user2.img_user, user1.img_user) AS img,
     IF(user1.id = ?, user2.arroba_user, user1.arroba_user) AS arroba,
@@ -109,6 +111,8 @@ $instituicoesQuery = DB::table('tb_mensagem')
     })
    ->selectRaw("
     c.id as id_conversa,
+    c.id_user1 AS idUser1,
+    c.id_user1 AS idUser2,
     IF(user1.id = ?, user2.nome_user, user1.nome_user) AS nome,
     IF(user1.id = ?, user2.img_user, user1.img_user) AS img,
     IF(user1.id = ?, user2.arroba_user, user1.arroba_user) AS arroba,
@@ -165,6 +169,8 @@ $canaisQuery = DB::table('tb_canal AS canal')
     })
     ->selectRaw("
         canal.id as id_conversa,
+        userPostou.id AS idUser1,
+        userPostou.id AS idUser2,
         canal.nome_canal as nome,
         canal.imagem_canal AS img,
         user.arroba_user as arroba,
@@ -593,7 +599,7 @@ catch(Exception $e){
             $nomeImagem = time() . '_' . uniqid() . '.' . $extensao;
             $request->file('imgMensagem')->move(public_path('img/chat/fotosChat'), $nomeImagem);
         }
-        
+       
         $mensagem = new Mensagem();
         $mensagem->id_chat = $request->idChat;
         $mensagem->conteudo_mensagem = $request->conteudoMensagem;
@@ -662,6 +668,7 @@ catch(Exception $e){
             'message' => 'Mensagem enviada com sucesso!',
             'paia' => 'teste',
             'mensagem' => $mensagem,
+            'chats' => $chats
         ], 201);
     }catch(Exception $e){
         return response()->json([

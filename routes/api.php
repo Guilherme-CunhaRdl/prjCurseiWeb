@@ -120,18 +120,18 @@ Route::post('/curtei/comentarios/curtir', [CurteiController::class, 'curtirComen
 
 
 
-//ROTAS DOS STORYES
-Route::post('/stories/upload', [StoryController::class, 'upload']);
-    Route::get('/stories', [StoryController::class, 'index']);
-    Route::delete('/stories/{id}', [StoryController::class, 'destroy']);
-
-
+//ROTAS DOS status
+        Route::post('/status/upload', [StoryController::class, 'uploadStatus']);
+        Route::get('/status', [StoryController::class, 'indexStatus']);
+        Route::delete('/status/{id}', [StoryController::class, 'destroyStatus']);
+        Route::post('/status/like', [StoryController::class, 'toggleLike']);
+        Route::get('/status/is-liked', [StoryController::class, 'isLiked']);
 //ROTAS DOS DESTAQUES
 
     // Listar destaques de um usuário específico
         Route::get('/destaques/{id_user}', [DestaqueController::class, 'index']);
         Route::post('/destaques/{id_user}', [DestaqueController::class, 'store']);
         Route::delete('/destaques/{id_user}/{id}', [DestaqueController::class, 'destroy']);
-        Route::put('/destaques/{id_destaque}/stories', [DestaqueController::class, 'atualizarDestaques']);
+        Route::post('/destaques/{id_destaque}/stories', [DestaqueController::class, 'atualizarDestaques']);
         Route::get('/destaqueEspecifico/{id}', [DestaqueController::class, 'show']);
         Route::get('/stories/{id_user}', [DestaqueController::class, 'listStories']);

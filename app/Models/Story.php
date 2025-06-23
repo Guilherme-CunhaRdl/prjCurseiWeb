@@ -52,8 +52,19 @@ class Story extends Model
         return $this->tipo_midia === 'image';
     }
 
+
     public function isVideo()
     {
         return $this->tipo_midia === 'video';
     }
+
+    public function likes()
+{
+    return $this->hasMany(StoryLike::class, 'story_id');
+}
+
+public function isLikedBy($userId)
+{
+    return $this->likes()->where('user_id', $userId)->exists();
+}
 }

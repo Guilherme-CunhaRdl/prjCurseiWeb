@@ -42,8 +42,8 @@
         <span class="perfil-arroba">{{'@'. auth()->user()->arroba_user }}</span>
         <span class="perfil-bio-box">{{ auth()->user()->bio_user }}</span>
         <div class="perfil-contagem-box">
-            <span><b>{{ $instituicao->seguidores ?? 1 }}</b> <span class="contagem-label">Seguidores</span></span>
-            <span><b>{{ $instituicao->seguindo ?? 0 }}</b> <span class="contagem-label">Seguindo</span></span>
+            <span><b>{{ $seguidores ?? $seguidores }}</b> <span class="contagem-label">Seguidores</span></span>
+            <span><b>{{ $seguidos ?? $seguidos }}</b> <span class="contagem-label">Seguindo</span></span>
         </div>
     </div>
     <button class="btn btn-primary btn-sm perfil-btn-editar" onclick="window.location.href='{{ url('curseiInstituicao/editarPerfil') }}'">Editar perfil</button>
@@ -68,15 +68,15 @@
         <div class="institucional-dados">
             <div>
                 <div class="dado-label">CNPJ:</div>
-                <div class="dado-valor">{{auth()->user()->instituicao->cnpj_instituicao}}</div>
-                <div class="dado-label">Telefone:</div>
-                <div class="dado-valor">{{auth()->user()->instituicao->telefone}}</div>
+                <div class="dado-valor">{{ $user->cnpj }}</div>
+                <div class="dado-label">Telefone: </div>
+                <div class="dado-valor">{{ !$user->telefone ? 'Nenhum Telefone Cadastrado' : $user->telefone }}</div>
             </div>
             <div>
                 <div class="dado-label">Email:</div>
                 <div class="dado-valor">{{auth()->user()->email_user}}</div>
                 <div class="dado-label">Senha:</div>
-                <div class="dado-valor">*********</div>
+                <div class="dado-valor">*************</div>
             </div>
         </div>
     </div>
@@ -94,19 +94,19 @@
         <div class="modal-form-grid">
             <div class="form-group">
                 <label for="cnpj">CNPJ</label>
-                <input type="text" id="cnpj" class="form-control" value="12.345.678/0001-90" disabled>
+                <input type="text" id="cnpj" class="form-control" value="{{ $user->cnpj }}" disabled>
             </div>
             <div class="form-group">
                 <label for="telefone">Telefone</label>
-                <input type="text" id="telefone" class="form-control" value="(11)91234-5678" disabled>
+                <input type="text" id="telefone" class="form-control" value="{{ $user->telefone }}" disabled>
             </div>
             <div class="form-group">
                 <label for="email">Email</label>
-                <input type="text" id="email" class="form-control" value="etecitaquera@gmail.com" disabled>
+                <input type="text" id="email" class="form-control" value="{{ $user->email }}" disabled>
             </div>
             <div class="form-group">
                 <label for="senha">Senha</label>
-                <input type="password" id="senha" class="form-control" value="*********" disabled>
+                <input type="password" id="senha" class="form-control" value="*************" disabled>
             </div>
         </div>
         <div class="modal-header" style="margin-top: 22px;">
@@ -116,35 +116,35 @@
         <div class="modal-form-grid">
             <div class="form-group">
                 <label for="cep">CEP</label>
-                <input type="text" id="cep" class="form-control" value=",,,,," disabled>
+                <input type="text" id="cep" class="form-control" value="{{ $user->cep }}" disabled>
             </div>
             <div class="form-group">
                 <label for="logradouro">Logradouro</label>
-                <input type="text" id="logradouro" class="form-control" value=",,,,," disabled>
+                <input type="text" id="logradouro" class="form-control" value="{{ $user->logradouro }}" disabled>
             </div>
             <div class="form-group">
                 <label for="estado">Estado</label>
-                <input type="text" id="estado" class="form-control" value=",,,," disabled>
+                <input type="text" id="estado" class="form-control" value="{{ $user->estado }}" disabled>
             </div>
             <div class="form-group">
                 <label for="cidade">Cidade</label>
-                <input type="text" id="cidade" class="form-control" value=",,,," disabled>
+                <input type="text" id="cidade" class="form-control" value="{{ $user->cidade }}" disabled>
             </div>
             <div class="form-group">
                 <label for="bairro">Bairro</label>
-                <input type="text" id="bairro" class="form-control" value=",,,," disabled>
+                <input type="text" id="bairro" class="form-control" value="{{ $user->bairro }}" disabled>
             </div>
             <div class="form-group">
                 <label for="logradouro2">Rua</label>
-                <input type="text" id="rua" class="form-control" value=",,,," disabled>
+                <input type="text" id="rua" class="form-control" value="{{ $user->logradouro }}" disabled>
             </div>
             <div class="form-group">
                 <label for="numero">Número</label>
-                <input type="text" id="numero" class="form-control" value=",,,," disabled>
+                <input type="text" id="numero" class="form-control" value="{{ $user->numero_logradouro }}" disabled>
             </div>
             <div class="form-group">
                 <label for="complemento">Complemento</label>
-                <input type="text" id="complemento" class="form-control" value=",,,," disabled>
+                <input type="text" id="complemento" class="form-control" value=" {{ $user->complemento }} " disabled>
             </div>
         </div>
         <div class="modal-botoes">

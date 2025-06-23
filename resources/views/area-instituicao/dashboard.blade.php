@@ -290,7 +290,7 @@
                 ],
                 datasets: [{
 
-                    data: [120, 150, 180, 170, 200, 220, 210, 230, 250, 240, 260, 280],
+                    data: [{{$engajamento[1]}}, {{$engajamento[2]}},{{$engajamento[3]}}, {{$engajamento[4]}}, {{$engajamento[5]}}, {{$engajamento[6]}}, {{$engajamento[7]}}, {{$engajamento[8]}}, {{$engajamento[9]}}, {{$engajamento[10]}}, {{$engajamento[11]}}, {{$engajamento[12]}}],
                     borderColor: '#FF8418',
                     backgroundColor: 'rgba(75, 192, 192, 0.2)',
                     tension: 0.3,

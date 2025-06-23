@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Comentario;
 use App\Models\Instituicao;
 use App\Models\Post;
 use App\Models\Seguidores;
@@ -333,8 +334,8 @@ class InstituicaoController extends Controller
     public function fazerLogoffInstituicao(Request $request)
     {
         Auth::logout();
-        $request->session()->invalidate(); // Invalida a sessão atual
-        $request->session()->regenerateToken(); // Gera novo token CSRF
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
         return redirect('curseiInstituicao/login');
     }
@@ -457,12 +458,45 @@ class InstituicaoController extends Controller
     $top3AreasInteresse = [];
     $outrasAreasPorcentagem = '0%';
     $totalAreasCurtidas = 0;
-    // ... outros valores padrão que quiser
 } else {
         $outrasAreasPorcentagem =  round(($somaOutrasAreas/$totalAreasCurtidas) * 100,1) .'%' ;
 }
 
 
+    $engajamento = [
+        'curtidasPorMes' => Curtida::whereIn('id_post', $posts)
+        ->selectRaw('MONTH(created_at) as mes, COUNT(*) as total')
+        ->groupBy('mes')
+        ->orderBy('mes')
+        ->pluck('total', 'mes')
+        ->toArray(),
+        'comentariosPorMes'=> Comentario::whereIn('id_post',$posts)
+        ->selectRaw('MONTH(created_at) as mes, COUNT(*) as total')
+        ->groupBy('mes')
+        ->orderBy('mes')
+        ->pluck('total', 'mes')
+        ->toArray(),
+        'repostsPorMes'=> Post::whereIn('repost_id',$posts)
+        ->selectRaw('MONTH(created_at) as mes, COUNT(*) as total')
+        ->groupBy('mes')
+        ->orderBy('mes')
+        ->pluck('total', 'mes')
+        ->toArray(),
+    ];
+
+$engajamentoPorMes = [];
+for ($i = 1;$i <=12; $i++){
+    $engajamentoPorMes[$i] = 0;
+}
+
+
+foreach ($engajamento as $tipo) {
+    foreach ($tipo as $mes => $valor) {
+
+
+        $engajamentoPorMes[$mes] += $valor;
+    }
+}
 
 
         return view('area-instituicao.dashboard', [
@@ -482,7 +516,9 @@ class InstituicaoController extends Controller
             'totalAreasCurtidas' => $totalAreasCurtidas,
             'top3AreasInteresse' => $top3AreasInteresse,
             'somaOutrasAreas' => $somaOutrasAreas,
-            'outrasAreasPorcentagem' => $outrasAreasPorcentagem
+            'outrasAreasPorcentagem' => $outrasAreasPorcentagem,
+            'todasAsInteracoes'=>$todasAsInteracoes,
+            'engajamento'=>$engajamentoPorMes
 
         ]);
     }
@@ -602,8 +638,8 @@ class InstituicaoController extends Controller
 
     public function logoutInstituicao()
     {
-        session()->forget('instituicao_id'); // Remove o ID
-        session()->invalidate();             // Invalida a sessão atual
+        session()->forget('instituicao_id');
+        session()->invalidate();
         session()->regenerateToken();
         return redirect()->route('login');
     }

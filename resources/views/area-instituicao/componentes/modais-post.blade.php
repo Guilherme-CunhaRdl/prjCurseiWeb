@@ -89,12 +89,12 @@
         <textarea placeholder="Descreva seu evento" name="descEvento"></textarea>
       </div>
       <div class="rodape" style="justify-content: end;">
-    
+
         <div class="cpb">
           <button type="button" class="cancelar" onclick="fecharModal()">
             Cancelar
           </button>
-          <button type="button" class="postar" onclick="postarEvento()"> 
+          <button type="button" class="postar" onclick="postarEvento()">
             postar
           </button>
         </div>
@@ -109,7 +109,7 @@
                 <label for="inputUrlLinkPost">URL</label>
                 <input type="text" id="inputUrlLinkPost" placeholder="Cole ou digite a URL aqui">
             </div>
-           
+
             <div style="width: 100%;display: flex;justify-content: center;">
                           <button id="buttonAddLinkPost">Adicionar</button>
             </div>
@@ -126,7 +126,7 @@
                 <input type="time" id="inputHoraPost"  style="width: 45%;">
                 </div>
             </div>
-           
+
             <div style="width: 100%;display: flex;justify-content: center;">
                           <button type="button" id="buttonAddDataPost">Agendar</button>
             </div>
@@ -188,7 +188,7 @@
         <div class="inputEventoCont">
           <i class='bx bx-link'></i>
     <input type="url" placeholder="Sua url aqui" name="link" id="linkUpdate" disabled>
-  
+
         </div>
         <label for="">Descrição</label>
   <textarea placeholder="Descreva seu evento" name="descEvento" id="descEventoUpdate" disabled></textarea>
@@ -209,7 +209,7 @@
           <div class="action" id="actions">
             <button  type="button" class="botoes" id="addLinkUpdateButton"><i class='bx bx-link '></i>Adicionar link</button>
             <label  class="botoes" for="imgUpdate" id="addImgLabelVerModal"><i class='bx bx-image-plus'></i>Adicionar imagem</label>
-            
+
           </div>
           <div class="button">
              <button type="button" class="cancelar" onclick="desativarEdicao()">Cancelar</button>

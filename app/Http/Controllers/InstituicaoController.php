@@ -515,16 +515,50 @@ class InstituicaoController extends Controller
             'Saturday' => 'Sábado',
         ];
 
-         $diasContagemTraduzidos = array_fill_keys(array_values($traducao), 0);
+        $diasContagemTraduzidos = array_fill_keys(array_values($traducao), 0);
 
         if (!empty($postDiaSemana)) {
-        foreach ($postDiaSemana as $diasIngles => $valor){
-            $diaTraduzido = $traducao[$diasIngles] ?? $diasIngles;
-            $diasContagemTraduzidos[$diaTraduzido] = $valor;
+            foreach ($postDiaSemana as $diasIngles => $valor) {
+                $diaTraduzido = $traducao[$diasIngles] ?? $diasIngles;
+                $diasContagemTraduzidos[$diaTraduzido] = $valor;
+            }
         }
-    }
-        
 
+        $postMaisEngajado = Post::withCount([
+            'curtidas as total_curtidas',
+            'comentario as total_comentarios',
+            'reposts as total_reposts' // Assumindo que você tem um relacionamento 'reposts' no model Post
+        ])
+            ->where('id_user', $usuario->id)
+            ->where('status_post', 1)
+            ->get()
+            ->map(function ($post) {
+                // Definindo pesos para cada tipo de interação
+                $pesos = [
+                    'curtida' => 1,
+                    'comentario' => 2,    // Comentários valem mais que curtidas
+                    'repost' => 3         // Reposts valem mais que comentários
+                ];
+
+                // Calculando o engajamento total
+                $post->engajamento =
+                    ($post->total_curtidas * $pesos['curtida']) +
+                    ($post->total_comentarios * $pesos['comentario']) +
+                    ($post->total_reposts * $pesos['repost']);
+
+                return $post;
+            })
+            ->sortByDesc('engajamento')
+            ->first();
+        $postMaisRecente = Post::where('id_user', $usuario->id)
+            ->where('status_post', 1)
+            ->orderBy('created_at', 'desc')
+            ->withCount(
+                'curtidas as total_curtidas',
+                'comentario as total_comentarios',
+                'reposts as total_reposts'
+            )
+            ->first();
 
 
         return view('area-instituicao.dashboard', [
@@ -548,7 +582,8 @@ class InstituicaoController extends Controller
             'todasAsInteracoes' => $todasAsInteracoes,
             'engajamento' => $engajamentoPorMes,
             'postsDiaSemana' => $diasContagemTraduzidos,
-
+            'postMaisEngajado' => $postMaisEngajado,
+            'postMaisRecente' => $postMaisRecente,
         ]);
     }
 
@@ -626,6 +661,8 @@ class InstituicaoController extends Controller
 
     public function seguidores()
     {
+        $user = auth()->user();
+
         $seguidores = [
             (object)[
                 'id' => 1,
@@ -638,7 +675,7 @@ class InstituicaoController extends Controller
 
         return view('area-instituicao.seguidores', [
             'seguidores' => $seguidores,
-            'user' => auth()->user()
+            'user' => $user
         ]);
     }
 
@@ -679,14 +716,15 @@ class InstituicaoController extends Controller
 
         ]);
     }
-    
-    public function updateConta(Request $request){
-        
+
+    public function updateConta(Request $request)
+    {
+
 
         $user = auth()->user();
 
 
-         $alterEmailSenha = User::where('id', $user->id)->update([
+        $alterEmailSenha = User::where('id', $user->id)->update([
             'senha_user' => Hash::make($request->senha),
             'email_user' => $request->email,
             'updated_at' => now()
@@ -704,9 +742,9 @@ class InstituicaoController extends Controller
             'complemento_instituicao' => $request->complemento
         ]);
 
-            $instituicaoAtualizada = Instituicao::where('id_user', $user->id)->first();
+        $instituicaoAtualizada = Instituicao::where('id_user', $user->id)->first();
 
-         $seguidores = DB::table('tb_seguidores')
+        $seguidores = DB::table('tb_seguidores')
             ->where('id_user_seguido', $user->id)
             ->count();
 
@@ -714,7 +752,7 @@ class InstituicaoController extends Controller
             ->where('id_user_seguidor', $user->id)
             ->count();
 
-         return view('area-instituicao.conta', [
+        return view('area-instituicao.conta', [
             'user' => (object)[
                 'id' => $user->id,
                 'banner_user' => $user->banner_user,
@@ -1102,7 +1140,7 @@ class InstituicaoController extends Controller
             'seguidores' => $seguidores,
             'seguidos' => $seguidos
 
-    ]);
+        ]);
     }
 
     /**
@@ -1193,6 +1231,4 @@ class InstituicaoController extends Controller
             'mediaCompartilhamento' => $mediaCompartilhamento
         ]);
     }
-
-    
 }

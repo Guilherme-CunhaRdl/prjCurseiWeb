@@ -114,7 +114,7 @@
                         <div class="infos">
                             <div class="info2">
                                 <div>
-                                    <div class="bola manha">
+                                    <div class="bola area">
                                     </div>
                                     <p>{{$top3AreasInteresse[0]['area']??'Ainda não definido'}}</p>
                                 </div>
@@ -122,7 +122,7 @@
                             </div>
                             <div class="info2">
                                 <div>
-                                    <div class="bola manha">
+                                    <div class="bola area2">
                                     </div>
                                     <p>{{$top3AreasInteresse[1]['area']??'Ainda não definido'}}</p>
                                 </div>
@@ -130,7 +130,7 @@
                             </div>
                             <div class="info2">
                                 <div>
-                                    <div class="bola manha">
+                                    <div class="bola area3">
                                     </div>
                                     <p>{{$top3AreasInteresse[2]['area']??'Ainda não definido'}}</p>
                                 </div>
@@ -138,7 +138,7 @@
                             </div>
                             <div class="info2">
                                 <div>
-                                    <div class="bola noite">
+                                    <div class="bola outros">
                                     </div>
                                     <p>Outros</p>
                                 </div>
@@ -266,7 +266,7 @@
                 labels: [@json($top3AreasInteresse[0]['area'] ?? 'Sem dados'), @json($top3AreasInteresse[1]['area'] ?? 'Sem dados'), @json($top3AreasInteresse[2]['area'] ?? 'Sem dados'), 'Outros'],
                 datasets: [{
                     data: [{{$top3AreasInteresse[0]['valor']??0}}, {{$top3AreasInteresse[1]['valor']??0}}, {{$top3AreasInteresse[2]['valor']??0}}, {{$somaOutrasAreas??0}}],
-                    backgroundColor: ['#616161', '#448FFF', '#BA68C8', '#FF8418'],
+                    backgroundColor: ['#C9A227', '#3478F6', '	#E67E22', '	#7f8285'],
                     borderWidth: 0,
                 }]
             },
@@ -317,10 +317,18 @@
         const stockChart = new Chart(barra, {
             type: 'bar',
             data: {
-                labels: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'],
+                labels: ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado    '],
                 datasets: [{
                         label: 'Usuarios',
-                        data: [5, 2, 5, 2, 4, 5, 5],
+data: [
+    {{ $postsDiaSemana['Domingo'] }},
+    {{ $postsDiaSemana['Segunda']  }},
+    {{ $postsDiaSemana['Terça'] }},
+    {{ $postsDiaSemana['Quarta']}},
+    {{ $postsDiaSemana['Quinta']}},
+    {{ $postsDiaSemana['Sexta']}},
+    {{ $postsDiaSemana['Sábado']}}
+],
                         backgroundColor: getComputedStyle(root).getPropertyValue('--inst').trim(),
                         borderRadius: 2,
                         yAxisID: 'y',

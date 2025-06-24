@@ -35,7 +35,7 @@
   </script>
 
   <div id="contLoading">
-      <!-- 
+      <!--
     <div class="flex-col gap-4 w-full flex items-center justify-center">
   <div class="spinner-bg"></div>
 </div> -->
@@ -64,43 +64,43 @@
               <div class="listaCores" id="listaCores">
 
                   <button onclick="trocarCorInst(this,'vermelho')" style="background-color:#e90013;">
-                      
+
                   </button>
 
                   <button onclick="trocarCorInst(this,'azul')" style="background-color: #448FFF;">
-                      
+
                   </button>
 
                   <button onclick="trocarCorInst(this,'verde')" style="background-color: #2ECC71;">
-                      
+
                   </button>
 
                   <button onclick="trocarCorInst(this,'amarelo')" style="background-color: #F1C40F;">
-                      
+
                   </button>
 
                   <button onclick="trocarCorInst(this,'laranja')" style="background-color: #FF8418;">
-                      
+
                   </button>
 
                   <button onclick="trocarCorInst(this,'roxo')" style="background-color: #6b00cf;">
-                      
+
                   </button>
 
                   <button onclick="trocarCorInst(this,'rosa')" style="background-color: #E91E63;">
-                      
+
                   </button>
 
                   <button onclick="trocarCorInst(this,'preto')" style="background-color: #2F2F2F;">
-                      
+
                   </button>
 
                   <button onclick="trocarCorInst(this,'verdeAqua')" style="background-color: #05A4B6;">
-                      
+
                   </button>
 
                   <button onclick="trocarCorInst(this,'azulEscuro')" style="background-color: #10009D;">
-                      
+
                   </button>
 
 

@@ -135,6 +135,20 @@
                 & .manha{
                     background-color: #448FFF;
                 }
+                & .area{
+                    background-color: #C9A227;
+                }
+                & .area2{
+                    background-color: #3478F6;
+                }
+                 & .area3{
+                    background-color: #E67E22;
+                }
+                & .outros{
+                    background-color: #7f8285;
+                }
+
+
 
                 & .noite{
                     background-color: var(--sidebar);

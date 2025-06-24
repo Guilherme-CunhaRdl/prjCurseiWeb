@@ -51,6 +51,7 @@ Route::post('/cursei/postsUpdate/{id}', [PostControllerApi::class, 'updateApi'])
 Route::post('instituicao', [instituicaoControllerApi::class, 'cadastrarInstituicao']);
 Route::get('/cursei/instituicao/procurarInstituicao/{pesquisa}', [instituicaoControllerApi::class, 'procurarInstituicao'])->name('instituicao.procurarInstituicao');
 Route::get('/cursei/instituicao/verificarInstituicao/{id}', [InstituicaoControllerApi::class, 'verificarInstituicaoSolicitada'])->name('instituicao.verificarInstituicao');
+Route::get('/cursei/instituicao/engajamentos/{id}/{tipo}', [InstituicaoControllerApi::class, 'engajamentos'])->name('instituicao.engajamentos');
 
  Route::get('/verificar-email', [UserControllerApi::class, 'verificarEmailExistente']);
 Route::get('/verificar-usuario', [UserControllerApi::class, 'verificarUsuarioExistente']);

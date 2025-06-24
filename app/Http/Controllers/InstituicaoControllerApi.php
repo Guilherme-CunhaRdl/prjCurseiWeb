@@ -5,6 +5,13 @@ use App\Models\Instituicao;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Curtei;
+use App\Models\Comentario;
+use App\Models\Curtida;
+use App\Models\CurtidaCurtei;
+use App\Models\ComentarioCurtei;
+
+use Illuminate\Support\Facades\DB;
+
 class instituicaoControllerApi extends Controller
 {
     public function cadastrarInstituicao(Request $request)
@@ -147,6 +154,53 @@ class instituicaoControllerApi extends Controller
             return response()->json(['success' => false, 'message' => 'Erro ao listar curteis', 'error' => $e->getMessage()], 500);
         }
     }
+    public function engajamentos($id,$tipo){
+        if($tipo ==1){
+            $comentarios = Comentario::with(['usuario'])
+                    ->where('id_post', $id)
+                    ->select(
+                        '*',
+                        DB::raw('TIMESTAMPDIFF(SECOND, created_at, NOW()) AS tempo_insercao'),
+                        DB::raw('(SELECT COUNT(*) FROM tb_curtida_comentario WHERE tb_curtida_comentario.id_comentario = tb_comentario.id) AS total_curtidas'),
+                    )
+                   
+                    ->get();
+                    $resposta = $comentarios;
+        }
+        else if ($tipo ==2){
+              $curtidas = Curtida::with(['user'])
+                    ->where('id_post', $id)
+                    ->select(
+                        '*',
+                        DB::raw('TIMESTAMPDIFF(SECOND, created_at, NOW()) AS tempo_insercao'),
+                    )
+                   
+                    ->get();
+                    $resposta = $curtidas;
+        }
+        else if ($tipo ==3){
+              $curtidas = CurtidaCurtei::with(['user'])
+                    ->where('id_curtei', $id)
+                    ->select(
+                        '*',
+                        DB::raw('TIMESTAMPDIFF(SECOND, created_at, NOW()) AS tempo_insercao'),
+                    )
+                   
+                    ->get();
+                    $resposta = $curtidas;
+        }
+         else if ($tipo ==4){
+              $comentarios = ComentarioCurtei::with(['usuario' => function($q) {
+                    $q->select('id', 'nome_user', 'arroba_user', 'img_user');
+                }])
+                ->withCount('curtidas as total_curtidas' )
+                ->where('id_curtei', $id)
+                ->orderBy('created_at', 'desc')
+                ->get();
+                
+                    $resposta = $comentarios;
+        }
+        return $resposta;
+    }
 }
-
 

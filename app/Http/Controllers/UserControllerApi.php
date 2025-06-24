@@ -663,6 +663,9 @@ class UserControllerApi extends Controller
             ], 500);
         }
     }
+
+    
+
     public function notificacao($id, $acao)
     {
         $notificacoes = DB::table(DB::raw(

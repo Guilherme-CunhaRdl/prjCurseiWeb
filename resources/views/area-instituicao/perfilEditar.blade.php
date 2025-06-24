@@ -18,7 +18,9 @@
         ])
         <div class="col-12 flex-row d-flex">
             <!-- Coluna do formulário -->
-            <div class="col-md-6 p-5">
+            <form method="POST" action="{{ route("perfil.update") }}" class="col-md-6 p-5" enctype="multipart/form-data">
+                @csrf
+                @method('PUT')
                 <div class="ps-5 col-10">
                     <div class="col-12">
                         <h1>Personalização de Página</h1>
@@ -30,7 +32,7 @@
                                 <div class="conteudo-img-perfil">
                                     <i class="bi bi-camera"></i>
                                     <label for="imgPerfil" class="h-100 w-100 position-absolute"></label>
-                                    <input type="file" accept="image/*" id="imgPerfil" class="d-none">
+                                    <input type="file" accept="image/*" id="imgPerfil" class="d-none"  name="imgPerfil">
                                 </div>
                             </div>
                         </div>
@@ -49,7 +51,7 @@
                             <div class="conteudo-banner">
                                 <i class="bi bi-camera"></i>
                                 <label class="w-100 h-100 position-absolute" style="opacity: 0;" for="bannerImg">Clique Para Alterar Seu Banner!</label>
-                                <input class="d-none" type="file" accept="image/*" id="bannerImg">
+                                <input class="d-none" type="file" accept="image/*" id="bannerImg"  name="imgBanner">
                             </div>
                         </div>
                     </div>
@@ -60,7 +62,7 @@
                                 <span class="span-alterar">Nome</span>
                             </div>
                             <div class="col-9">
-                                <input class="input-alterar" type="text" value="{{ $user->nome_user }}" id="input-nome">
+                                <input class="input-alterar" name="nomeInstituicao" type="text" value="{{ $user->nome_user }}" id="input-nome">
                             </div>
                         </div>
                         <div class="col-12 d-flex flex-row my-3">
@@ -68,7 +70,7 @@
                                 <span class="span-alterar">Descrição</span>
                             </div>
                             <div class="col-9">
-                                <textarea rows="4" class="input-alterar" id="input-bio">{{ $user->bio_user }}</textarea>
+                                <textarea rows="4" class="input-alterar" id="input-bio" name="bioInstituicao">{{ $user->bio_user }}</textarea>
                             </div>
                         </div>
                         <div class="col-12 d-flex flex-row my-3" style="height: 50px;">
@@ -76,16 +78,16 @@
                                 <span class="span-alterar">Usuário</span>
                             </div>
                             <div class="col-9">
-                                <input class="input-alterar" value="{{ $user->arroba_user }}" type="text" id="input-contato">
+                                <input class="input-alterar" name="arrobaInstituicao" value="{{ $user->arroba_user }}" type="text" id="input-contato">
                             </div>
                         </div>
                     </div>
                     <div class="col-12 ps-2 mt-4">
-                        <button class="botao-salvar" type="button">Salvar</button>
+                        <button class="botao-salvar" type="submit">Salvar</button>
                         <button class="botao-cancelar" type="button" onclick="window.location.href='{{ url('curseiInstituicao/conta') }}'">Cancelar</button>
                     </div>
                 </div>
-            </div>
+            </form>
             <!-- Coluna do preview -->
             <div class="col-md-6 p-5" >
                 <div class="col-12 p-4">
@@ -93,7 +95,7 @@
                     <div class="col-12">
                         <div class="box-preview-perfil" style="box-sizing: border-box; overflow-y:auto;">
                             <div class="col-12 position-relative">
-                                <img class="banner-preview bannerPreview" src="{{ asset('img/img-instituicao/banners/banner.png') }}" alt="">
+                                <img class="banner-preview bannerPreview" src="{{ asset("img/user/bannerPerfil/$user->banner_user") }}" alt="">
                                 <div class="div-img-preview-perfil">
                                     <img class="img-preview-perfil carregarImgPerfil" src="{{ asset("img/user/fotoPerfil/$user->img_user") }}" alt="">
                                 </div>

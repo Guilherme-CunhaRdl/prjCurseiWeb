@@ -91,22 +91,26 @@
             <img src="{{ asset('img/Icone_Logo_Cursei_Laranja.png') }}" style="width:38px; height:32px;">
             <span class="modal-titulo">Registros da Conta</span>
         </div>
+        <form action="{{ route("conta.update") }}" method="POST">
+            @csrf
+            @method('PUT')
+
         <div class="modal-form-grid">
             <div class="form-group">
                 <label for="cnpj">CNPJ</label>
-                <input type="text" id="cnpj" class="form-control" value="{{ $user->cnpj }}" disabled>
+                <input type="text" id="cnpj" name="cnpj" class="form-control" value="{{ $user->cnpj }}">
             </div>
             <div class="form-group">
                 <label for="telefone">Telefone</label>
-                <input type="text" id="telefone" class="form-control" value="{{ $user->telefone }}" disabled>
+                <input type="text" id="telefone" name="telefone" class="form-control" value="{{ $user->telefone }}">
             </div>
             <div class="form-group">
                 <label for="email">Email</label>
-                <input type="text" id="email" class="form-control" value="{{ $user->email }}" disabled>
+                <input type="text" id="email" name="email" class="form-control" value="{{ $user->email }}">
             </div>
             <div class="form-group">
                 <label for="senha">Senha</label>
-                <input type="password" id="senha" class="form-control" value="*************" disabled>
+                <input type="password" id="senha" name="senha" class="form-control" value="*************">
             </div>
         </div>
         <div class="modal-header" style="margin-top: 22px;">
@@ -116,42 +120,43 @@
         <div class="modal-form-grid">
             <div class="form-group">
                 <label for="cep">CEP</label>
-                <input type="text" id="cep" class="form-control" value="{{ $user->cep }}" disabled>
+                <input type="text" id="cep" name="cep" class="form-control" value="{{ $user->cep }}">
             </div>
             <div class="form-group">
                 <label for="logradouro">Logradouro</label>
-                <input type="text" id="logradouro" class="form-control" value="{{ $user->logradouro }}" disabled>
+                <input type="text" id="logradouro" name="logradouro" class="form-control" value="{{ $user->logradouro }}">
             </div>
             <div class="form-group">
                 <label for="estado">Estado</label>
-                <input type="text" id="estado" class="form-control" value="{{ $user->estado }}" disabled>
+                <input type="text" id="estado" name="estado" class="form-control" value="{{ $user->estado }}">
             </div>
             <div class="form-group">
                 <label for="cidade">Cidade</label>
-                <input type="text" id="cidade" class="form-control" value="{{ $user->cidade }}" disabled>
+                <input type="text" id="cidade" name="cidade" class="form-control" value="{{ $user->cidade }}">
             </div>
             <div class="form-group">
                 <label for="bairro">Bairro</label>
-                <input type="text" id="bairro" class="form-control" value="{{ $user->bairro }}" disabled>
+                <input type="text" id="bairro" name="bairro" class="form-control" value="{{ $user->bairro }}">
             </div>
             <div class="form-group">
                 <label for="logradouro2">Rua</label>
-                <input type="text" id="rua" class="form-control" value="{{ $user->logradouro }}" disabled>
+                <input type="text" id="rua" name="logradouro" class="form-control" value="{{ $user->logradouro }}">
             </div>
             <div class="form-group">
                 <label for="numero">Número</label>
-                <input type="text" id="numero" class="form-control" value="{{ $user->numero_logradouro }}" disabled>
+                <input type="text" id="numero" name="numero" class="form-control" value="{{ $user->numero_logradouro }}">
             </div>
             <div class="form-group">
                 <label for="complemento">Complemento</label>
-                <input type="text" id="complemento" class="form-control" value=" {{ $user->complemento }} " disabled>
+                <input type="text" id="complemento" name="complemento" class="form-control" value=" {{ $user->complemento }} ">
             </div>
         </div>
         <div class="modal-botoes">
-            <button class="btn-cancelar" onclick="fecharModalEditarConta()">Cancelar</button>
-            <button class="btn-confirmar" disabled>Salvar</button>
+            <button class="btn-cancelar" onclick="fecharModalEditarConta()" type="button">Cancelar</button>
+            <button class="btn-confirmar" type="submit">Salvar</button>
         </div>
     </div>
+    </form>
 </div>
 
 <script>

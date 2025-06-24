@@ -7,9 +7,9 @@
 
      <!-- Direita -->
      <div class="navbar-right ">
-         <div class="notification-icon"  onclick="abrirModalNotificacoes()">
+         <div class="notification-icon"  onclick="abrirModalNotificacoes({{ $user->id }}, 'outra')">
              <i class='bx  bx-bell'></i>
-             <div class="notification-badge">4</div>
+             <div class="notification-badge" id="qtdNotificacao"></div>
          </div>
 
          <div class="dropdown">
@@ -34,3 +34,5 @@
          </div>
      </div>
  </nav>
+
+ <script src="{{ url('js/notificacoesInstituicao/pegarNotificacoes.js') }}"></script>

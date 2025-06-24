@@ -84,6 +84,8 @@ Route::prefix('curseiInstituicao')->group(function () {
         Route::get('/seguidores', [InstituicaoController::class,'seguidores'])->name('seguidoresInst');
         Route::get('/conta', [InstituicaoController::class, 'conta'])->name('instituicao.conta');
         Route::get('/editarPerfil', [InstituicaoController::class, 'editarPerfil'])->name('instituicao.perfilEditar');
+        Route::put('/atualizarConta', [InstituicaoController::class, 'updateConta'])->name('conta.update');
+        Route::put('/atualizarPerfil', [InstituicaoController::class, 'updatePersonalizacao'])->name('perfil.update');
 
         
     });

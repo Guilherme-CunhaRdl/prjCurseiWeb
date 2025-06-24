@@ -48,6 +48,14 @@
     flex: 1;
     overflow-y: auto;
     padding: 0.5rem;
+
+}
+.containerLoading{
+    width: 100%;
+    margin-top: 7px;
+    display: none;
+    align-items: center;
+    justify-content: center;
 }
 
 .notificacao-item {

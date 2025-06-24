@@ -628,6 +628,7 @@ class InstituicaoController extends Controller
         $instituicao = Instituicao::where('id_user', $user->id)->first();
         return view('area-instituicao.conta', [
             'user' => (object)[
+                'id' => $user->id,
                 'banner_user' => $user->banner_user,
                 'img_user' => $user->img_user,
                 'arroba_user' => $user->arroba_user,
@@ -643,6 +644,65 @@ class InstituicaoController extends Controller
                 'bairro' => $instituicao->bairro_instituicao,
                 'numero_logradouro' => $instituicao->num_logradouro_instituicao,
                 'complemento' => $instituicao->complemento_instituicao
+            ],
+            'seguidores' => $seguidores,
+            'seguidos' => $seguidos
+
+        ]);
+    }
+    
+    public function updateConta(Request $request){
+        
+
+        $user = auth()->user();
+
+
+         $alterEmailSenha = User::where('id', $user->id)->update([
+            'senha_user' => Hash::make($request->senha),
+            'email_user' => $request->email,
+            'updated_at' => now()
+        ]);
+
+        $alterInstituicao = Instituicao::where('id_user', $user->id)->update([
+            'telefone' => $request->telefone,
+            'cnpj_instituicao' => $request->cnpj,
+            'cep_instituicao' => $request->cep,
+            'estado_instituicao' => $request->estado,
+            'cidade_instituicao' => $request->cidade,
+            'bairro_instituicao' => $request->bairro,
+            'logradouro_instituicao' => $request->logradouro,
+            'num_logradouro_instituicao' => $request->numero,
+            'complemento_instituicao' => $request->complemento
+        ]);
+
+            $instituicaoAtualizada = Instituicao::where('id_user', $user->id)->first();
+
+         $seguidores = DB::table('tb_seguidores')
+            ->where('id_user_seguido', $user->id)
+            ->count();
+
+        $seguidos = DB::table('tb_seguidores')
+            ->where('id_user_seguidor', $user->id)
+            ->count();
+
+         return view('area-instituicao.conta', [
+            'user' => (object)[
+                'id' => $user->id,
+                'banner_user' => $user->banner_user,
+                'img_user' => $user->img_user,
+                'arroba_user' => $user->arroba_user,
+                'nome_user' => $user->nome_user,
+                'email' => $user->email_user,
+                'senha' => $user->senha_user,
+                'cnpj' => $instituicaoAtualizada->cnpj_instituicao,
+                'telefone' => $instituicaoAtualizada->telefone,
+                'cep' => $instituicaoAtualizada->cep_instituicao,
+                'logradouro' => $instituicaoAtualizada->logradouro_instituicao,
+                'estado' => $instituicaoAtualizada->estado_instituicao,
+                'cidade' => $instituicaoAtualizada->cidade_instituicao,
+                'bairro' => $instituicaoAtualizada->bairro_instituicao,
+                'numero_logradouro' => $instituicaoAtualizada->num_logradouro_instituicao,
+                'complemento' => $instituicaoAtualizada->complemento_instituicao
             ],
             'seguidores' => $seguidores,
             'seguidos' => $seguidos
@@ -908,7 +968,9 @@ class InstituicaoController extends Controller
      */
     public function updatePersonalizacao(Request $request)
     {
-        $instituicaoId = session('instituicao_id'); // Recupera o ID da instituição logada
+        $user = auth()->user();
+
+        $instituicaoId = $user->id; // Recupera o ID da instituição logada
         $verificarInstituicao = User::where('id', $instituicaoId)->get();
 
         foreach ($verificarInstituicao as $item) {
@@ -974,8 +1036,44 @@ class InstituicaoController extends Controller
             'updated_at' => now()
         ]);
 
+        $user = User::find($instituicaoId);
+
+
+        $seguidores = DB::table('tb_seguidores')
+            ->where('id_user_seguido', $user->id)
+            ->count();
+
+        $seguidos = DB::table('tb_seguidores')
+            ->where('id_user_seguidor', $user->id)
+            ->count();
+
         $instituicao = User::where('id', $instituicaoId)->first();
-        return view('instituicao.personalizacao-pagina.index', ['instituicao' => $instituicao, 'posts' => $posts]);
+
+        return view('area-instituicao.perfilEditar', [
+            'posts' => $posts,
+            'user' => (object)[
+                'id' => $user->id,
+                'banner_user' => $user->banner_user,
+                'img_user' => $user->img_user,
+                'arroba_user' => $user->arroba_user,
+                'bio_user' => $user->bio_user,
+                'nome_user' => $user->nome_user,
+                'email' => $user->email_user,
+                'senha' => $user->senha_user,
+                'cnpj' => $instituicao->cnpj_instituicao,
+                'telefone' => $instituicao->telefone,
+                'cep' => $instituicao->cep_instituicao,
+                'logradouro' => $instituicao->logradouro_instituicao,
+                'estado' => $instituicao->estado_instituicao,
+                'cidade' => $instituicao->cidade_instituicao,
+                'bairro' => $instituicao->bairro_instituicao,
+                'numero_logradouro' => $instituicao->num_logradouro_instituicao,
+                'complemento' => $instituicao->complemento_instituicao
+            ],
+            'seguidores' => $seguidores,
+            'seguidos' => $seguidos
+
+    ]);
     }
 
     /**
@@ -1066,4 +1164,6 @@ class InstituicaoController extends Controller
             'mediaCompartilhamento'=>$mediaCompartilhamento
         ]);
     }
+
+    
 }

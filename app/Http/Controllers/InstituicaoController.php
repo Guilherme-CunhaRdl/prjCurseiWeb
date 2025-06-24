@@ -498,6 +498,34 @@ class InstituicaoController extends Controller
             }
         }
 
+        $postDiaSemana = Post::whereIn('id', $posts)
+            ->selectRaw('DAYNAME(created_at) as dia_semana, COUNT(*) as total')
+            ->groupBy('dia_semana')
+            ->orderBy('dia_semana')
+            ->pluck('total', 'dia_semana')
+            ->toArray();
+
+        $traducao = [
+            'Sunday' => 'Domingo',
+            'Monday' => 'Segunda',
+            'Tuesday' => 'Terça',
+            'Wednesday' => 'Quarta',
+            'Thursday' => 'Quinta',
+            'Friday' => 'Sexta',
+            'Saturday' => 'Sábado',
+        ];
+
+         $diasContagemTraduzidos = array_fill_keys(array_values($traducao), 0);
+
+        if (!empty($postDiaSemana)) {
+        foreach ($postDiaSemana as $diasIngles => $valor){
+            $diaTraduzido = $traducao[$diasIngles] ?? $diasIngles;
+            $diasContagemTraduzidos[$diaTraduzido] = $valor;
+        }
+    }
+        
+
+
 
         return view('area-instituicao.dashboard', [
             'user' => $user,
@@ -518,7 +546,8 @@ class InstituicaoController extends Controller
             'somaOutrasAreas' => $somaOutrasAreas,
             'outrasAreasPorcentagem' => $outrasAreasPorcentagem,
             'todasAsInteracoes' => $todasAsInteracoes,
-            'engajamento' => $engajamentoPorMes
+            'engajamento' => $engajamentoPorMes,
+            'postsDiaSemana' => $diasContagemTraduzidos,
 
         ]);
     }
@@ -552,11 +581,11 @@ class InstituicaoController extends Controller
                     ->where('id_user', $idUser);
             })->count();
 
-       
+
         // Médias
         $mediaCurtidasPorCurtei = $totalCurteis > 0 ? round($totalCurtidas / $totalCurteis, 2) : 0;
         $mediaComentariosPorCurtei = $totalCurteis > 0 ? round($totalComentarios / $totalCurteis, 2) : 0;
-       
+
 
         $interesses = DB::table('tb_curtida_curtei as cc')
             ->join('tb_curtei as c', 'cc.id_curtei', '=', 'c.id')
@@ -1133,13 +1162,13 @@ class InstituicaoController extends Controller
 
 
         $totalPosts = $postsPorArea->sum('total');
- $compartilhamentos = DB::table('tb_mensagem')
+        $compartilhamentos = DB::table('tb_mensagem')
             ->whereIn('id_post', function ($query) use ($instituicaoId) {
                 $query->select('id')
                     ->from('tb_post')
                     ->where('id_user', $instituicaoId);
             })
-            ->whereNotNull('id_post') 
+            ->whereNotNull('id_post')
             ->count();
         $mediaCompartilhamento = $postCount > 0 ? round($compartilhamentos / $postCount, 2) : 0;
 
@@ -1161,7 +1190,7 @@ class InstituicaoController extends Controller
             'porcentagemAreaPrincipal' => $porcentagemAreaPrincipal,
             'postsPorArea' => $postsPorArea,
             'areaPrincipal' => $areaPrincipal,
-            'mediaCompartilhamento'=>$mediaCompartilhamento
+            'mediaCompartilhamento' => $mediaCompartilhamento
         ]);
     }
 

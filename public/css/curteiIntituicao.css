@@ -581,7 +581,7 @@ main {
     top: 0; left: 0;
     width: 100vw; height: 100vh;
     background-color: rgba(0,0,0,0.3);
-    display: flex;
+    display: none;
     justify-content: center;
     align-items: center;
     z-index: 90;
@@ -632,3 +632,195 @@ main {
     background-color: var(--inst);
     color: white;
   }
+.contModalNovoCurte {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 90;
+    
+
+    animation: slideIn 0.5s;
+
+    .modalNovCur {
+        background-color: var(--branco);
+        width: 400px;
+        border-radius: 2px;
+        display: flex;
+        flex-direction: column;
+        height: auto;
+
+        .topo {
+            margin-top: 3%;
+            padding-inline: 5%;
+            font-size: 23px;
+            color: var(--texto);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid rgba(0, 0, 0, 0.089);
+            padding-bottom: 1%;
+
+            p {
+                margin: 0px;
+                font-weight: 600px;
+            }
+
+            i {
+                font-size: 30px;
+                cursor: pointer;
+                margin: 0px;
+            }
+        }
+
+        .main-modal {
+            display: flex;
+
+            #pt1 {
+                position: relative;
+                margin-inline: 15%;
+                margin-top: 7%;
+                width: 100%;
+                display: none;
+                align-items: center;
+                justify-content: center;
+                height: 500px;
+                border: 2px solid var(--inst);
+                video{
+                    width: 100%;
+                    height: 500px;
+                    z-index: 2;
+                    display: none;
+                    object-fit: cover;
+                }
+                label {
+                    position: absolute;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    flex-direction: column;
+                    color: var(--inst);
+                    font-size: 45px;
+                    cursor: pointer;
+                    width: 100%;
+                    height: 100%;
+                    z-index: 1;
+                    i{
+                        z-index: 0;
+                    }
+                    p {
+                        z-index: 0;
+                        font-size: 20px;
+                    }
+
+                }
+
+                input {
+                    display: none;
+                }
+            }
+
+            #pt2 {
+
+
+                position: relative;
+                margin-inline: 10%;
+                margin-top: 7%;
+                width: 100%;
+
+                display: none;
+                align-items: center;
+                justify-content: center;
+                height: 500px;
+                border: 2px solid var(--inst);
+
+                label {
+                    position: absolute;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    flex-direction: column;
+                    color: var(--inst);
+                    font-size: 45px;
+                    cursor: pointer;
+                    width: 100%;
+                    height: 100%;
+                    z-index: 2;
+                    p {
+                        font-size: 20px;
+                    }
+                    i{
+                        
+                    }
+
+                    .img{
+                         position: absolute;
+                          width: 100%;
+                        height: 100%;
+                        img{
+                            height: 100%;
+                            width: 100%;
+                            object-fit: cover;
+                            display: none;
+                        }
+                    }
+                }
+                input {
+                    display: none;
+                }
+            }
+
+            #pt3 {
+                display: none;
+                flex-direction: column;
+                width: 100%;
+                margin-top: 5%;
+                padding: 7%;
+                gap: 5px;
+                
+                textarea{
+                    border: none;
+                    resize: none;
+                    outline: none;
+                    background-color: var(--fundo);
+                    border-radius: 2px;
+                    height: 120px;
+                    padding: 2%;
+                    
+                }
+            }
+        }
+
+        .rodape {
+            padding-block: 2%;
+            border-top: 2px solid rgba(0, 0, 0, 0.089);
+            display: flex;
+            justify-content: end;
+            padding-inline: 5%;
+            gap: 25px;
+            button{
+                background-color: var(--inst);
+                color: white;
+                font-weight: bold;
+                width: 120px;
+                border: none;
+                border-radius: 2px;
+                padding-block: 1%;
+                font-size: 18px;
+            }
+            #salvar{
+                display: none;
+            }
+            #btnVoltar{
+                background-color: transparent;
+                color: var(--inst);
+                width: fit-content;
+            }
+        }
+    }
+}

@@ -184,7 +184,7 @@ async function postarPost() {
 alert('erro de conexão')
     setLoading(false)
     }
-  }eç
+  }
 }
 
 const eventoFormulario = document.getElementById('evento')

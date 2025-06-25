@@ -57,7 +57,7 @@
                             <i class='bx  bx-search'></i>
                         </div>
                     </div>
-                    <button>
+                    <button onclick="abrirmodalNovoCurtei()">
                         <p>Novo Curtei</p>
                         <i class='bx bx-plus'></i>
                     </button>
@@ -171,6 +171,46 @@
             </div>
         </form>
     </div>
+    <div class="contModalNovoCurte" id="contModalNovoCurte">
+        <form class="modalNovCur" id="formNovoCurtei">
+            <div class="topo">
+                <p>Novo curtei</p>
+                <i class="bx bx-x" onclick="fecharmodalNovoCurtei()"></i>
+            </div>
+            <div class="main-modal">
+                <div id="pt1">
+                    <video src="" id="videoAdd" controls width="600" src="" autoplay muted loop></video>
+                    <input type="file" id="inputVideoCurteiAdd" accept="video/*" name="caminho_curtei">
+                    <label for="inputVideoCurteiAdd">
+                        <i class="bx bx-video"></i>
+                        <p>Adicionar video</p>
+                    </label>
+                </div>
+                <div id="pt2">
+
+                    <input type="file" id="inputImgCurteiAdd" accept="image/*" name="caminho_curtei_thumb">
+                    <label for="inputImgCurteiAdd">
+                        <div class="img">
+                            <img src="" alt="" id="previewThub">
+
+                        </div>
+                        <i class="bx bx-image"></i>
+                        <p>Adicionar thumbnail</p>
+                    </label>
+                </div>
+                <div id="pt3" >
+                    <label for="descCurteiAdd">Descrição (opcional)</label>
+                    <textarea name="legenda_curtei" id="" placeholder="Descrição do seu curtei"></textarea>
+                </div>
+            </div>
+            <div class="rodape">
+                <button type="button" id="btnVoltar" onclick="mudarParte(pt-1)">voltar</button>
+                <button type="button" onclick="mudarParte(pt+1)" id="continuarBtn">Continuar</button>
+                <button type="button" id="btnsalvar" onclick="salvarCurtei()">Salvar</button>
+            </div>
+            <input type="hidden" name="id_user" value="{{ $user->id  }}">
+        </form>
+    </div>
         @include('area-instituicao.componentes.modal-engajamentos')
 
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
@@ -181,6 +221,7 @@
 <script src="https://cdn.jsdelivr.net/npm/dayjs@1/plugin/relativeTime.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/dayjs@1/locale/pt-br.js"></script>
     <script src="{{ asset('js/modaisEngajamentos.js') }}"></script>
+    <script src="{{ asset('js/curtei/novoCurtei.js') }}"></script>
 
     <script>
         

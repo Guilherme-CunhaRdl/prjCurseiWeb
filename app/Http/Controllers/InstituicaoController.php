@@ -659,25 +659,39 @@ class InstituicaoController extends Controller
         ]);
     }
 
-    public function seguidores()
+public function seguidores()
+{
+    $user = auth()->user();
+
+    $seguidores = Seguidores::where('id_user_seguido', $user->id)
+        ->join('tb_user', 'tb_seguidores.id_user_seguidor', '=', 'tb_user.id')
+        ->selectRaw('tb_user.*,
+            tb_seguidores.created_at,
+            (SELECT COUNT(*) FROM tb_seguidores WHERE id_user_seguido = tb_user.id) as total_seguidores,
+            (SELECT COUNT(*) FROM tb_seguidores WHERE id_user_seguidor = tb_user.id) as total_seguindo
+        ')
+        ->get()
+        ->toArray();
+
+    return view('area-instituicao.seguidores', [
+        'seguidores' => $seguidores,
+        'user' => $user
+    ]);
+}
+    public function retirarUsuarioSeguidor($idSeguidor, $idInstituicao)
     {
-        $user = auth()->user();
 
-        $seguidores = [
-            (object)[
-                'id' => 1,
-                'nome' => auth()->user()->nome_user,
-                'nome_usuario' => auth()->user()->arroba_user,
-                'email' => auth()->user()->email_user,
-                'foto_perfil' => auth()->user()->img_user
-            ]
-        ];
 
-        return view('area-instituicao.seguidores', [
-            'seguidores' => $seguidores,
-            'user' => $user
-        ]);
+            $seguidor = Seguidores::where('id_user_seguidor', $idSeguidor)
+                ->where('id_user_seguido', $idInstituicao)
+                ->firstOrFail(); 
+
+            $seguidor->delete();
+
+            return back();
+
     }
+
 
     public function conta()
     {

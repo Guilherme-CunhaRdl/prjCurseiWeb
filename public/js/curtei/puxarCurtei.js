@@ -20,18 +20,19 @@ function mostrarCurteis(curteis){
     lista.innerHTML = ''
     curteis.forEach(curtei => {
         const card = `
-             <div class="card-conteudo" onclick= "verCurtei('${(curtei.legenda || '').replace(/'/g, "\\'")}',
+             <div class="card-conteudo" >
+                  <div style="cursor:pointer" onclick= "verCurtei('${(curtei.legenda || '').replace(/'/g, "\\'")}',
              '${(curtei.video_url || '').replace(/'/g, "\\'")}','${(curtei.thumb_url || '').replace(/'/g, "\\'")}', ${curtei.id})">
-
                          <div class="img">
                              <img src="${curtei.thumb_url}" alt=""/>
                          </div>
+                         </div>
                          <div class="infos-conteudo">
-                             <div class="info">
+                             <div class="info" onclick="verEngajamentos(3,${curtei.id})">
                                  <i class='bx bx-heart'></i>
                                  <p>${curtei.curtidas_count} </p>
                              </div>
-                             <div class="info">
+                             <div class="info" onclick="verEngajamentos(4,${curtei.id})">
                                  <i class='bx  bx-message-circle'></i>
                                  <p>${curtei.comentarios_count}</p>
                              </div>

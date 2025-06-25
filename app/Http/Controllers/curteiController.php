@@ -12,6 +12,93 @@ use Illuminate\Support\Facades\Log;
 
 class curteiController extends Controller
 {
+
+
+    public function show($id)
+{
+    try {
+        $curtei = Curtei::with(['usuario' => function($query) {
+                $query->select('id', 'nome_user', 'arroba_user', 'img_user');
+            }])
+            ->withCount(['curtidas', 'comentarios'])
+            ->findOrFail($id);
+
+        // Verifica se o usuário atual curtiu este vídeo
+        $userId = request()->input('user_id');
+        $curtiu = false;
+        
+        if ($userId) {
+            $curtiu = CurtidaCurtei::where('id_curtei', $id)
+                ->where('id_user', $userId)
+                ->exists();
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'id' => $curtei->id,
+                'video_url' => asset($curtei->caminho_curtei),
+                'thumb_url' => asset($curtei->caminho_curtei_thumb),
+                'legenda' => $curtei->legenda_curtei,
+                'curtidas_count' => $curtei->curtidas_count,
+                'comentarios_count' => $curtei->comentarios_count,
+                'curtiu' => $curtiu,
+                'usuario' => [
+                    'id' => $curtei->usuario->id,
+                    'nome' => $curtei->usuario->nome_user,
+                    'foto' => $curtei->usuario->img_user 
+                        ? asset('img/user/fotoPerfil/' . $curtei->usuario->img_user) 
+                        : null,
+                    'arroba' => $curtei->usuario->arroba_user
+                ],
+                'created_at' => $curtei->created_at->format('d/m/Y H:i')
+            ]
+        ]);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Curtei não encontrado',
+            'error' => env('APP_DEBUG') ? $e->getMessage() : null
+        ], 404);
+    }
+}   
+
+    public function listarPorUsuario($userId)
+{
+    try {
+        $curteis = Curtei::with(['usuario'])
+            ->withCount(['curtidas', 'comentarios'])
+            ->where('id_user', $userId)
+            ->where('status_curtei', '1') // Apenas ativos
+            ->latest()
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'titulo' => $item->legenda_curtei,
+                    'video_url' => asset($item->caminho_curtei),
+                    'thumbnail_url' => asset($item->caminho_curtei_thumb),
+                    'visualizacoes' => $item->visualizacoes_count ?? 0,
+                    'curtidas_count' => $item->curtidas_count,
+                    'comentarios_count' => $item->comentarios_count,
+                    'created_at' => $item->created_at->format('d/m/Y H:i')
+                ];
+            });
+
+        return response()->json([
+            'success' => true,
+            'data' => $curteis
+        ]);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Erro ao listar curtéis',
+            'error' => env('APP_DEBUG') ? $e->getMessage() : null
+        ], 500);
+    }
+}
     public function curtir($id)
     {
         try {

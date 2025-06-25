@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="{{ asset('css/postsIntituicao.css') }}">
         <link rel="stylesheet" href="{{ asset('css/modalVerPost.css') }}">
         <link rel="stylesheet" href="{{ asset('css/modalImpulsionar.css') }}">
+        <link rel="stylesheet" href="{{ asset('css/modalEngajamentos.css') }}">
 
 
 </head>
@@ -135,14 +136,22 @@
 
 
         @include('area-instituicao.componentes.modal-Impulsionar')
+        @include('area-instituicao.componentes.modal-engajamentos')
 
 
     <script>
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script src="{{ asset('js/postsInstituicao/ModalverPost.js') }}"></script>
-    <script src="{{ asset('js/postsInstituicao/postsInstituicao.js') }}"></script>
-    <script src="{{ asset('js/postsInstituicao/modalCriarPosts.js') }}"></script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="{{ asset('js/postsInstituicao/ModalverPost.js') }}"></script>
+<script src="{{ asset('js/postsInstituicao/postsInstituicao.js') }}"></script>
+<script src="{{ asset('js/postsInstituicao/modalCriarPosts.js') }}"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dayjs@1/plugin/relativeTime.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dayjs@1/locale/pt-br.js"></script>
+    <script src="{{ asset('js/modaisEngajamentos.js') }}"></script>
 
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

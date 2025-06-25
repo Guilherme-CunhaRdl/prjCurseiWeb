@@ -20,7 +20,7 @@ class Post extends Model
         'updated_at',
 
     ];
-    
+
     public function curtidas()
     {
         return $this->hasMany(Curtida::class, 'id_post', 'id');
@@ -38,4 +38,8 @@ class Post extends Model
     {
         return $this->belongsToMany(Hashtag::class, 'tb_post_hashtag', 'id_post', 'id_hashtag');
     }
+public function reposts()
+{
+    return $this->hasMany(Post::class, 'repost_id'); // outros posts que deram repost nesse
+}
 }

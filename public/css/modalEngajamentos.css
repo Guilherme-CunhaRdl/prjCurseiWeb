@@ -1,0 +1,181 @@
+.modalEngajamentoCont {
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.432);
+    z-index: 99;
+    position: fixed;
+    top: 0;
+    display: none;
+    justify-content: center;
+    align-items: center;
+      animation: fadeIn 0.3s ease forwards;
+
+  .modalEn {
+    background-color: var(--branco);
+    width: 20%;
+    height: 500px;
+    border-radius: 2px;
+    padding-inline: 1%;
+        animation: slideIn 0.3s ease forwards;
+
+    
+    .topo {
+        margin-top: 3%;
+         display: flex;
+    justify-content: space-between;
+    align-items: center;
+      p {
+        margin: 0px;
+        font-size: 22px;
+        font-weight: 600;
+        }
+
+      i {
+        font-size: 30px;
+        margin: 0px;
+        cursor: pointer;
+        }
+    }
+
+    .lista {
+      display: flex;
+      width: 100%;
+    flex-direction: column;
+    gap: 20px;
+    margin-top: 5%;
+    overflow-y:scroll;
+    overflow-x: hidden;
+    height: 85%;
+ 
+     &::-webkit-scrollbar {
+            width: 5px;
+          }
+          
+          &::-webkit-scrollbar-track {
+            background: #F1F1F1;
+            border-radius: 20px;
+          }
+          
+          &::-webkit-scrollbar-thumb {
+            background: var(--inst);
+            border-radius: 20px;
+          }
+          
+          &::-webkit-scrollbar-thumb:hover {
+            background: var(--inst);
+          }
+
+      .comentario {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        .imgUser {
+          width: 60px;
+          height: 60px;
+          border-radius: 100px;
+            background-color: #666;
+            overflow: hidden;
+          img {
+            object-fit: cover ;
+            width: 100%;
+            height: 100%;
+          }
+        }
+
+        .infoUser {
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+          .nome {
+            margin: 0px;
+            color: var(--preto);
+            font-weight: bold;
+            font-size: 15px;
+            span {
+              font-size: 12px;
+              font-weight: 400;
+            margin-left: 10px;
+            color: var(--texto);
+            }
+          }
+
+          .desc {
+            margin: 0px;
+            font-size: 14px;
+          }
+
+          .curtidas {
+              margin: 0px;
+              margin-top: 4px;
+            font-size: 12px;
+            align-items: center;
+            display: flex;
+            gap: 5px;
+           
+          }
+        }
+      }
+
+      .curtida {
+         display: flex;
+        align-items: center;
+        gap: 10px;
+
+        .imgUser {
+          width: 60px;
+          height: 60px;
+          border-radius: 100px;
+            background-color: #666;
+            overflow: hidden;
+          img {
+            object-fit: cover ;
+            width: 100%;
+            height: 100%;
+          }
+        }
+        .infoUser {
+           display: flex;
+            justify-content: center;
+            flex-direction: column;
+
+      
+          .nome {
+            margin: 0px;
+            color: var(--preto);
+            font-weight: bold;
+            font-size: 16px;
+            span {
+              font-size: 12px;
+              font-weight: 400;
+            margin-left: 10px;
+            color: var(--texto);
+            }
+          }
+
+          
+
+          .arroba {
+            margin: 0px;
+            font-weight: 600;
+          }
+
+        }
+      }
+    }
+  }
+}
+@keyframes fadeIn {
+  from { opacity: 0 }
+  to { opacity: 1 }
+}
+
+
+
+@keyframes slideIn {
+  from { transform: translateY(-20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+.centro{
+       justify-content:center ;
+    align-items: center;
+}

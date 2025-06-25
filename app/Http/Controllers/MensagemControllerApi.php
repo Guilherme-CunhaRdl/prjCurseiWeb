@@ -147,9 +147,12 @@ class MensagemControllerApi extends Controller
                             ->on('mc.id_canal', '=', 'sub.id_canal');
                     });
 
-                // Consulta principal dos canais com última mensagem correta
                 $canaisQuery = DB::table('tb_canal AS canal')
-                    ->leftJoin('tb_membros_canal AS membrosC', 'canal.id', '=', 'membrosC.id_canal')
+                   ->leftJoin('tb_membros_canal AS membrosC', function ($join) use ($idUser) {
+                            $join->on('canal.id', '=', 'membrosC.id_canal')
+                                ->where('membrosC.id_user', '=', $idUser);
+                        })
+
                     ->join('tb_user AS user', 'canal.user_criador_canal', '=', 'user.id')
 
                     ->leftJoinSub($ultimaMensagemCompleta, 'mensagemC', function ($join) {
@@ -182,6 +185,14 @@ class MensagemControllerApi extends Controller
         membrosC.id_user AS id_membro,
         'canal' AS tipo
         ")
+        ->groupBy([
+            'canal.id', 'userPostou.id', 'canal.nome_canal', 'canal.imagem_canal',
+            'user.arroba_user', 'canal.user_criador_canal',
+            'mensagemC.img_mensagem_canal', 'mensagemC.conteudo_mensagem_canal',
+            'p.id', 'p.conteudo_post', 'p.descricao_post',
+            'userPostou.nome_user', 'userPostou.img_user', 'userPostou.arroba_user',
+            'mensagemC.created_at', 'membrosC.id_user'
+        ])
                     ->orderByDesc('mensagemC.created_at');
 
 
@@ -748,6 +759,8 @@ ORDER BY created_at DESC
                 ->joinSub($sub, 'sub', function ($join) {
                     $join->on('tb_mensagem.id', '=', 'sub.ultima_mensagem_id');
                 })
+
+                
                 ->select(
                     'tb_mensagem.id AS id_mensagem',
                     'c.id AS id_chat',
@@ -781,9 +794,16 @@ ORDER BY created_at DESC
                 })
                 ->orderByDesc('id_mensagem');
 
-            $chats = $queryBuilder->get();
+                
+           // Clonar antes de executar
+$queryForGet = clone $queryBuilder;
+$queryForFirst = clone $queryBuilder;
 
-            broadcast(new MensagemChat($mensagem))->toOthers();
+$chats = $queryForGet->get();
+$ultimaMensagemCriada = $queryForFirst->first();
+
+
+            broadcast(new MensagemChat($mensagem, $ultimaMensagemCriada))->toOthers();
             Broadcast(new TelaChat($chats, $request->idChat));
 
             return response()->json([

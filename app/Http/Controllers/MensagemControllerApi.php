@@ -242,6 +242,7 @@ ORDER BY created_at DESC
                     ->join('tb_user AS user2', 'c.id_user2', '=', 'user2.id')
                     ->leftJoin('tb_post AS p', 'tb_mensagem.id_post', '=', 'p.id')
                     ->leftJoin('tb_user AS userPostou', 'p.id_user', '=', 'userPostou.id')
+                    
                     ->joinSub($subPrivado, 'sub', function ($join) {
                         $join->on('tb_mensagem.id', '=', 'sub.ultima_mensagem_id');
                     })
@@ -369,6 +370,8 @@ ORDER BY created_at DESC
             ->join('tb_user AS user2', 'c.id_user2', '=', 'user2.id')
             ->leftJoin('tb_post AS p', 'tb_mensagem.id_post', '=', 'p.id')
             ->leftJoin('tb_user AS userPostou', 'p.id_user', '=', 'userPostou.id')
+            ->leftJoin('tb_curtei AS curtei', 'tb_mensagem.id_curtei', '=', 'curtei.id')
+            ->leftJoin('tb_user AS userCurtei', 'curtei.id_user', '=', 'userCurtei.id')
             ->select(
                 'c.id AS id_chat',
                 'tb_mensagem.id AS id_mensagem',
@@ -388,7 +391,17 @@ ORDER BY created_at DESC
                 'userPostou.nome_user AS nome_user_postou',
                 'userPostou.img_user AS img_user_postou',
                 'userPostou.id AS id_user_postou',
-                'userPostou.arroba_user AS arroba_user_postou'
+                'userPostou.arroba_user AS arroba_user_postou',
+                'curtei.id AS id_curtei',
+                'curtei.legenda_curtei AS desc_curtei',
+                'curtei.id_user AS criador_curtei',
+                'curtei.caminho_curtei AS url_curtei',
+                'curtei.caminho_curtei_thumb AS thumb_curtei',
+                'curtei.curtidas_count AS total_curtidas',
+                'curtei.comentarios_count AS total_comentarios',
+                'userCurtei.nome_user AS nome_user_curtei',
+                'userCurtei.img_user AS img_user_curtei',
+                'userCurtei.id AS id_user_curtei',
             )
             ->where('c.id', $idChat)
             ->orderBy('tb_mensagem.created_at', 'asc');
@@ -740,6 +753,7 @@ ORDER BY created_at DESC
             $mensagem->id_post = $request->idPost ? $request->idPost : null;
             $mensagem->id_user_enviador = $request->idEnviador;
             $mensagem->status_mensagem = false;
+            $mensagem->id_curtei = $request->idCurtei;
             $mensagem->created_at = now();
             $mensagem->save();
 
@@ -755,6 +769,8 @@ ORDER BY created_at DESC
                 ->join('tb_user AS user1', 'c.id_user1', '=', 'user1.id')
                 ->join('tb_user AS user2', 'c.id_user2', '=', 'user2.id')
                 ->leftJoin('tb_post AS p', 'tb_mensagem.id_post', '=', 'p.id')
+                ->leftJoin('tb_curtei AS curtei', 'tb_mensagem.id_curtei', '=', 'curtei.id')
+            ->leftJoin('tb_user AS userCurtei', 'curtei.id_user', '=', 'userCurtei.id')
                 ->leftJoin('tb_user AS userPostou', 'p.id_user', '=', 'userPostou.id')
                 ->joinSub($sub, 'sub', function ($join) {
                     $join->on('tb_mensagem.id', '=', 'sub.ultima_mensagem_id');
@@ -785,7 +801,16 @@ ORDER BY created_at DESC
                     'userPostou.img_user AS img_user_postou',
                     'userPostou.id AS id_user_postou',
                     'userPostou.arroba_user AS arroba_user_postou',
-
+                    'curtei.id AS id_curtei',
+                    'curtei.legenda_curtei AS desc_curtei',
+                    'curtei.id_user AS criador_curtei',
+                    'curtei.caminho_curtei AS url_curtei',
+                    'curtei.caminho_curtei_thumb AS thumb_curtei',
+                    'curtei.curtidas_count AS total_curtidas',
+                    'curtei.comentarios_count AS total_comentarios',
+                    'userCurtei.nome_user AS nome_user_curtei',
+                    'userCurtei.img_user AS img_user_curtei',
+                    'userCurtei.id AS id_user_curtei',
                     'tb_mensagem.created_at'
                 )
                 ->where(function ($query) use ($idEnviador) {

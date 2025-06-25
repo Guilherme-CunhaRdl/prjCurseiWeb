@@ -21,7 +21,9 @@ return new class extends Migration
             $table->unsignedBigInteger('id_user_enviador');
             $table->unsignedBigInteger('id_chat');
             $table->unsignedBigInteger('id_post')->nullable();
+            $table->unsignedBigInteger('id_curtei')->nullable();
             $table->foreign('id_post')->references('id')->on('tb_post')->onDelete('cascade');
+            $table->foreign('id_curtei')->references('id')->on('tb_curtei')->onDelete('cascade');
             $table->foreign('id_chat')->references('id')->on('tb_chat')->onDelete('cascade');
             $table->foreign('id_user_enviador')->references('id')->on('tb_user')->onDelete('cascade');
             $table->timestamps();

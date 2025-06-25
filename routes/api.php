@@ -103,7 +103,9 @@ Route::post('/2fa/verificarCodigo', [UserControllerApi::class, 'verificarCodigo'
 Route::group(['middleware' => ['cors']], function() {
     Route::post('/curtei/upload', [CurteiController::class, 'storeCurtei']);
     Route::get('/curtei/videos', [CurteiController::class, 'mostrarVideos']);
+
 });
+
  
 
 //rotas para o explorar
@@ -115,7 +117,8 @@ Route::post('/curtei/upload', [CurteiController::class, 'storeCurtei']);
 Route::get('/curtei/videos', [CurteiController::class, 'mostrarVideos']);
 Route::delete('/curtei/deletar/{id}', [CurteiController::class, 'destroy']);
 Route::post('/curtei/update/{id}', [CurteiController::class, 'updateCurtei']);
-
+Route::get('/curteis/{userId}', [curteiController::class, 'listarPorUsuario']);
+Route::get('/curtei/{id}', [CurteiController::class, 'show']);
 
 Route::post('/curtei/{curtei}/curtir', [CurteiController::class, 'curtir']);
 Route::post('/curtei/{curtei}/descurtir', [CurteiController::class, 'descurtir']);

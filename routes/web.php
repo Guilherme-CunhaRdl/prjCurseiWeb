@@ -20,7 +20,7 @@ route::prefix('curseiAdm')->group(function () {
     // rotas de v    iews
     Route::get('/', 'App\Http\Controllers\AdminController@index')->middleware('auth:adm');
 
-    Route::get('/log    in', function () {
+    Route::get('/login', function () {
         return view('area-adm.login');
     })->name('login');
     Route::get('/usuarios', 'App\Http\Controllers\userController@usuariosAdm')->middleware('auth:adm')->name('usuario');
@@ -37,7 +37,7 @@ route::prefix('curseiAdm')->group(function () {
 
 
     // funcões
-    Route::get('/de    sl    ogar', 'App\Http\Controllers\AdminController@deslogar');
+    Route::get('/deslogar', 'App\Http\Controllers\AdminController@deslogar');
     Route::post('/logar', 'App\Http\Controllers\AdminController@logar');
     Route::get('/novoadm', 'App\Http\Controllers\AdminController@store');
     Route::get('/buscarUsuarios', 'App\Http\Controllers\userController@buscarUsuarios')->middleware('auth:adm');
@@ -86,8 +86,8 @@ Route::prefix('curseiInstituicao')->group(function () {
         Route::get('/editarPerfil', [InstituicaoController::class, 'editarPerfil'])->name('instituicao.perfilEditar');
         Route::put('/atualizarConta', [InstituicaoController::class, 'updateConta'])->name('conta.update');
         Route::put('/atualizarPerfil', [InstituicaoController::class, 'updatePersonalizacao'])->name('perfil.update');
+        Route::get('/retirarUsuarioSeguidor/{idSeguidor}/{idInstituicao}', [InstituicaoController::class, 'retirarUsuarioSeguidor'])->name('deletar.seguidor');
 
-        
     });
 });
 

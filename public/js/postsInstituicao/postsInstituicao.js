@@ -22,24 +22,26 @@ async function mostrarPosts(posts) {
     const cardPost = `
               <div class="card-conteudo"
               
-              onclick="verPost(${post.id_post},
+           >
+              <div style="cursor:pointer"    onclick="verPost(${post.id_post},
               '${(post.descricao_post || '').replace(/'/g, "\\'")}','${(post.conteudo_post || '').replace(/'/g, "\\'")}',${post.evento_id})">
                        <div class="cont-desc-card">
                            ${post.descricao_post ? `<p>${post.descricao_post}</p>` : ''}
                        </div>
                         <div class="img">
-                            <img src="http://${host}/img/user/imgPosts/${post.conteudo_post}" alt="">
+    <img src="http://${host}/img/user/imgPosts/${post.conteudo_post ? post.conteudo_post : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ8lRbS7eKYzDq-Ftxc1p8G_TTw2unWBMEYUw&s'}" alt="">
                         </div>
+                         </div>
                         <div class="infos-conteudo">
                             <div class="info">
-                                <i class='bx bx-heart'></i>
+                                <i class='bx bx-heart' onclick="verEngajamentos(2,${post.id_post})"></i>
                                 <p>${post.curtidas}</p>
                             </div>
-                            <div class="info">
+                            <div class="info" onclick="verEngajamentos(1,${post.id_post})">
                                 <i class='bx  bx-message-circle'></i>
                                 <p>${post.comentarios}</p>
                             </div>
-                            <div class="info">
+                            <div class="info" style="cursor:auto">
                                 <i class='bx bx-repeat-alt'></i>
                                 <p>${post.total_reposts}</p>
                             </div>

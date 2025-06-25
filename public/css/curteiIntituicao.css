@@ -277,7 +277,7 @@ main {
     }
 
     .areaposts-cont {
-        height: 323px;
+        height: 353px;
         padding-block: 5%;
 
         .titulo-card {
@@ -321,6 +321,8 @@ main {
         .areas-lista {
             display: flex;
             justify-content: space-around;
+                        margin-top: -20px
+
         }
 
         .areas-lista div {

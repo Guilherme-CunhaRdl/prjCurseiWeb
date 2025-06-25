@@ -12,6 +12,7 @@
 
     @include('area-instituicao.componentes.padrao')
     <link rel="stylesheet" href="{{ asset('css/curteiIntituicao.css') }}">
+        <link rel="stylesheet" href="{{ asset('css/modalEngajamentos.css') }}">
 
 </head>
 
@@ -170,10 +171,16 @@
             </div>
         </form>
     </div>
+        @include('area-instituicao.componentes.modal-engajamentos')
 
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+<script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dayjs@1/plugin/relativeTime.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dayjs@1/locale/pt-br.js"></script>
+    <script src="{{ asset('js/modaisEngajamentos.js') }}"></script>
 
     <script>
         

@@ -150,12 +150,12 @@ main {
         row-gap: 20px;
 
         .card-conteudo {
-            cursor: pointer;
             background-color: var(--branco);
             box-shadow: var(--shadow);
             border-radius: 2px;
             padding: 2%;
             width: 32%;
+           height: fit-content;
             .cont-desc-card{
              
                 height: 55px; 
@@ -281,7 +281,7 @@ main {
     }
 
     .areaposts-cont {
-        height: 323px;
+        height: 383px;
         padding-block: 5%;
         .titulo-card {
             font-size: 22px;
@@ -324,6 +324,7 @@ main {
         .areas-lista {
             display: flex;
             justify-content: space-around;
+            margin-top: -20px
         }
 
         .areas-lista div {
@@ -369,7 +370,7 @@ main {
   height: 100vh;
   background-color: #0000003a;
     display: none;
-
+  z-index: 9;
   justify-content: center;
   align-items: center;
   animation: fadeOut 0.3s forwards;

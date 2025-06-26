@@ -55,8 +55,13 @@ class MensagemChat implements ShouldBroadcast
             'img_user_postou' => $this->ultimaMsg->img_user_postou,
             'nome_user_postou' => $this->ultimaMsg->nome_user_postou,
             'desc_post' => $this->ultimaMsg->desc_post,
-            'cont_post' => $this->ultimaMsg->cont_post
-
+            'cont_post' => $this->ultimaMsg->cont_post,
+            'id_curtei' => $this->ultimaMsg->id_curtei,
+            'url_curtei' => $this->ultimaMsg->url_curtei,
+            'thumb_curtei' => $this->ultimaMsg->thumb_curtei,
+            'desc_curtei' => $this->ultimaMsg->desc_curtei,
+            'nome_user_curtei'=> $this->ultimaMsg->nome_user_curtei,
+            'img_user_curtei' => $this->ultimaMsg->img_user_curtei
         ]
     ];
 }

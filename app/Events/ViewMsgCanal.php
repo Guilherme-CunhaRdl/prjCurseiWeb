@@ -44,7 +44,8 @@ class ViewMsgCanal implements ShouldBroadcast
                     'id_enviador' => $msg->enviador,
                     'created_at' => $msg->created_at,
                     'foto_enviada' => $msg->foto_enviada,
-                ];
+                    'id_post'=> $msg->id_post
+                ]; 
             })
         ];
     }

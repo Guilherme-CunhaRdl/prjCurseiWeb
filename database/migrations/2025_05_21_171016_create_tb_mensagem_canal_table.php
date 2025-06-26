@@ -21,6 +21,8 @@ return new class extends Migration
             $table->foreign('id_user_enviador')->references('id')->on('tb_user')->onDelete('cascade');
             $table->unsignedBigInteger('id_post')->nullable();
             $table->foreign('id_post')->references('id')->on('tb_post')->onDelete('cascade');
+            $table->unsignedBigInteger('id_curtei')->nullable();
+            $table->foreign('id_curtei')->references('id')->on('tb_curtei')->onDelete('cascade');
             $table->unsignedBigInteger('id_canal');
             $table->foreign('id_canal')->references('id')->on('tb_canal')->onDelete('cascade');            
             $table->timestamps();

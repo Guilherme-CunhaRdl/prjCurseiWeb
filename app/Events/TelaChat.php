@@ -13,12 +13,13 @@ class TelaChat implements ShouldBroadcast
 {
     use InteractsWithSockets, SerializesModels;
 
-    public $chats, $idChat;
+    public $chats, $idChat, $idCurtei;
 
-    public function __construct($chats, $idChat)
+    public function __construct($chats, $idChat, $idCurtei)
     {
         $this->chats = $chats;
         $this->idChat = $idChat;
+        $this->idCurtei = $idCurtei;
     }
 
     public function broadcastOn()
@@ -52,6 +53,7 @@ public function broadcastAs()
                     'img_mensagem' => $msg->foto_enviada,
                     'id_post' => $msg->id_post,
                     'cont_post' => $msg->cont_post,
+                    'id_curtei' => $msg->id_curtei
                     
             ];
         })

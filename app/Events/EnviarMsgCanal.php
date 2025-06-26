@@ -14,7 +14,7 @@ namespace App\Events;
     {
         use Dispatchable, InteractsWithSockets, SerializesModels;
 
-            public $idChat, $mensagem;
+            public $idChat, $mensagem, $ultimaMsg;
 
 
         /**
@@ -22,12 +22,12 @@ namespace App\Events;
          *
          * @return void
          */
-        public function __construct($mensagem)
+        public function __construct($mensagem, $ultimaMsg)
         {
             Log::info('Construtor do evento EnviarMsgCanal', ['mensagem' => $mensagem]);
 
             $this->mensagem = $mensagem;
-            $this->idChat = $mensagem->id_chat; 
+            $this->ultimaMsg = $ultimaMsg;
         }
 
         /**
@@ -52,6 +52,11 @@ namespace App\Events;
                     'id_enviador' => $this->mensagem->id_user_enviador,
                     'foto_enviada' => $this->mensagem->img_mensagem_canal,
                     'created_at' => $this->mensagem->created_at,
+                    'id_post' => $this->mensagem->id_post,
+                    'img_user_postou' => $this->ultimaMsg->img_user_postou,
+                    'nome_user_postou' => $this->ultimaMsg->nome_user_postou,
+                    'desc_post' => $this->ultimaMsg->desc_post,
+                    'cont_post' => $this->ultimaMsg->cont_post,
                 ]
             ];
         }

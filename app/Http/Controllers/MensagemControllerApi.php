@@ -770,7 +770,7 @@ ORDER BY created_at DESC
                 ->join('tb_user AS user2', 'c.id_user2', '=', 'user2.id')
                 ->leftJoin('tb_post AS p', 'tb_mensagem.id_post', '=', 'p.id')
                 ->leftJoin('tb_curtei AS curtei', 'tb_mensagem.id_curtei', '=', 'curtei.id')
-            ->leftJoin('tb_user AS userCurtei', 'curtei.id_user', '=', 'userCurtei.id')
+                ->leftJoin('tb_user AS userCurtei', 'curtei.id_user', '=', 'userCurtei.id')
                 ->leftJoin('tb_user AS userPostou', 'p.id_user', '=', 'userPostou.id')
                 ->joinSub($sub, 'sub', function ($join) {
                     $join->on('tb_mensagem.id', '=', 'sub.ultima_mensagem_id');
@@ -829,7 +829,7 @@ $ultimaMensagemCriada = $queryForFirst->first();
 
 
             broadcast(new MensagemChat($mensagem, $ultimaMensagemCriada))->toOthers();
-            Broadcast(new TelaChat($chats, $request->idChat));
+            Broadcast(new TelaChat($chats, $request->idChat, $request->idCurtei));
 
             return response()->json([
                 'message' => 'Mensagem enviada com sucesso!',
@@ -979,6 +979,8 @@ $ultimaMensagemCriada = $queryForFirst->first();
         $mensagensCanal = DB::table('tb_canal AS canal')
             ->join('tb_user AS user', 'canal.user_criador_canal', '=', 'user.id')
             ->join('tb_mensagem_canal AS mensagemC', 'mensagemC.id_canal', '=', 'canal.id')
+            ->leftJoin('tb_post AS p', 'mensagemC.id_post', '=', 'p.id')
+            ->leftJoin('tb_user AS userPostou', 'p.id_user', '=', 'userPostou.id')
             ->select([
                 'canal.id AS id_canal',
                 'canal.nome_canal',
@@ -993,6 +995,13 @@ $ultimaMensagemCriada = $queryForFirst->first();
                 'mensagemC.conteudo_mensagem_canal AS conteudo_mensagem',
                 'mensagemC.created_at AS data_envio_mensagem',
                 'mensagemC.img_mensagem_canal AS foto_enviada',
+                'p.id AS id_post',
+                'p.conteudo_post AS cont_post',
+                'p.descricao_post AS desc_post',
+                'userPostou.nome_user AS nome_user_postou',
+                'userPostou.img_user AS img_user_postou',
+                'userPostou.id AS id_user_postou',
+                'userPostou.arroba_user AS arroba_user_postou',
 
             ])
             ->where('canal.user_criador_canal', '=', $idEnviador)
@@ -1117,6 +1126,7 @@ $ultimaMensagemCriada = $queryForFirst->first();
             $mensagem->img_mensagem_canal = $tipoMensagem == 'semImagem' ? null : $nomeImagem;
             $mensagem->id_user_enviador = $request->idEnviador;
             //$mensagem->status_mensagem = false;
+            $mensagem->id_post = $request->idPost;
             $mensagem->created_at = now();
             $mensagem->save();
 
@@ -1129,6 +1139,8 @@ $ultimaMensagemCriada = $queryForFirst->first();
             $queryBuilder = DB::table('tb_mensagem_canal')
                 ->join('tb_user AS enviador', 'tb_mensagem_canal.id_user_enviador', '=', 'enviador.id')
                 ->join('tb_canal AS c', 'tb_mensagem_canal.id_canal', '=', 'c.id')
+                ->leftJoin('tb_post AS p', 'tb_mensagem_canal.id_post', '=', 'p.id')
+                ->leftJoin('tb_user AS userPostou', 'p.id_user', '=', 'userPostou.id')
                 ->joinSub($sub, 'sub', function ($join) {
                     $join->on('tb_mensagem_canal.id', '=', 'sub.ultima_mensagem_id');
                 })
@@ -1139,17 +1151,30 @@ $ultimaMensagemCriada = $queryForFirst->first();
                     'tb_mensagem_canal.img_mensagem_canal AS foto_enviada',
                     'tb_mensagem_canal.id_user_enviador AS enviador',
                     'tb_mensagem_canal.id AS id_ultima_mensagem',
+                    'p.id AS id_post',
+                    'p.conteudo_post AS cont_post',
+                    'p.descricao_post AS desc_post',
+                    'userPostou.nome_user AS nome_user_postou',
+                    'userPostou.img_user AS img_user_postou',
+                    'userPostou.id AS id_user_postou',
+                    'userPostou.arroba_user AS arroba_user_postou',
 
                     'tb_mensagem_canal.created_at'
                 )
                 ->where('id_user_enviador', $idEnviador)
                 ->orderByDesc('id_mensagem');
 
-            $canais = $queryBuilder->get();
+
+                       // Clonar antes de executar
+            $queryForGet = clone $queryBuilder;
+            $queryForFirst = clone $queryBuilder;
+
+            $canais = $queryForGet->get();
+            $ultimaMensagemCriada = $queryForFirst->first();
 
             Log::info('Dados para broadcast EnviarMsgCanal', ['canais' => $canais]);
 
-            Broadcast(new EnviarMsgCanal($mensagem))->toOthers();
+            Broadcast(new EnviarMsgCanal($mensagem, $ultimaMensagemCriada))->toOthers();
             Broadcast(new ViewMsgCanal($canais, $request->idChat));
 
             return response()->json([

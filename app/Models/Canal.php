@@ -12,6 +12,6 @@ class Canal extends Model
     protected $table = 'tb_canal';
 
     protected $fillable = ['id', 'nome_canal', 'descricao_canal',
-     'imagem_canal', 'user_criador_canal', 'created_at',
+     'imagem_canal', 'user_criador_canal', 'created_at','id_curtei',
      'updated_at'];
 }

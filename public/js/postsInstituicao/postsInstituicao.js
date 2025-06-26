@@ -6,7 +6,7 @@ carregarPost();
 
 async function carregarPost() {
   try {
-    const res = await axios.get(`http://${host}/api/posts/2/0/3/0/${idInst}`);
+    const res = await axios.get(`http://${host}/api/posts/2/0/100/0/${idInst}`);
     const posts = res.data.data;
     mostrarPosts(posts)
     setLoading(false)

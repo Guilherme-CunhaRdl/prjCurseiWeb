@@ -222,7 +222,7 @@
 }
 
 .perfil-arroba {
-    color: #ff9800;
+    color: var(--inst);
     font-size: 1rem;
     margin-bottom: 8px;
     font-weight: 500;
@@ -244,7 +244,7 @@
 }
 
 .btn-fechar {
-    background: #FF9800;
+    background: var(--inst);
     color: #fff;
     border: none;
     border-radius: 6px;
@@ -258,7 +258,7 @@
     transition: background 0.2s;
 }
 .btn-fechar:hover {
-    background: #F57C00;
+    background: var(--inst);
 }
 .perfil-cursei-modal .perfil-banner-box {
     position: relative;

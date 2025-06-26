@@ -18,7 +18,9 @@ const listaPosts = document.getElementById('listaPosts')
 async function mostrarPosts(posts) {
   listaPosts.innerHTML = '';
   posts.forEach(post => {
- 
+ const imgSrc = post.conteudo_post 
+  ? `http://${host}/img/user/imgPosts/${post.conteudo_post}` 
+  : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ8lRbS7eKYzDq-Ftxc1p8G_TTw2unWBMEYUw&s';
     const cardPost = `
               <div class="card-conteudo"
               
@@ -29,8 +31,7 @@ async function mostrarPosts(posts) {
                            ${post.descricao_post ? `<p>${post.descricao_post}</p>` : ''}
                        </div>
                         <div class="img">
-    <img src="http://${host}/img/user/imgPosts/${post.conteudo_post ? post.conteudo_post : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ8lRbS7eKYzDq-Ftxc1p8G_TTw2unWBMEYUw&s'}" alt="">
-                        </div>
+   <img src="${imgSrc}" alt="">                        </div>
                          </div>
                         <div class="infos-conteudo">
                             <div class="info">

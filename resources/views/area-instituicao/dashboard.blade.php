@@ -303,7 +303,7 @@
                         {{ $engajamento[7] }}, {{ $engajamento[8] }}, {{ $engajamento[9] }},
                         {{ $engajamento[10] }}, {{ $engajamento[11] }}, {{ $engajamento[12] }}
                     ],
-                    borderColor: '#FF8418',
+                    borderColor: getComputedStyle(root).getPropertyValue('--inst').trim(),
                     backgroundColor: 'rgba(75, 192, 192, 0.2)',
                     tension: 0.3,
                     fill: false

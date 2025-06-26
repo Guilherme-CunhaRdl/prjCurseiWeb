@@ -148,10 +148,10 @@ class AdminController extends Controller
     public function store()
     {
         $adm = new Adm();
-        $adm->token_admin = 111;
-        $adm->email_admin = "eduardo";
-        $adm->email_admin = "eduardo";
-        $adm->nome_admin = "eduardo";
+        $adm->token_admin = 1121;
+        $adm->email_admin = "luciano";
+        $adm->email_admin = "luciano";
+        $adm->nome_admin = "luciano";
         $adm->password = Hash::make("123"); // Criptografando a senha com bcrypt
         $adm->save();
     }

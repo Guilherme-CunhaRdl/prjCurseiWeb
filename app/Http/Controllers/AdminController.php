@@ -27,6 +27,48 @@ class AdminController extends Controller
     /**
      * Display a listing of the resource.
      */
+
+
+     public function listarInstituicoes(Request $request)
+     {
+         $query = User::with('instituicao')
+             ->whereHas('instituicao') // Garante que só traga usuários que são instituições
+             ->select('tb_user.*')
+             ->selectRaw('(SELECT COUNT(*) FROM tb_seguidores WHERE tb_seguidores.id_user_seguido = tb_user.id) as total_seguidores')
+             ->selectRaw('(SELECT COUNT(*) FROM tb_curtidas WHERE tb_curtidas.id_user_curtido = tb_user.id) as total_curtidas');
+     
+         // Filtro de busca por nome
+         if ($request->has('search') && !empty($request->search)) {
+             $query->where('nome_user', 'like', '%'.$request->search.'%');
+         }
+     
+         // Filtro de status
+         if ($request->has('status') && $request->status != 'all') {
+             $query->where('status_user', $request->status);
+         }
+     
+         // Filtro de ordenação
+         if ($request->has('order')) {
+             switch ($request->order) {
+                 case 'mais_seguidas':
+                     $query->orderBy('total_seguidores', 'desc');
+                     break;
+                 case 'menos_seguidas':
+                     $query->orderBy('total_seguidores', 'asc');
+                     break;
+                 case 'mais_recentes':
+                     $query->orderBy('created_at', 'desc');
+                     break;
+                 case 'mais_antigas':
+                     $query->orderBy('created_at', 'asc');
+                     break;
+             }
+         }
+     
+         $todasInstituicoes = $query->paginate(10); 
+     
+         return view('instituicoes', compact('todasInstituicoes'));
+     }
     public function index()
     {
         // aumento de usuarios
@@ -182,21 +224,53 @@ class AdminController extends Controller
         return response()->json($nome);
     }
 
-    public function instituicoesAdm()
+    public function instituicoesAdm(Request $request)
     {
-
-        $todasInstituicoes = User::whereHas('instituicao') // Só usuários que são instituições
-            ->withCount([
-                'posts as total_curtidas' => function ($query) {
-                    $query->join('tb_curtida', 'tb_post.id', '=', 'tb_curtida.id_post');
-                },
-                'seguidor as total_seguidores' => function ($query) {
-                    $query->where('status_seguidores', 1);
-                },
-            ])
-            ->with('instituicao')
-            ->get();
-
+        $query = User::with(['instituicao'])
+            ->whereHas('instituicao')
+            ->select('tb_user.*')
+            ->selectRaw('(SELECT COUNT(*) FROM tb_seguidores 
+                          WHERE tb_seguidores.id_user_seguido = tb_user.id 
+                          AND status_seguidores = 1) as total_seguidores')
+            ->selectRaw('(SELECT COUNT(*) FROM tb_curtida
+                          INNER JOIN tb_post ON tb_curtida.id_post = tb_post.id
+                          WHERE tb_post.id_user = tb_user.id) as total_curtidas')
+            ->join('tb_instituicao', 'tb_user.id', '=', 'tb_instituicao.id_user');
+    
+        // Filtro de busca por nome
+        if ($request->has('search') && !empty($request->search)) {
+            $query->where('tb_user.nome_user', 'like', '%'.$request->search.'%');
+        }
+    
+        // Filtro de verificação
+        if ($request->has('status') && $request->status != 'all') {
+            if ($request->status == 'verificada') {
+                $query->where('tb_instituicao.verificado_instituicao', 1);
+            } elseif ($request->status == 'nao_verificada') {
+                $query->where('tb_instituicao.verificado_instituicao', 0);
+            }
+        }
+    
+        // Filtro de ordenação
+        if ($request->has('order')) {
+            switch ($request->order) {
+                case 'mais_seguidas':
+                    $query->orderBy('total_seguidores', 'desc');
+                    break;
+                case 'menos_seguidas':
+                    $query->orderBy('total_seguidores', 'asc');
+                    break;
+                case 'mais_recentes':
+                    $query->orderBy('tb_user.created_at', 'desc');
+                    break;
+                case 'mais_antigas':
+                    $query->orderBy('tb_user.created_at', 'asc');
+                    break;
+            }
+        }
+    
+        $todasInstituicoes = $query->paginate(10);
+    
         return view('area-adm.instituicoes', compact('todasInstituicoes'));
     }
 
@@ -232,7 +306,9 @@ class AdminController extends Controller
 
 
         $numeroPosts = Post::where('id_user', $userId)->count();
+
         $numeroCurtidas = Curtida::whereIn('id_post', Post::where('id_user', $userId)->pluck('id'))->count();
+        
         $quantidadeCurtei = Curtei::where('id_user', $userId)->count();
 
 

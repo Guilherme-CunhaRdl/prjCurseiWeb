@@ -22,47 +22,41 @@
             </div>
 
             <div class="SelecInputs">
-                <div class="pesqInput">
-                    <input type="text" placeholder="Digite o nome da instituicão">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                </div>
+    <form id="filtroForm" method="GET" action="{{ url()->current() }}">
+        <div class="pesqInput">
+            <input type="text" name="search" placeholder="Digite o nome da instituição" 
+                   value="{{ request('search') }}">
+            <i class="fa-solid fa-magnifying-glass" onclick="document.getElementById('filtroForm').submit()"></i>
+        </div>
 
+        <select class="form-select selectInst" name="status" onchange="this.form.submit()">
+    <option value="all" {{ request('status') == 'all' ? 'selected' : '' }}>
+        Todas as instituições
+    </option>
+    <option value="verificada" {{ request('status') == 'verificada' ? 'selected' : '' }}>
+        Instituições verificadas
+    </option>
+    <option value="nao_verificada" {{ request('status') == 'nao_verificada' ? 'selected' : '' }}>
+        Instituições não verificadas
+    </option>
+</select>
 
-                <select class="form-select selectInst">
-                    <option value="all">
-                        Todas as instituicoes
-                    </option>
-                    <option value="all">
-                        Instituicoes ativas
-                    </option>
-                    <option value="all">
-                        Desativadas
-                    </option>
-                </select>
-
-
-                 <select name="Organizar" class="form-select selectInst">
-                    <option value="all">
-                        Mais seguidas
-                    </option>
-                    <option value="all">
-                        Menos seguidas
-                    </option>
-                    <option value="all">
-                        Mais recentes
-                    </option>
-                    <option value="all">
-                        Mais antigas
-                    </option>
-                    </select>
-
-                   
-
-
-
-
-
-            </div>
+        <select name="order" class="form-select selectInst" onchange="this.form.submit()">
+            <option value="mais_seguidas" {{ request('order') == 'mais_seguidas' ? 'selected' : '' }}>
+                Mais seguidas
+            </option>
+            <option value="menos_seguidas" {{ request('order') == 'menos_seguidas' ? 'selected' : '' }}>
+                Menos seguidas
+            </option>
+            <option value="mais_recentes" {{ request('order') == 'mais_recentes' ? 'selected' : '' }}>
+                Mais recentes
+            </option>
+            <option value="mais_antigas" {{ request('order') == 'mais_antigas' ? 'selected' : '' }}>
+                Mais antigas
+            </option>
+        </select>
+    </form>
+</div>
 
                             <div class="listarCards">
 
@@ -102,9 +96,14 @@
                 
                 </div>
 
+                <div class="d-flex justify-content-center mt-4">
+                {{ $todasInstituicoes->appends(request()->query())->links() }}
+            </div>
 
+</div>
     </main>
 
    
+    <script src="{{asset('js/listarInstiuicoesAdm.js')}}"></script>
 </body>
 </html>

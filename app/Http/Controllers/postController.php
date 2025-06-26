@@ -7,6 +7,7 @@ use App\Models\Post;
 use App\Models\Curtida;
 use App\Models\Hashtag;
 use App\Models\Repostar;
+use App\Models\Comentario;
 use Illuminate\Support\Facades\DB;
 
 class postController extends Controller
@@ -18,6 +19,7 @@ class postController extends Controller
     {
         $totalCurtidas = Curtida::count();
         $totalPosts = Post::count();
+        $totalComentarios = Comentario::count(); 
         $postsPorDia = DB::table('tb_post')
             ->selectRaw('DAYOFWEEK(created_at) as dia_semana, COUNT(*) as total')
             ->groupBy('dia_semana')
@@ -46,7 +48,13 @@ class postController extends Controller
         $postsNoite = Post::whereRaw('HOUR(created_at) >= 18 OR HOUR(created_at) < 6')->count();
         $porcentagemNoite = porcentagem($postsNoite,$totalPosts);
         $porcentagemDia = porcentagem($postsDia,$totalPosts);
-        $posts = Post::with(['usuario', 'curtidas'])->withCount('curtidas')->orderByDesc('curtidas_count')->limit(3)->get();
+        $posts = Post::with(['usuario', 'curtidas'])
+        ->withCount('curtidas')
+        ->withCount('comentario')
+        ->orderByDesc('curtidas_count')
+        ->limit(3)
+        ->get();
+
         
         $topHashtags = Hashtag::withCount('posts')
     ->orderByDesc('posts_count')
@@ -57,6 +65,7 @@ class postController extends Controller
         return view('area-adm.posts')
             ->with('totalCurtidas', $totalCurtidas)
             ->with('totalPosts', $totalPosts)
+            ->with('totalComentarios', $totalComentarios)
             ->with('postsPorDia', $postsPorDia)
             ->with('postsInstituicao', $postsInstituicao)
             ->with('postUsers', $postUsers)

@@ -9,7 +9,7 @@
   <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
   @include('area-adm.componentes.links-base')
   <link rel="stylesheet" href="{{asset('css/instituicoesAdm.css')}}">
-  <link rel="stylesheet" href="{{asset('css/dashboardInst.css')}}">
+  <link rel="stylesheet" href="{{asset('css/dashboardInstAdm.css')}}">
 </head>
 
 <body>

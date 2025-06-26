@@ -10,6 +10,50 @@
  
 }
 
+
+.SelecInputs {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.SelecInputs form {
+  display: flex;
+  gap: 15px;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+.pesqInput {
+  position: relative;
+  flex-grow: 1;
+  min-width: 250px;
+}
+
+.pesqInput i {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+.selectInst {
+  min-width: 200px;
+}
+
+@media (max-width: 768px) {
+  .SelecInputs form {
+      flex-direction: column;
+  }
+  
+  .selectInst, .pesqInput {
+      width: 100%;
+  }
+}
+
+
 /*Parte Dos cards*/
 
 .listarCards{

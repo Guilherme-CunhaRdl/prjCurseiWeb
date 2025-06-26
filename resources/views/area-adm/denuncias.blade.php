@@ -55,7 +55,7 @@
                         </div>
                        
                         <div class="acoes">
-                            <a href="#"><i class='bx bx-info-circle' onclick="abrirModalDenuncia('{{$denuncia->autor->nome_user }}','{{ $denuncia-> motivo_denuncia }}','{{$denuncia->denunciado-> nome_user    }}','{{ $denuncia->created_at ? $denuncia->created_at->format('d/m/Y H:i:s') : 'Data não disponível' }}','e')"></i></a>
+                            <a href="#"><i class='bx bx-info-circle' onclick="abrirModalDenuncia('{{$denuncia->autor->nome_user}}','{{$denuncia->motivo_denuncia}}','{{$denuncia->denunciado->nome_user}}','{{$denuncia->created_at ? $denuncia->created_at->format('d/m/Y H:i:s') : 'Data não disponível'}}','{{$denuncia->descricao_denuncia ?? "Nenhuma descrição fornecida"}}')"></i></a>
                         </div>
                     </div>
                     @endforeach
@@ -86,13 +86,10 @@
                 </div>
                 <div class="info-modal">
                     <p>Data:</p>
-                    <p class="info-modal-container cinza" id="data">15/04/2025 13:40</p>
+                    <p class="info-modal-container cinza" id="data" style="color: white;">15/04/2025 13:40</p>
                 </div>
             </div>
-            <div class="desc-modal-denuncia">
-                <p>Motivo da denúncia:</p>
-                <textarea name="" id="descmod" disabled ></textarea>
-            </div>
+
         </div>
     </div>
 

@@ -53,30 +53,32 @@ class UserControllerApi extends Controller
 
     
     public function verificarCodigo(Request $request)
-    {
-        $user = User::where('email_user', $request->email)
-                   ->where('codigo_2fa', $request->code)
-                   ->where('codigo_2fa_expira_em', '>', Carbon::now())
-                   ->first();
+{
+    $email = trim($request->email);
+    $code = strtolower(trim($request->code)); // Normaliza o código
 
-        if (!$user) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Código inválido ou expirado'
-            ], 401);
-        }
+    $user = User::where('email_user', $email)
+               ->whereRaw('LOWER(codigo_2fa) = ?', [$code]) // case-insensitive
+               ->where('codigo_2fa_expira_em', '>', Carbon::now())
+               ->first();
 
-        
-        $user->codigo_2fa = null;
-        $user->codigo_2fa_expira_em = null;
-        $user->save();
-
+    if (!$user) {
         return response()->json([
-            'success' => true,
-            'user' => $user
-        ]);
+            'success' => false,
+            'message' => 'Código inválido ou expirado'
+        ], 401);
     }
 
+    // Limpa os dados de 2FA após verificação
+    $user->codigo_2fa = null;
+    $user->codigo_2fa_expira_em = null;
+    $user->save();
+
+    return response()->json([
+        'success' => true,
+        'user' => $user
+    ]);
+}
     /**
      * Show the form for creating a new resource.
      *

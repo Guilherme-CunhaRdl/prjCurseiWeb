@@ -54,6 +54,7 @@ async function salvarCurtei() {
         const res = await axios.post(`http://${host}/api/curtei/upload`, novoCurtei);
         fecharmodalNovoCurtei()
         formNovoCurtei.reset()
+        carregarCurteis()
     } catch (error) {
         alert('erro de conexão')
         setLoading(false)

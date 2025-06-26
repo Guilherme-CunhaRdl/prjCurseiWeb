@@ -53,7 +53,7 @@
                 <!-- Conta Institucional -->
 <div class="card-conta">
     <div class="header">
-        <img src="{{ asset('img/Icone_Logo_Cursei_Laranja.png') }}" style="width:38px; height:32px;">
+        <img src="{{ asset('img/Icone_Logo_Cursei_Preta.png') }}" style="width:38px; height:32px;">
         <span class="titulo titulo-laranja">Conta Institucional</span>
     </div>
     <div class="institucional-info">
@@ -88,7 +88,7 @@
 <div id="modal-editar-conta" class="modal-seguidores" style="display: none;">
     <div class="modal-conteudo modal-editar-conta">
         <div class="modal-header">
-            <img src="{{ asset('img/Icone_Logo_Cursei_Laranja.png') }}" style="width:38px; height:32px;">
+            <img src="{{ asset('img/Icone_Logo_Cursei_Preta.png') }}" style="width:38px; height:32px;">
             <span class="modal-titulo">Registros da Conta</span>
         </div>
         <form action="{{ route("conta.update") }}" method="POST">
@@ -114,7 +114,7 @@
             </div>
         </div>
         <div class="modal-header" style="margin-top: 22px;">
-            <img src="{{ asset('img/Icone_Logo_Cursei_Laranja.png') }}" style="width:38px; height:32px;">
+            <img src="{{ asset('img/Icone_Logo_Cursei_Preta.png') }}" style="width:38px; height:32px;">
             <span class="modal-titulo">Registro de Endereço</span>
         </div>
         <div class="modal-form-grid">

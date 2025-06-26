@@ -307,42 +307,45 @@ class UserControllerApi extends Controller
             'code' => 200,
         ]);
     }
-    public function selectUserLogin(Request $request)
-    {
-        try {
+  public function selectUserLogin(Request $request)
+{
+    try {
+        // Tenta encontrar o usuário pelo e-mail
+        $user = DB::table('tb_user')
+            ->where('email_user', $request->emailDigitado)
+            ->first();
 
-            $user = DB::table('tb_instituicao')
-                ->join('tb_user', 'tb_instituicao.id_user', '=', 'tb_user.id')
-                ->select(['tb_instituicao.id AS id_instituicao', 'tb_user.*'])
-                ->where('tb_user.email_user', $request->emailDigitado)
-                // ->where('tb_user.senha_user', $request->senhaDigitada)
-                ->first();
-
-            if (!$user) {
-                $user = User::where('email_user', $request->emailDigitado)
-                    // ->where('senha_user', $request->senhaDigitada)
-                    ->first();
-            }
-
-            $converterNumero = strval($user->id);
-
-            return response()->json([
-                'sucesso' => true,
-                'mensagem' => 'Fim do Processo',
-                'code' => 200,
-                'usuario' => $user,
-                'id_instituicao' => $user->id_instituicao ? $converterNumero : '0'
-            ]);
-        } catch (Exception $e) {
-
+        if (!$user || !Hash::check($request->senhaDigitada, $user->senha_user)) {
             return response()->json([
                 'sucesso' => false,
-                'mensagem' => 'Fim do Processo',
-                'code' => 200,
-                'error' => $e
+                'mensagem' => 'Email ou senha inválidos',
+                'code' => 401,
             ]);
         }
+
+        // Pega o ID da instituição associada (se existir)
+        $instituicao = DB::table('tb_instituicao')
+            ->where('id_user', $user->id)
+            ->select('id as id_instituicao')
+            ->first();
+
+        return response()->json([
+            'sucesso' => true,
+            'mensagem' => 'Login realizado com sucesso',
+            'code' => 200,
+            'usuario' => $user,
+            'id_instituicao' => $instituicao ? strval($instituicao->id_instituicao) : '0',
+        ]);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'sucesso' => false,
+            'mensagem' => 'Erro no processo de login',
+            'code' => 500,
+            'error' => $e->getMessage()
+        ]);
     }
+}
 
     public function verificarEmailExistente(Request $request)
     {

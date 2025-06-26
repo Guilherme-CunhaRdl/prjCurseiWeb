@@ -3,7 +3,7 @@ function abrirModalNotificacoes(idUser, acao) {
     document.getElementById('modalNotificacoes').style.display = 'flex';
         const loading = document.getElementById("contLoad");
 
-    loading.style.display = 'flex'; // Mostra o carregamento
+    loading.style.display = 'flex'; 
 
     axios.get(`http://localhost:8000/api/cursei/user/notificacao/${idUser}/${acao}`)
         .then(response => {
@@ -12,16 +12,15 @@ function abrirModalNotificacoes(idUser, acao) {
             const container = document.getElementById("listaNotificacoes");
 
             container.innerHTML = '';
-
             notificacoes.forEach(n => {
                 const icone = {
                     'curtida': 'bx-like',
                     'comentario': 'bx-comment',
                     'seguido': 'bx-user-plus',
-                    'repost': 'bi bi-arrow-repeat'
+                    'repost': 'bi bi-repeat'
                 }[n.tipo] || 'bx-bell';
                 
-                loading.style.display = 'none'; // Esconde o loading após receber
+                loading.style.display = 'none'; 
 
                 container.innerHTML += `
                     <div class="notificacao-item">

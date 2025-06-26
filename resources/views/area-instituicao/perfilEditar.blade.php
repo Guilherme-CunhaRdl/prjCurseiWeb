@@ -11,6 +11,7 @@
    @include('area-instituicao.componentes.padrao')
 </head>
 <body>
+    
     <main class="container-fluid p-0">
         @include('area-instituicao.componentes.navbar', [
             'navbarIcon' => 'bx-user',

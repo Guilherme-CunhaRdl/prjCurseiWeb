@@ -16,7 +16,6 @@ class Curtei extends Model
         'caminho_curtei_thumb',
         'legenda_curtei',
         'id_user',
-        //'id_conteudo_curtei',
         'created_at',
         'updated_at',
         'status_curtei',
@@ -33,26 +32,30 @@ class Curtei extends Model
     {
         return $this->belongsTo(ConteudoCurtei::class, 'id_conteudo_curtei');
     }
+
     public function curtidas()
     {
         return $this->hasMany(CurtidaCurtei::class, 'id_curtei');
     }
 
     public function comentarios()
-{
-    return $this->hasMany(ComentarioCurtei::class, 'id_curtei');
-}
+    {
+        return $this->hasMany(ComentarioCurtei::class, 'id_curtei');
+    }
+
+    public function mensagens()
+    {
+        return $this->hasMany(Mensagem::class, 'id_curtei');
+    }
 
     public function comentariosCount()
     {
         return $this->hasMany(ComentarioCurtei::class, 'id_curtei')->count();
     }
 
-
     public function curtidasPorUsuario()
-{
-    return $this->hasMany(CurtidaCurtei::class, 'id_curtei')
-                ->where('id_user', auth()->id());
-}
-
+    {
+        return $this->hasMany(CurtidaCurtei::class, 'id_curtei')
+                    ->where('id_user', auth()->id());
+    }
 }

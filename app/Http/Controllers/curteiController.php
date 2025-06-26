@@ -6,6 +6,7 @@ use App\Models\Curtei;
 use App\Models\CurtidaCurtei;
 use App\Models\ComentarioCurtei;
 use App\Models\CurtidaComentarioCurtei;
+use App\Models\Mensagem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -252,13 +253,15 @@ class curteiController extends Controller
        public function index()
        {
            try {
-               $totalCurtei = Curtei::count();
+            $totalCurtei = Curtei::count();
+            $totalCurtidas = CurtidaCurtei::count();
+            $totalCompartilhamentos = Mensagem::whereNotNull('id_curtei')->count();
                $CurteiPorDia = DB::table('tb_curtei')
                    ->selectRaw('DAYOFWEEK(created_at) as dia_semana, COUNT(*) as total')
                    ->groupBy('dia_semana')
                    ->orderBy('dia_semana')
                    ->get();
-       
+           
                $curteiUsers = DB::table('tb_curtei')
                    ->join('tb_user', 'tb_curtei.id_user', '=', 'tb_user.id')
                    ->leftJoin('tb_instituicao', 'tb_user.id', '=', 'tb_instituicao.id_user')
@@ -270,9 +273,12 @@ class curteiController extends Controller
                    ->join('tb_instituicao', 'tb_user.id', '=', 'tb_instituicao.id_user')
                    ->count('tb_curtei.id');
                
-               // Adicione esta query para os top curteis
+               // Adicione esta query para os top curteis com contagem de compartilhamentos
                $topCurteis = Curtei::with(['usuario', 'curtidas'])
                    ->withCount('curtidas')
+                   ->withCount(['mensagens as compartilhamentos_count' => function($query) {
+                       $query->whereNotNull('id_curtei');
+                   }])
                    ->orderByDesc('curtidas_count')
                    ->limit(3)
                    ->get();
@@ -293,7 +299,9 @@ class curteiController extends Controller
                $porcentagemDia = porcentagem($curteisDia,$totalCurtei);
                
                return view('area-adm.curtei')
-                   ->with('totalCurtei', $totalCurtei)
+               ->with('totalCurtei', $totalCurtei)
+               ->with('totalCurtidas', $totalCurtidas)
+               ->with('totalCompartilhamentos', $totalCompartilhamentos)
                    ->with('CurteiPorDia', $CurteiPorDia)
                    ->with('curteisInstituicao', $curteisInstituicao)
                    ->with('curteiUsers', $curteiUsers)
@@ -303,7 +311,7 @@ class curteiController extends Controller
                    ->with('curteisNoite', $curteisNoite)
                    ->with('porcentagemNoite', $porcentagemNoite)
                    ->with('porcentagemDia', $porcentagemDia)
-                   ->with('topCurteis', $topCurteis); // Adiciona os top curteis
+                   ->with('topCurteis', $topCurteis);
                    
            } catch (\Exception $e) {
                Log::error("Erro no método index do curteiController: " . $e->getMessage());

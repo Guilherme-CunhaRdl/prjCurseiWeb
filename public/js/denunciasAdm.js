@@ -31,3 +31,43 @@ function fecharModalDenuncia() {
         
           }
      }
+
+
+     $(document).ready(function() {
+     
+        $('#pesquisa').on('keyup', function() {
+            let searchTerm = $(this).val().toLowerCase();
+            
+            if (searchTerm === '') {
+                $('#cardsPesquisa').hide();
+                $('#cardsPadrao').show();
+                return;
+            }
+    
+            $('#cardsPadrao').hide();
+            $('#cardsPesquisa').empty().show();
+    
+            $('.card').each(function() {
+                let cardText = $(this).text().toLowerCase();
+                if (cardText.includes(searchTerm)) {
+                    $('#cardsPesquisa').append($(this).clone());
+                }
+            });
+        });
+    
+       
+        $('.form-select').on('change', function() {
+            let order = $(this).val();
+            let $container = $('#cardsPadrao');
+            let $cards = $container.find('.card').get();
+    
+            $cards.sort(function(a, b) {
+                let dateA = new Date($(a).find('#data').text() || $(a).find('p').last().text());
+                let dateB = new Date($(b).find('#data').text() || $(b).find('p').last().text());
+                
+                return order === 'Mais recentes' ? dateB - dateA : dateA - dateB;
+            });
+    
+            $container.empty().append($cards);
+        });
+    });

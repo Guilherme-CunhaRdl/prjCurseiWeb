@@ -39,7 +39,7 @@
                                 <i class='bx bx-heart'></i>
                             </div>
                             <div class="infos">
-                                <p>0</p>
+                                <p>{{ $totalCurtidas}}</p>
                                 <p>Curtidas</p>
                             </div>
                         </div>
@@ -48,8 +48,8 @@
                                 <i class='bx bx-download'></i>
                             </div>
                             <div class="infos">
-                                <p>10.232</p>
-                                <p>Downloads</p>
+                                <p>{{ $totalCompartilhamentos }}</p>
+                                <p>Compartilhamento</p>
                             </div>
                         </div>
                     </div>

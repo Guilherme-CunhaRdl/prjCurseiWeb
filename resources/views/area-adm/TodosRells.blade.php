@@ -23,51 +23,42 @@
             </div>
 
             <div class="SelecInputs">
-                <div class="pesqInput">
-                    <input type="text" placeholder="Digite o nome do usuario">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                </div>
+    <div class="pesqInput">
+        <input type="text" id="pesquisa" placeholder="Digite o nome do usuario">
+        <i class="fa-solid fa-magnifying-glass"></i>
+    </div>
 
+    <select class="form-select selectInst" id="filtroStatus">
+        <option value="all">
+            Todos os Posts
+        </option>
+        <option value="active">
+            Posts ativos
+        </option>
+        <option value="inactive">
+            Posts Desativados
+        </option>
+    </select>
 
-                <select class="form-select selectInst">
-                    <option value="all">
-                        Todos os Posts
-                    </option>
-                    <option value="all">
-                        Posts ativos
-                    </option>
-                    <option value="all">
-                      Posts Desativados
-                    </option>
-                </select>
+    <select name="Organizar" class="form-select selectInst" id="filtroOrdenacao">
+        <option value="mais_vistos">
+            Mais Vistos
+        </option>
+        <option value="mais_curtidos">
+            Mais Curtidos
+        </option>
+        <option value="mais_recentes">
+            Mais recentes
+        </option>
+        <option value="mais_antigos">
+            Mais antigos
+        </option>
+    </select>
+</div>
 
-
-                 <select name="Organizar" class="form-select selectInst">
-                    <option value="all">
-                        Mais Vistos
-                    </option>
-                    <option value="all">
-                        Mais Curtidos
-                    </option>
-                    <option value="all">
-                        Mais recentes
-                    </option>
-                    <option value="all">
-                        Mais antigos
-                    </option>
-                    </select>
-
-                   
-
-
-
-
-
-            </div>
-
-            <div class="listarCards">
+<div class="listarCards">
     @foreach($Curtei as $C)    
-    <div class="cardsPost">
+    <div class="cardsPost" data-status="{{ $C->status_curtei ? 'active' : 'inactive' }}" data-date="{{ $C->created_at }}">
         <div class="topoCard">
             <img src="{{ asset('img/user/fotoPerfil/' . ($C->usuario->img_user ?? 'default-banner.jpg')) }}" alt="Foto perfil" class="logoInstituicao">
             <div class="userInfo">
@@ -83,33 +74,33 @@
         @endif
 
         <div class="videoWrapper">
-    <div class="videoContainer">
-        <video controls class="videoPost" poster="{{ asset($C->caminho_curtei_thumb) }}">
-            <source src="{{ asset($C->caminho_curtei) }}" type="video/mp4">
-        </video>
-    </div>
-</div>
+            <div class="videoContainer">
+                <video controls class="videoPost" poster="{{ asset($C->caminho_curtei_thumb) }}">
+                    <source src="{{ asset($C->caminho_curtei) }}" type="video/mp4">
+                </video>
+            </div>
+        </div>
 
         <div class="interactionButtons">
             <div class="interactionBtn">
                 <i class="fas fa-heart"></i>
-                <span>{{ $C->curtidas->count() }}</span>
+                <span>{{ $C->curtidas_count }}</span>
             </div>
             <div class="interactionBtn">
                 <i class="fas fa-comment"></i>
-                <span>{{ $C->comentarios_count ?? 0 }}</span>
+                <span>{{ $C->comentarios_count }}</span>
             </div>
             <div class="interactionBtn">
                 <i class="fas fa-share"></i>
+                <span>{{ $C->compartilhamentos_count }}</span>
             </div>
         </div>
     </div>
     @endforeach
 </div>
 
-
     </main>
 
-   
+    <script src="{{asset('js/filtrosCurteiAdm.js')}}"></script>
 </body>
 </html>

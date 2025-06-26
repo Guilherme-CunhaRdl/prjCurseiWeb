@@ -30,35 +30,29 @@
 
 
                 <select name="Organizar" class="form-select">
-                    <option value="all">
-                        Mais recentes
-                    </option>
-                    <option value="all">
-                        Mais antigos
-                    </option>
-                </select>
+    <option value="Mais recentes">
+        Mais recentes
+    </option>
+    <option value="Mais antigos">
+        Mais antigos
+    </option>
+</select>
 
             </div>
             <div class="lista-cards" id="cardsPadrao">
-                @foreach ($denuncias as $denuncia )
-
-               
-             
-                  
-                    <div class="card">
-                       
-                        <div class="info">
-                        <p id="usuario">{{ $denuncia->autor->nome_user }}</p>
-                            <p>{{ $denuncia-> motivo_denuncia }}</p>
-                            <p>{{ $denuncia->denunciado-> nome_user }}</p>
-
-                        </div>
-                       
-                        <div class="acoes">
-                            <a href="#"><i class='bx bx-info-circle' onclick="abrirModalDenuncia('{{$denuncia->autor->nome_user}}','{{$denuncia->motivo_denuncia}}','{{$denuncia->denunciado->nome_user}}','{{$denuncia->created_at ? $denuncia->created_at->format('d/m/Y H:i:s') : 'Data não disponível'}}','{{$denuncia->descricao_denuncia ?? "Nenhuma descrição fornecida"}}')"></i></a>
-                        </div>
-                    </div>
-                    @endforeach
+            @foreach ($denuncias as $denuncia)
+    <div class="card">
+        <div class="info">
+            <p id="usuario">{{ $denuncia->autor->nome_user }}</p>
+            <p>{{ $denuncia->motivo_denuncia }}</p>
+            <p>{{ $denuncia->denunciado->nome_user }}</p>
+            <p class="data-denuncia" style="display: none;">{{ $denuncia->created_at ? $denuncia->created_at->format('d/m/Y H:i:s') : 'Data não disponível' }}</p>
+        </div>
+        <div class="acoes">
+            <a href="#"><i class='bx bx-info-circle' onclick="abrirModalDenuncia('{{$denuncia->autor->nome_user}}','{{$denuncia->motivo_denuncia}}','{{$denuncia->denunciado->nome_user}}','{{$denuncia->created_at ? $denuncia->created_at->format('d/m/Y H:i:s') : 'Data não disponível'}}','{{$denuncia->descricao_denuncia ?? "Nenhuma descrição fornecida"}}')"></i></a>
+        </div>
+    </div>
+@endforeach
                 </div>
 
                 <div class="lista-cards" id="cardsPesquisa"></div>

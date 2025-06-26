@@ -6,7 +6,7 @@ carregarPost();
 
 async function carregarPost() {
   try {
-    const res = await axios.get(`http://${host}/api/posts/2/0/100/0/${idInst}`);
+    const res = await axios.get(`http://${host}/api/posts/2/0/3/0/${idInst}`);
     const posts = res.data.data;
     mostrarPosts(posts)
     setLoading(false)
@@ -18,12 +18,12 @@ const listaPosts = document.getElementById('listaPosts')
 async function mostrarPosts(posts) {
   listaPosts.innerHTML = '';
   posts.forEach(post => {
- const imgSrc = post.conteudo_post 
-  ? `http://${host}/img/user/imgPosts/${post.conteudo_post}` 
+ const imgSrc = post.conteudo_post
+  ? `http://${host}/img/user/imgPosts/${post.conteudo_post}`
   : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ8lRbS7eKYzDq-Ftxc1p8G_TTw2unWBMEYUw&s';
     const cardPost = `
               <div class="card-conteudo"
-              
+
            >
               <div style="cursor:pointer"    onclick="verPost(${post.id_post},
               '${(post.descricao_post || '').replace(/'/g, "\\'")}','${(post.conteudo_post || '').replace(/'/g, "\\'")}',${post.evento_id})">

@@ -499,7 +499,7 @@ class InstituicaoController extends Controller
             foreach ($tipo as $mes => $valor) {
 
 
-                $engajamentoPorMes[$mes] += $valor;
+                $engajamentoPorMes[$mes] += $valor ?? 0;
             }
         }
 
@@ -689,7 +689,7 @@ public function seguidores()
 
             $seguidor = Seguidores::where('id_user_seguidor', $idSeguidor)
                 ->where('id_user_seguido', $idInstituicao)
-                ->firstOrFail(); 
+                ->firstOrFail();
 
             $seguidor->delete();
 
@@ -1234,7 +1234,7 @@ public function seguidores()
         $maiorTotal = $areaMaisPostada?->total ?? 0;
 
         $porcentagemAreaPrincipal = $totalPosts > 0 ? number_format(($maiorTotal / $totalPosts) * 100, 2) : 0;
-
+        
         return view('area-instituicao.posts', [
             'user' => auth()->user(),
             'instID' => $instituicaoId,

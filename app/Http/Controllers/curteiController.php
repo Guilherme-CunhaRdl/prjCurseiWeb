@@ -249,57 +249,67 @@ class curteiController extends Controller
 
 
        //PARTE DO ADM
-    public function index()
-    {
-        try {
-            $totalCurtei = Curtei::count();
-            $CurteiPorDia = DB::table('tb_curtei')
-                ->selectRaw('DAYOFWEEK(created_at) as dia_semana, COUNT(*) as total')
-                ->groupBy('dia_semana')
-                ->orderBy('dia_semana')
-                ->get();
-
-            $curteiUsers = DB::table('tb_curtei')
-                ->join('tb_user', 'tb_curtei.id_user', '=', 'tb_user.id')
-                ->leftJoin('tb_instituicao', 'tb_user.id', '=', 'tb_instituicao.id_user')
-                ->whereNull('tb_instituicao.id_user')
-                ->count('tb_curtei.id');
-            $curteisInstituicao = DB::table('tb_curtei')
-                ->join('tb_user', 'tb_curtei.id_user', '=', 'tb_user.id')
-                ->join('tb_instituicao', 'tb_user.id', '=', 'tb_instituicao.id_user')
-                ->count('tb_curtei.id');
-            
-            function porcentagem($valor,$total){
-                $resultado = ($total != 0) 
-                ? number_format(($valor / $total) * 100, 1, ',', '.') 
-                : '0,0';
-                return $resultado;
-            }
-            $porcentagemUser = porcentagem($curteiUsers,$totalCurtei);
-            $porcentagemInst = porcentagem($curteisInstituicao,$totalCurtei);
-
-            $curteisDia = Curtei::whereRaw('HOUR(created_at) BETWEEN 6 and 18')->count();
-            $curteisNoite = Curtei::whereRaw('HOUR(created_at) >= 18 OR HOUR(created_at) < 6')->count();
-            $porcentagemNoite = porcentagem($curteisNoite,$totalCurtei);
-            $porcentagemDia = porcentagem($curteisDia,$totalCurtei);
-            
-            return view('area-adm.curtei')
-                ->with('totalCurtei', $totalCurtei)
-                ->with('CurteiPorDia', $CurteiPorDia)
-                ->with('curteisInstituicao', $curteisInstituicao)
-                ->with('curteiUsers', $curteiUsers)
-                ->with('porcentagemUser', $porcentagemUser)
-                ->with('porcentagemInst', $porcentagemInst)
-                ->with('curteisDia', $curteisDia)
-                ->with('curteisNoite', $curteisNoite)
-                ->with('porcentagemNoite', $porcentagemNoite)
-                ->with('porcentagemDia', $porcentagemDia);
-                
-        } catch (\Exception $e) {
-            Log::error("Erro no método index do curteiController: " . $e->getMessage());
-            return back()->with('error', 'Erro ao carregar estatísticas');
-        }
-    }
+       public function index()
+       {
+           try {
+               $totalCurtei = Curtei::count();
+               $CurteiPorDia = DB::table('tb_curtei')
+                   ->selectRaw('DAYOFWEEK(created_at) as dia_semana, COUNT(*) as total')
+                   ->groupBy('dia_semana')
+                   ->orderBy('dia_semana')
+                   ->get();
+       
+               $curteiUsers = DB::table('tb_curtei')
+                   ->join('tb_user', 'tb_curtei.id_user', '=', 'tb_user.id')
+                   ->leftJoin('tb_instituicao', 'tb_user.id', '=', 'tb_instituicao.id_user')
+                   ->whereNull('tb_instituicao.id_user')
+                   ->count('tb_curtei.id');
+               
+               $curteisInstituicao = DB::table('tb_curtei')
+                   ->join('tb_user', 'tb_curtei.id_user', '=', 'tb_user.id')
+                   ->join('tb_instituicao', 'tb_user.id', '=', 'tb_instituicao.id_user')
+                   ->count('tb_curtei.id');
+               
+               // Adicione esta query para os top curteis
+               $topCurteis = Curtei::with(['usuario', 'curtidas'])
+                   ->withCount('curtidas')
+                   ->orderByDesc('curtidas_count')
+                   ->limit(3)
+                   ->get();
+       
+               function porcentagem($valor,$total){
+                   $resultado = ($total != 0) 
+                   ? number_format(($valor / $total) * 100, 1, ',', '.') 
+                   : '0,0';
+                   return $resultado;
+               }
+               
+               $porcentagemUser = porcentagem($curteiUsers,$totalCurtei);
+               $porcentagemInst = porcentagem($curteisInstituicao,$totalCurtei);
+       
+               $curteisDia = Curtei::whereRaw('HOUR(created_at) BETWEEN 6 and 18')->count();
+               $curteisNoite = Curtei::whereRaw('HOUR(created_at) >= 18 OR HOUR(created_at) < 6')->count();
+               $porcentagemNoite = porcentagem($curteisNoite,$totalCurtei);
+               $porcentagemDia = porcentagem($curteisDia,$totalCurtei);
+               
+               return view('area-adm.curtei')
+                   ->with('totalCurtei', $totalCurtei)
+                   ->with('CurteiPorDia', $CurteiPorDia)
+                   ->with('curteisInstituicao', $curteisInstituicao)
+                   ->with('curteiUsers', $curteiUsers)
+                   ->with('porcentagemUser', $porcentagemUser)
+                   ->with('porcentagemInst', $porcentagemInst)
+                   ->with('curteisDia', $curteisDia)
+                   ->with('curteisNoite', $curteisNoite)
+                   ->with('porcentagemNoite', $porcentagemNoite)
+                   ->with('porcentagemDia', $porcentagemDia)
+                   ->with('topCurteis', $topCurteis); // Adiciona os top curteis
+                   
+           } catch (\Exception $e) {
+               Log::error("Erro no método index do curteiController: " . $e->getMessage());
+               return back()->with('error', 'Erro ao carregar estatísticas');
+           }
+       }
 //-------------------------//
 
 //VOU COMENTAR PRA NINGUEM SE PERDER NESSA BUDEGA

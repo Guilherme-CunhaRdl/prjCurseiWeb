@@ -57,26 +57,26 @@ class MensagemControllerApi extends Controller
                             ->whereRaw('i.id_user = IF(c.id_user1 = ?, c.id_user2, c.id_user1)', [$idUser]);
                     })
                     ->selectRaw("
-    c.id as id_conversa,
-    user1.id AS idUser1,
-    user2.id AS idUser2,
-    IF(user1.id = ?, user2.nome_user, user1.nome_user) AS nome,
-    IF(user1.id = ?, user2.img_user, user1.img_user) AS img,
-    IF(user1.id = ?, user2.arroba_user, user1.arroba_user) AS arroba,
-    IF(user1.id = ?, user2.id, user1.id) AS id_remetente,
-    tb_mensagem.img_mensagem AS img_mensagem,
-    tb_mensagem.conteudo_mensagem AS ultima_mensagem,
-    tb_mensagem.created_at,
-    p.id AS id_post,
-    p.conteudo_post AS cont_post,
-    p.descricao_post AS desc_post,
-    userPostou.nome_user AS nome_user_postou, 
-    userPostou.img_user AS img_user_postou,
-    userPostou.id AS id_user_postou, 
-    userPostou.arroba_user AS arroba_user_postou,
-    NULL AS id_membro,
-    'privada' AS tipo
-    ", [$idUser, $idUser, $idUser, $idUser]);
+                        c.id as id_conversa,
+                        user1.id AS idUser1,
+                        user2.id AS idUser2,
+                        IF(user1.id = ?, user2.nome_user, user1.nome_user) AS nome,
+                        IF(user1.id = ?, user2.img_user, user1.img_user) AS img,
+                        IF(user1.id = ?, user2.arroba_user, user1.arroba_user) AS arroba,
+                        IF(user1.id = ?, user2.id, user1.id) AS id_remetente,
+                        tb_mensagem.img_mensagem AS img_mensagem,
+                        tb_mensagem.conteudo_mensagem AS ultima_mensagem,
+                        tb_mensagem.created_at,
+                        p.id AS id_post,
+                        p.conteudo_post AS cont_post,
+                        p.descricao_post AS desc_post,
+                        userPostou.nome_user AS nome_user_postou, 
+                        userPostou.img_user AS img_user_postou,
+                        userPostou.id AS id_user_postou, 
+                        userPostou.arroba_user AS arroba_user_postou,
+                        NULL AS id_membro,
+                        'privada' AS tipo
+                        ", [$idUser, $idUser, $idUser, $idUser]);
 
                 $privadasSql = $privadasQuery->toSql();
                 $privadasBindings = $privadasQuery->getBindings();
